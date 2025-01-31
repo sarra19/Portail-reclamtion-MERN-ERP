@@ -201,6 +201,28 @@ async function userLogout(req, res) {
     }
 }
 
+async function userDetails(req,res){
+    try{
+        console.log("userId",req.userId)
+        const user = await userModel.findById(req.userId)
+
+        res.status(200).json({
+            data : user,
+            error : false,
+            success : true,
+            message : " details d'Utilisateur"
+        })
+
+        console.log("utilisateur",user)
+
+    }catch(err){
+        res.status(400).json({
+            message : err.message || err,
+            error : true,
+            success : false
+        })
+    }
+}
 
 async function getall(req, res) {
     try {
@@ -244,4 +266,4 @@ async function deleteUser(req, res) {
 
 
 
-module.exports = { add, SignUp, userVerify, SignIn, userLogout, getall, getbyid, updateUser, deleteUser }
+module.exports = { add, SignUp, userVerify,userDetails, SignIn, userLogout, getall, getbyid, updateUser, deleteUser }

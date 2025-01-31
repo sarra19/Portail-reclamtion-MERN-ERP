@@ -14,6 +14,8 @@ const remboursementController=require("../controller/remboursementController");
 const réponseController=require("../controller/réponseController");
 const userController=require("../controller/userController");
 
+const authToken = require('../middleware/authToken')
+
 
 //service
 router.post("/addService",serviceController.add)
@@ -107,6 +109,7 @@ router.get("/userLogout",userController.userLogout)
 
 router.get("/getAllUser",userController.getall)
 router.get("/getUser/:id",userController.getbyid)
+router.get("/user-details",authToken,userController.userDetails)
 router.put('/updateUser/:id',userController.updateUser);
 router.delete('/deleteUser/:id',userController.deleteUser);
 
