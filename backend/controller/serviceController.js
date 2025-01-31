@@ -1,5 +1,4 @@
 const serviceModel = require("../models/serviceModel");
-const express = require('express');
 
 async function add(req, res) {
     try {

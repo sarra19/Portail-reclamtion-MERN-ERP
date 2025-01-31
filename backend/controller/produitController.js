@@ -1,5 +1,4 @@
 const produitModel = require("../models/produitModel");
-const express = require('express');
 
 async function add(req, res) {
     try {

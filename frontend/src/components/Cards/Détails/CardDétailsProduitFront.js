@@ -37,7 +37,6 @@ export default function CardDétailsProduitFront() {
               <div className="text-section w-1/2">
                 <h4 className="mt-2 font-bold text-white">Microsoft Power Platform</h4>
                 <p className="mt-2 text-white">Description</p>
-                <p className="mt-4 text-white ">Fournisseur: </p>
                 <p className="text-white ">Prix: </p>
 
 

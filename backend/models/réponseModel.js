@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 const réponseSchema = new mongoose.Schema({
     réponseContenu: String, 
-    serviceSupp: {String,required: true},
-    fichierJoint: {String,required: true},
+    serviceSupp: {type:String,required: true,enum: ['remboursement', 'intervention']},
+    fichierJoint: {type:String,required: true},
    
-    sujetRéclamation:string, //fk
+        //    réclamation: { type: mongoose.Schema.Types.ObjectId, ref: 'réclamation' } //pour sujet réclamation
 
 
 }, {

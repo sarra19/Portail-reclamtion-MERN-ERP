@@ -3,13 +3,40 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const connectDB = require('./config/db');
-const router = require('./routes');
-
+// const router = require('./routes');
+const session = require("express-session");
 const app = express();
 const indexRouter = require('./routes/index');
+const MongoStore = require('connect-mongo');
+const cors = require('cors');
+
 // var usersRouter = require('./routes/users');
 // app.use('/users', usersRouter);
 
+app.use(cors({
+    origin: ["http://localhost:8081","http://localhost:3000"],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+}));
+
+app.use(
+    session({
+        secret: "secret",
+        resave: false,
+        saveUninitialized: false,
+        store: MongoStore.create({
+            mongoUrl: process.env.MONGODB_URI,
+            collectionName: 'sessions',
+        }),
+        cookie: {
+            sameSite: "lax", 
+            secure: false, 
+            maxAge: 1000 * 60 * 60 * 24 // 1 jour
+        }
+    })
+);
+
+  
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json({ limit: '10mb' })); 

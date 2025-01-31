@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
-    contenu: {String,required: true}, 
-    priorité: String,//élevée pour réclamation résolue , Normale en réponse en cours
-    statut: String, //lue,nonlue
+    contenu: {type:String,required: true}, 
+    priorité:{type:String,required: true,enum: ['élevée', 'normal']},//élevée pour réclamation résolue , Normale en réponse en cours
+    statut: {type:String,required: true,enum: ['lue', 'non lue']}, //lue,nonlue
+    // utilisateur: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 
 }, {
     timestamps: true

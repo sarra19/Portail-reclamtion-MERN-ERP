@@ -2,14 +2,14 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
     pseudo: String,
-    prénom: {String,required: true},
-    nom: {String,required: true},
+    prénom: {type:String,required: true},
+    nom: {type:String,required: true},
     email: {
         type: String,
         unique: true,
         required: true
     },
-    motdePasse: {String,required: true},
+    motdePasse: {type:String,required: true},
     imageprofile: String,
     adresse: String,
     pays: String,
@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     biographie: String,
     genre: String,
     téléphone:Number,
-    role: {String,required: true},
+    role: {type:String,enum: ['admin', 'client', 'fournisseur']},
     verified: { type: Boolean, default: false },
 
 
