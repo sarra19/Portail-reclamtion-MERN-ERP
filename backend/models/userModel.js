@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     biographie: String,
     genre: String,
     téléphone:Number,
-    role: {type:String,enum: ['admin', 'client', 'fournisseur']},
+    role: {type:String,enum: ['admin', 'client', 'fournisseur'],default:'client'},
     verified: { type: Boolean, default: false },
 
 

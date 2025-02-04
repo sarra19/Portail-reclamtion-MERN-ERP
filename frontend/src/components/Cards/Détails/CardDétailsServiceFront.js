@@ -1,14 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import SummaryApi from '../../../common';
+import  { useParams } from 'react-router-dom';
 
 export default function CardDétailsServiceFront() {
   const [showForm, setShowForm] = React.useState(false);
+  const [loading,setLoading] = useState(true)
+  const { id } = useParams();
 
   const handleButtonClick = () => {
     setShowForm(!showForm);
   };
   const [rating, setRating] = React.useState(0);
   const [submitted, setSubmitted] = React.useState(false);
-
+  const [data,setData] = useState({
+    image : "",
+    nomService : "",
+    description : "",
+    prix : "",
+  
+  })
   const handleSubmit = (event) => {
     event.preventDefault();
     setSubmitted(true);
@@ -18,6 +28,30 @@ export default function CardDétailsServiceFront() {
     setRating(newRating);
   };
 
+  useEffect(() => {
+    const fetchServiceDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${SummaryApi.serviceDetails.url}/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const dataResponse = await response.json();
+        setData(dataResponse?.data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des données :", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServiceDetails();
+    console.log(data)
+    
+  }, [id]);
 
   return (
     <>
@@ -32,26 +66,28 @@ export default function CardDétailsServiceFront() {
           </div>
         </div>
         <div className="block w-full overflow-x-auto">
-          <div className="hover:-mt-4 relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-lg bg-bleu-dys ease-linear transition-all duration-150">
-            <blockquote className="relative p-8 mb-4 flex items-center">
-              <div className="text-section w-1/2">
-                <h2 className="mt-2 font-bold text-white">Conseil Stratégique</h2>
-                <p className="mt-2 text-white">Description</p>
-                <p className="text-white ">Prix: </p>
+      {loading ? (
+        <p className="text-center text-blueGray-700">Chargement...</p>
+      ) : (
+        <div className="hover:-mt-4 relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-lg bg-bleu-dys ease-linear transition-all duration-150">
+          <blockquote className="relative p-8 mb-4 flex items-center">
+            <div className="text-section w-1/2">
+              <h2 className="mt-2 font-bold text-white">{data.nomService}</h2>
+              <p className="mt-2 text-white">{data.description}</p>
+              <p className=" mt-12 text-white">Prix: {data.prix} TND</p>
+            </div>
 
-
-              </div>
-
-              <div className="image-section ml-4 w-1/2">
-                <img
-                  alt="Utilisateur"
-                  src={require("assets/img/conseil.png")}
-                  className="w-full h-auto object-cover rounded-lg"  // Taille de l'image ajustée à w-full
-                />
-              </div>
-            </blockquote>
-          </div>
+            <div className="image-section ml-4 w-1/2">
+              <img
+                alt={data.nomService}
+                src={require(`assets/img/${data.image}`)} 
+                className="w-full h-auto object-cover rounded-lg"
+              />
+            </div>
+          </blockquote>
         </div>
+      )}
+    </div>
         <div className="text-center flex justify-end">
           <a href="#!" onClick={handleButtonClick}>
             <button

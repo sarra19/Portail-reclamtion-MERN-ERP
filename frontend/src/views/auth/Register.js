@@ -4,6 +4,8 @@ import imageTobase64 from '../../helpers/imageTobase64';
 import loginIcons from '../../assets/img/signup.gif';
 import SummaryApi from '../../common';
 import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -136,6 +138,8 @@ export default function Register() {
   };
   return (
     <>
+          <ToastContainer position='top-center' />
+
       <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-start h-full">
           <div className="w-full lg:w-6/12 px-4">
@@ -284,7 +288,7 @@ export default function Register() {
                         required
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       />
-                       <div className='cursor-pointer text-xl' onClick={() => setShowPassword((prev) => !prev)}>
+                       <div className=' ml-2 mt-3 cursor-pointer text-xl' onClick={() => setShowPassword((prev) => !prev)}>
                   <span>{showPassword ? <FaEyeSlash /> : <FaEye />}</span>
                 </div>
                     </div>
@@ -308,7 +312,7 @@ export default function Register() {
                         required
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       />
-                      <div className='cursor-pointer text-xl' onClick={() => setShowConfirmPassword((prev) => !prev)}>
+                      <div className=' ml-2 mt-3 cursor-pointer text-xl' onClick={() => setShowConfirmPassword((prev) => !prev)}>
                   <span>{showConfirmPassword ? <FaEyeSlash /> : <FaEye />}</span>
                 </div>
                     </div>
@@ -318,13 +322,24 @@ export default function Register() {
                   <div className="text-center mt-6">
                     <button
                       className="bg-orange-dys text-white active:bg-orange-dys text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                      type="button"
+                      type="submit"
                     >
                       Créer Compte
                     </button>
                   </div>
                 </form>
               </div>
+            </div>
+            <div className="flex flex-wrap mt-6 relative">
+              <div className="w-1/2">
+                <a
+                  href="/auth/login"
+                  className="text-blueGray-600"
+                >
+                  <small>Vous avez un compte ?</small>
+                </a>
+              </div>
+              
             </div>
           </div>
         </div>

@@ -25,6 +25,8 @@ import DétailsProd from "views/DétailsProd";
 import DétailsService from "views/DétailsService";
 
 ReactDOM.render(
+
+
   <BrowserRouter>
     <Switch>
       
@@ -39,7 +41,7 @@ ReactDOM.render(
       <Route path="/Envoyer-réclamation" exact component={AddReclamation} />
       <Route path="/produits" exact component={Produits} />
       <Route path="/détails-produit" exact component={DétailsProd} />
-      <Route path="/détails-service" exact component={DétailsService} />
+      <Route path="/détails-service/:id" exact component={DétailsService} />
       <Route path="/chat" exact component={Chat} />
       <Route path="/profile" exact component={Profile} />
       <Route path="/" exact component={Index} />

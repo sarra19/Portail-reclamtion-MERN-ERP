@@ -31,13 +31,25 @@ async function updateService(req, res) {
         res.status(400).json(err);
     }
 }
-async function getbyid(req, res) {
-    try {
-        const data = await serviceModel.findById(req.params.id);
+async function getServiceDetails(req, res) {
+    try{
 
-        res.status(200).send(data)
-    } catch (err) {
-        res.status(400).send(err);
+        const service = await serviceModel.findById(req.params.id)
+        
+        res.json({
+            data : service,
+            message : "Ok",
+            success : true,
+            error : false
+        })
+
+        
+    }catch(err){
+        res.json({
+            message : err?.message  || err,
+            error : true,
+            success : false
+        })
     }
 }
 async function deleteService(req, res) {
@@ -53,4 +65,4 @@ async function deleteService(req, res) {
 
 
 
-module.exports = { add, getall, getbyid, updateService, deleteService }
+module.exports = { add, getall, getServiceDetails, updateService, deleteService }

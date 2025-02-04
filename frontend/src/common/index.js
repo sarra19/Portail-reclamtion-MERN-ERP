@@ -28,7 +28,16 @@ const SummaryApi = {
     delete_user: {
         url: `${backendDomin}/delete-user`,
         method: 'DELETE'
-    }
+    },
+    allService: {
+        url: `${backendDomin}/getAllService`,
+        method: 'get'
+    },
+    serviceDetails: {
+        url: `${backendDomin}/getServiceDetails`,
+        method: "get"
+    },
+
 }
 
 

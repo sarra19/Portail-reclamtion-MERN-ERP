@@ -4,13 +4,13 @@ import { Link } from "react-router-dom";
 
 import IndexNavbar from "components/Navbars/IndexNavbar.js";
 import Footer from "components/Footers/Footer.js";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+
 import HeaderAuth from "components/Header/HeaderAuth";
 
 export default function Index() {
   return (
     <>
+    
       <HeaderAuth fixed />
 
       <IndexNavbar />

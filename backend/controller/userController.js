@@ -17,9 +17,9 @@ async function add(req, res) {
 
 async function SignUp(req, res) {
     try {
-        const { email, motdePasse, prénom, nom, role } = req.body;
+        const { email, motdePasse, prénom, nom, role ,imageprofile} = req.body;
 
-        if (!email || !motdePasse || !prénom || !nom || !role) {
+        if (!email || !motdePasse || !prénom || !nom) {
             return res.status(400).json({
                 message: "Insérer votre coordonnées",
                 error: true,
@@ -30,7 +30,7 @@ async function SignUp(req, res) {
         const existingUser = await userModel.findOne({ email });
         if (existingUser) {
             return res.status(400).json({
-                message: "User already exists.",
+                message: "Utilisateur existe déjà.",
                 error: true,
                 success: false,
             });
@@ -51,6 +51,7 @@ async function SignUp(req, res) {
             prénom,
             motdePasse: hashPassword,
             role,//role ajoutih mel front
+            imageprofile,
             secret: token,
         };
 

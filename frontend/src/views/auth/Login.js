@@ -1,9 +1,118 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link ,useHistory } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import SummaryApi from '../../common';
 
 export default function Login() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [data, setData] = useState({
+    email: "",
+    motdePasse: ""
+  });
+  const [errors, setErrors] = useState({});
+  const history = useHistory();
+
+  const validateField = (name, value) => {
+    let error = '';
+    switch (name) {
+      case 'email':
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          error = 'Invalid email format.';
+        }
+        break;
+      case 'motdePasse':
+        const passwordError = validatePassword(value);
+        if (passwordError) {
+          error = passwordError;
+        }
+        break;
+      default:
+        break;
+    }
+    return error;
+  };
+
+  const validatePassword = (password) => {
+    const lengthValid = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (!lengthValid) return 'Password must be at least 8 characters long.';
+    if (!hasUpperCase) return 'Password must contain at least one uppercase letter.';
+    if (!hasLowerCase) return 'Password must contain at least one lowercase letter.';
+    if (!hasNumber) return 'Password must contain at least one number.';
+    if (!hasSpecialChar) return 'Password must contain at least one special character.';
+
+    return null;
+  };
+  const handleOnChange = (e) => {
+    const { name, value } = e.target;
+    const error = validateField(name, value);
+    setData((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+    setErrors((prev) => ({
+      ...prev,
+      [name]: error
+    }));
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let formIsValid = true;
+    const newErrors = {};
+
+    const emailError = validateField('email', data.email);
+    if (emailError) {
+      newErrors.email = emailError;
+      formIsValid = false;
+    }
+
+    const passwordError = validateField('motdePasse', data.motdePasse);
+    if (passwordError) {
+      newErrors.password = passwordError;
+      formIsValid = false;
+    }
+
+    if (!formIsValid) {
+      setErrors(newErrors);
+      return;
+    }
+
+    try {
+      const dataResponse = await fetch(SummaryApi.signIn.url, {
+        method: SummaryApi.signIn.method,
+        credentials: 'include',
+        headers: {
+          "content-type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      const dataApi = await dataResponse.json();
+
+      if (dataApi.success) {
+        toast.success(dataApi.message);
+        history.push('/');
+        // fetchUserDetails();
+        // fetchUserAddToCart();
+      } else if (dataApi.error) {
+        toast.error(dataApi.message);
+      }
+    } catch (error) {
+      toast.error('An error occurred during login.');
+    }
+  };
   return (
     <>
+              <ToastContainer position='top-center' />
+
       <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-start h-full">
           <div className="w-full lg:w-4/12 px-4">
@@ -15,7 +124,7 @@ export default function Login() {
                   </h6>
                 </div>
                 <div className="btn-wrapper text-center flex justify-center space-x-2">
-                <button
+                  <button
                     className="bg-white active:bg-blueGray-50 text-blueGray-700 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-2 mb-1 uppercase shadow hover:shadow-md inline-flex items-center font-bold text-xs ease-linear transition-all duration-150"
                     type="button"
                   >
@@ -37,7 +146,7 @@ export default function Login() {
                     />
                     Google
                   </button>
-                   <button
+                  <button
                     className="bg-white active:bg-blueGray-50 text-blueGray-700 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-2 mb-1 uppercase shadow hover:shadow-md inline-flex items-center font-bold text-xs ease-linear transition-all duration-150"
                     type="button"
                   >
@@ -55,7 +164,7 @@ export default function Login() {
                 <div className="text-blueGray-400 text-center mb-3 font-bold">
                   <small>Ou connecter avec</small>
                 </div>
-                <form>
+                <form  onSubmit={handleSubmit}>
                   <div className="relative w-full mb-3">
                     <label
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -64,10 +173,13 @@ export default function Login() {
                       Email
                     </label>
                     <input
-                      type="email"
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                      placeholder="Email"
-                    />
+                      type='email'
+                      placeholder='Entrer votre email'
+                      name='email'
+                      value={data.email}
+                      onChange={handleOnChange}
+                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150" />
+                    {errors.email && <p className='text-red-500 text-sm'>{errors.email}</p>}
                   </div>
 
                   <div className="relative w-full mb-3">
@@ -77,18 +189,29 @@ export default function Login() {
                     >
                       Mot de passe
                     </label>
+                    <div className="flex">
                     <input
-                      type="password"
-                      className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                      placeholder="Password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="entrer votre Password"
+                      value={data.motdePasse}
+                      name='motdePasse'
+                      onChange={handleOnChange} className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                     />
+                    <div className=' ml-2 mt-3 cursor-pointer text-xl' onClick={() => setShowPassword(prev => !prev)}>
+                      <span>
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                      </span>
+                    </div>
+                    </div>
+                    {errors.password && <p className='text-red-500 text-sm'>{errors.password}</p>}
+
                   </div>
-                 
+
 
                   <div className="text-center mt-6">
                     <button
                       className="bg-orange-dys text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                      type="button"
+                      type="submit"
                     >
                       Connexion
                     </button>

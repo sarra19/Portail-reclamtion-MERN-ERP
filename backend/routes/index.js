@@ -20,7 +20,7 @@ const authToken = require('../middleware/authToken')
 //service
 router.post("/addService",serviceController.add)
 router.get("/getAllService",serviceController.getall)
-router.get("/getService/:id",serviceController.getbyid)
+router.get("/getServiceDetails/:id",serviceController.getServiceDetails)
 router.put('/updateService/:id',serviceController.updateService);
 router.delete('/deleteService/:id',serviceController.deleteService);
 
