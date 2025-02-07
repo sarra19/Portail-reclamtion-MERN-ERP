@@ -55,11 +55,10 @@ export default function CardReclamation() {
           {["Produit", "Service"].map((tab) => (
             <button
               key={tab}
-              className={`px-4 py-2 rounded-t-lg text-sm font-bold uppercase transition-all duration-300 ${
-                activeTab === tab
+              className={`px-4 py-2 rounded-t-lg text-sm font-bold uppercase transition-all duration-300 ${activeTab === tab
                   ? "bg-blue-600 text-gray-700"
                   : "bg-gray-200 text-gray-700"
-              }`}
+                }`}
               onClick={() => setActiveTab(tab)}
             >
               {tab === "Produit" ? "Produits" : "Services"}
@@ -97,9 +96,9 @@ export default function CardReclamation() {
                     </td>
                     <td className="px-6 py-4 flex space-x-2"></td>
                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                    <a href={`/détails-réclamations/${reclamation._id}`}>
-                    <button
-                          className="bg-orange-dys text-white active:bg-orange-dys font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                      <a href={`/détails-réclamations/${reclamation._id}`}>
+                        <button
+                          className="bg-orange-dys text-white active:bg-orange-dys font-bold uppercase text-xs px-6 py-2 mt-4 shadow hover:shadow-md outline-none focus:outline-none mr-1 animate-ease-in-out animate-fill-forwards hover:animate-jump hover:animate-once hover:animate-duration-[2000ms] "
                           type="button"
                         >
                           Détails
@@ -107,10 +106,10 @@ export default function CardReclamation() {
                       </a>
                     </td>
                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                    <a href={`/réponse-réclamations/${reclamation._id}`}>
+                      <a href={`/réponse-réclamations/${reclamation._id}`}>
                         <button
-                          className="bg-bleu-dys text-white active:bg-orange-dys font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                          type="button"
+                  className="bg-bleu-dys text-white active:bg-bleu-dys font-bold uppercase text-xs px-6 py-2 mt-4 shadow hover:shadow-md outline-none focus:outline-none mr-1 animate-ease-in-out animate-fill-forwards hover:animate-jump hover:animate-once hover:animate-duration-[2000ms] "
+                  type="button"
                         >
                           <i className="fas fa-paper-plane mr-2"></i>
                           Répondre
