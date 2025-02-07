@@ -17,7 +17,7 @@ async function add(req, res) {
 
 async function SignUp(req, res) {
     try {
-        const { email, motdePasse, prénom, nom, role ,imageprofile} = req.body;
+        const { email, motdePasse, prénom, nom, role, imageprofile } = req.body;
 
         if (!email || !motdePasse || !prénom || !nom) {
             return res.status(400).json({
@@ -153,9 +153,9 @@ async function SignIn(req, res) {
             const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET_KEY, { expiresIn: '8h' });
 
             const tokenOptions = {
-                httpOnly: false,
-                secure: false, // http -- true
-                sameSite: 'lax' //sans http avec localhost   --- none avec http
+                httpOnly: true,
+                secure:'production', // Utiliser HTTPS en production
+                maxAge: 1000 * 60 * 60 * 24, // 1 jour
             };
 
             res.cookie("token", token, tokenOptions).status(200).json({
@@ -202,25 +202,25 @@ async function userLogout(req, res) {
     }
 }
 
-async function userDetails(req,res){
-    try{
-        console.log("userId",req.userId)
+async function userDetails(req, res) {
+    try {
+        console.log("userId", req.userId)
         const user = await userModel.findById(req.userId)
 
         res.status(200).json({
-            data : user,
-            error : false,
-            success : true,
-            message : " details d'Utilisateur"
+            data: user,
+            error: false,
+            success: true,
+            message: " details d'Utilisateur"
         })
 
-        console.log("utilisateur",user)
+        console.log("utilisateur", user)
 
-    }catch(err){
+    } catch (err) {
         res.status(400).json({
-            message : err.message || err,
-            error : true,
-            success : false
+            message: err.message || err,
+            error: true,
+            success: false
         })
     }
 }
@@ -267,4 +267,4 @@ async function deleteUser(req, res) {
 
 
 
-module.exports = { add, SignUp, userVerify,userDetails, SignIn, userLogout, getall, getbyid, updateUser, deleteUser }
+module.exports = { add, SignUp, userVerify, userDetails, SignIn, userLogout, getall, getbyid, updateUser, deleteUser }

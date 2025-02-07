@@ -1,16 +1,24 @@
 /*eslint-disable*/
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import IndexNavbar from "components/Navbars/IndexNavbar.js";
 import Footer from "components/Footers/Footer.js";
 
 import HeaderAuth from "components/Header/HeaderAuth";
+import { useSelector } from 'react-redux'
 
 export default function Index() {
+  const user = useSelector(state => state?.user?.user)
+
+  useEffect(() => {
+
+    console.log(user)
+
+  }, [user])
   return (
     <>
-    
+
       <HeaderAuth fixed />
 
       <IndexNavbar />
@@ -83,8 +91,8 @@ animate-fade-right animate-once animate-duration-[2000ms]  animate-ease-in-out a
                 <div className="text-center flex justify-end ">
                   <a href="/services">
                     <button
-                  className="bg-orange-dys text-white active:bg-orange-dys font-bold uppercase text-xs px-6 py-2 mt-4 shadow hover:shadow-md outline-none focus:outline-none mr-1 animate-ease-in-out animate-fill-forwards hover:animate-jump hover:animate-once hover:animate-duration-[2000ms] hover:animate-delay-0"
-                  type="button"
+                      className="bg-orange-dys text-white active:bg-orange-dys font-bold uppercase text-xs px-6 py-2 mt-4 shadow hover:shadow-md outline-none focus:outline-none mr-1 animate-ease-in-out animate-fill-forwards hover:animate-jump hover:animate-once hover:animate-duration-[2000ms] hover:animate-delay-0"
+                      type="button"
                     >
                       En savoir plus
                     </button>

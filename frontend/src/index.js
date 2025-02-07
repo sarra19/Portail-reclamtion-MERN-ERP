@@ -1,16 +1,14 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import React, { useEffect, useCallback } from 'react';
+import ReactDOM from 'react-dom';
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { Provider, useDispatch } from 'react-redux';
+import { store } from './store/store';
 
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "assets/styles/tailwind.css";
 
-// layouts
-
 import Admin from "layouts/Admin.js";
 import Auth from "layouts/Auth.js";
-
-// views without layouts
 
 import Profile from "views/Profile.js";
 import Index from "views/Index.js";
@@ -23,31 +21,63 @@ import RépReclamation from "views/reponse-réclamations";
 import Chat from "views/Chat";
 import DétailsProd from "views/DétailsProd";
 import DétailsService from "views/DétailsService";
+import SummaryApi from './common';
+import { setUserDetails } from './store/userSlice';
+import Context from './context';
+import AddReclamationProd from 'views/AddReclamationProd';
+
+const App = () => {
+  const dispatch = useDispatch();
+
+  const fetchUserDetails = useCallback(async () => {
+    try {
+      const dataResponse = await fetch(SummaryApi.current_user.url, {
+        method: SummaryApi.current_user.method,
+        credentials: 'include'
+      });
+
+      const dataApi = await dataResponse.json();
+
+      if (dataApi.success) {
+        dispatch(setUserDetails(dataApi.data));
+      }
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+    }
+  }, [dispatch]); // ✅ Only depends on `dispatch`
+
+  useEffect(() => {
+    fetchUserDetails(); 
+  }, [fetchUserDetails]); // ✅ Now stable across renders
+
+  return (
+    <Context.Provider value={{ fetchUserDetails }}>
+      <BrowserRouter>
+        <Switch>
+          <Route path="/admin" component={Admin} />
+          <Route path="/auth" component={Auth} />
+          <Route path="/services" exact component={Service} />
+          <Route path="/mes-réclamations" exact component={MesReclamation} />
+          <Route path="/réponse-réclamations/:id" exact component={RépReclamation} />
+          <Route path="/détails-réclamations/:id" exact component={DétailsReclamtion} />
+          <Route path="/Envoyer-réclamation/:id" exact component={AddReclamation} />
+          <Route path="/Envoyer-réclamation-produit/:id" exact component={AddReclamationProd} />
+          <Route path="/produits" exact component={Produits} />
+          <Route path="/détails-produit/:id" exact component={DétailsProd} />
+          <Route path="/détails-service/:id" exact component={DétailsService} />
+          <Route path="/chat" exact component={Chat} />
+          <Route path="/profile" exact component={Profile} />
+          <Route path="/" exact component={Index} />
+          <Redirect from="*" to="/" />
+        </Switch>
+      </BrowserRouter>
+    </Context.Provider>
+  );
+};
 
 ReactDOM.render(
-
-
-  <BrowserRouter>
-    <Switch>
-      
-      {/* add routes with layouts */}
-      <Route path="/admin" component={Admin} />
-      <Route path="/auth" component={Auth} />
-      {/* add routes without layouts */}
-      <Route path="/services" exact component={Service} />
-      <Route path="/mes-réclamations" exact component={MesReclamation} />
-      <Route path="/réponse-réclamations" exact component={RépReclamation} />
-      <Route path="/détails-réclamations" exact component={DétailsReclamtion} />
-      <Route path="/Envoyer-réclamation" exact component={AddReclamation} />
-      <Route path="/produits" exact component={Produits} />
-      <Route path="/détails-produit" exact component={DétailsProd} />
-      <Route path="/détails-service/:id" exact component={DétailsService} />
-      <Route path="/chat" exact component={Chat} />
-      <Route path="/profile" exact component={Profile} />
-      <Route path="/" exact component={Index} />
-      {/* add redirect for first page */}
-      <Redirect from="*" to="/" />
-    </Switch>
-  </BrowserRouter>,
+  <Provider store={store}>
+    <App />
+  </Provider>,
   document.getElementById("root")
 );

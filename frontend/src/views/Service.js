@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from "react";
-// import conseilImage from "../../src/assets/img/conseil2.png";
-// import ERP from "../../src/assets/img/Erp2.png";
-// import Form from "../../src/assets/img/Form2.png";
-// import audit from "../../src/assets/img/audit2.jpg";
-// import maintenance from "../../src/assets/img/maintenance.jpg";
-// import solution from "../../src/assets/img/solution.jpg";
+
 import SummaryApi from '../common';
 
 import Footer from "components/Footers/Footer.js";
 import IndexNavbar from "components/Navbars/IndexNavbar.js";
 import CardStats from "components/Cards/CardStats";
 import HeaderAuth from "components/Header/HeaderAuth";
+import { useSelector } from 'react-redux'
 
 export default function Service() {
   const [allService, setAllService] = useState([]);
+  const user = useSelector(state => state?.user?.user)
 
+  useEffect(()=>{
+  
+        console.log(user)
+    
+},[user])
   const fetchAllService = async () => {
     try {
       const response = await fetch(SummaryApi.allService.url, {
@@ -103,7 +105,7 @@ export default function Service() {
               allService.map((service, index) => (
                 <div key={index} className="w-full lg:w-6/12 xl:w-3/12 px-4">
                   <CardStats
-                    statTitle={service.nomService} 
+                    statTitle={service.nom} 
                     statDescripiron={service.description} 
                     statImage={require(`assets/img/${service.image}`)} 
                     id={service._id}

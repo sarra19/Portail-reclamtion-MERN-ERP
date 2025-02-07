@@ -31,13 +31,24 @@ async function updateProduit(req, res) {
         res.status(400).json(err);
     }
 }
-async function getbyid(req, res) {
-    try {
-        const data = await produitModel.findById(req.params.id);
+async function getProduitDetails(req, res) {
+    try{
+        const produit = await produitModel.findById(req.params.id)
+        
+        res.json({
+            data : produit,
+            message : "Ok",
+            success : true,
+            error : false
+        })
 
-        res.status(200).send(data)
-    } catch (err) {
-        res.status(400).send(err);
+        
+    }catch(err){
+        res.json({
+            message : err?.message  || err,
+            error : true,
+            success : false
+        })
     }
 }
 async function deleteProduit(req, res) {
@@ -53,4 +64,4 @@ async function deleteProduit(req, res) {
 
 
 
-module.exports = { add, getall, getbyid, updateProduit, deleteProduit }
+module.exports = { add, getall, getProduitDetails, updateProduit, deleteProduit }

@@ -1,14 +1,25 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import SummaryApi from '../../../common';
+import { useParams } from 'react-router-dom';
 
 export default function CardDétailsProduitFront() {
   const [showForm, setShowForm] = React.useState(false);
+  const [loading, setLoading] = useState(true)
+  const { id } = useParams();
 
   const handleButtonClick = () => {
     setShowForm(!showForm);
   };
   const [rating, setRating] = React.useState(0);
   const [submitted, setSubmitted] = React.useState(false);
+  const [data, setData] = useState({
+    image: "",
+    nom: "",
+    description: "",
+    prix: "",
+    fournisseur:"",
 
+  })
   const handleSubmit = (event) => {
     event.preventDefault();
     setSubmitted(true);
@@ -18,6 +29,30 @@ export default function CardDétailsProduitFront() {
     setRating(newRating);
   };
 
+  useEffect(() => {
+    const fetchProduitDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${SummaryApi.produitDetails.url}/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const dataResponse = await response.json();
+        setData(dataResponse?.data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des données :", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduitDetails();
+    console.log(data)
+
+  }, [id]);
 
   return (
     <>
@@ -32,25 +67,28 @@ export default function CardDétailsProduitFront() {
           </div>
         </div>
         <div className="block w-full overflow-x-auto">
-          <div className="hover:-mt-4 relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-lg bg-bleu-dys ease-linear transition-all duration-150">
-            <blockquote className="relative p-8 mb-4 flex items-center">
-              <div className="text-section w-1/2">
-                <h4 className="mt-2 font-bold text-white">Microsoft Power Platform</h4>
-                <p className="mt-2 text-white">Description</p>
-                <p className="text-white ">Prix: </p>
+          {loading ? (
+            <p className="text-center text-blueGray-700">Chargement...</p>
+          ) : (
+            <div className="hover:-mt-4 relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-lg bg-bleu-dys ease-linear transition-all duration-150">
+              <blockquote className="relative p-8 mb-4 flex items-center">
+                <div className="text-section w-1/2">
+                  <h2 className="mt-2 font-bold text-white">{data.nom}</h2>
+                  <p className="mt-2 text-white">{data.description}</p>
+                  <p className="mt-2 text-white">{data.fournisseur}</p>
+                  <p className=" mt-12 text-white">Prix: {data.prix} TND</p>
+                </div>
 
-
-              </div>
-
-              <div className="image-section ml-4 w-1/2">
-                <img
-                  alt="Utilisateur"
-                  src={require("assets/img/power.jpg")}
-                  className="w-full h-auto object-cover rounded-lg"  // Taille de l'image ajustée à w-full
-                />
-              </div>
-            </blockquote>
-          </div>
+                <div className="image-section ml-4 w-1/2">
+                  <img
+                    alt={data.nom}
+                    src={require(`assets/img/${data.image}`)}
+                    className="w-full h-auto object-cover rounded-lg"
+                  />
+                </div>
+              </blockquote>
+            </div>
+          )}
         </div>
         <div className="text-center flex justify-end">
           <a href="#!" onClick={handleButtonClick}>
@@ -93,14 +131,12 @@ export default function CardDétailsProduitFront() {
                   rows="4"
                   className="mt-1 p-3 block w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-dys focus:border-orange-dys transition-all duration-300"
                   placeholder="Donnez votre avis sur le produit..."
-                  
                 ></textarea>
-                
-                  <input
-                    type="file"
-                    className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  />
-             
+
+                <input
+                  type="file"
+                  className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                />
               </div>
 
 
@@ -132,25 +168,24 @@ export default function CardDétailsProduitFront() {
                 Commentaires :
               </h3>
             </div>
-
           </div>
-          <div className="relative mt-5 w-full px-4 max-w-full flex flex-grow flex-1 justify-between">
-            <p className=" text-base text-sm text-black">
-              Commentaire 1
-            </p>
-            <div>
-              <a href="#">
-                <button className="bg-orange-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-2 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
-                  <i className="fas fa-pen"></i>
-                </button>
-              </a>
-              <a href="#">
-                <button className="bg-blueGray-dys-2 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-2 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
-                  <i className="fas fa-trash"></i>
-                </button>
-              </a>
+        </div>
+        <div className="relative mt-5 w-full px-4 max-w-full flex flex-grow flex-1 justify-between">
+          <p className=" text-base text-sm text-black">
+            Commentaire 1
+          </p>
+          <div>
+            <a href="#">
+              <button className="bg-orange-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-2 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
+                <i className="fas fa-pen"></i>
+              </button>
+            </a>
+            <a href="#">
+              <button className="bg-blueGray-dys-2 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-2 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
+                <i className="fas fa-trash"></i>
+              </button>
+            </a>
 
-            </div>
           </div>
         </div>
       </div>

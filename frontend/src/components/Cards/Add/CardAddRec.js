@@ -1,14 +1,141 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import SummaryApi from '../../../common';
+import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function CardAddRec() {
   const [typeReclamation, setTypeReclamation] = useState("textuelle");
+  const { id } = useParams();
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [audioBlob, setAudioBlob] = useState(null); const [data, setData] = useState({
+    nom: "",
+    typeCible: "",
+    sujet: "",
+    typeReclamation: "textuelle",
+    fichierJoint: null,
+    contenu: "",
+    vocal: null,
+  });
+
 
   const handleReclamationTypeChange = (event) => {
-    setTypeReclamation(event.target.value);
+    const selectedType = event.target.value;
+    setTypeReclamation(selectedType);
+    setData((prev) => ({ ...prev, typeReclamation: selectedType }));
   };
+
+  const allowedFileTypes = {
+    vocal: ["audio/mp3", "audio/mpeg"],
+    fichierJoint: ["application/pdf", "image/png", "image/jpeg"],
+  };
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      setMediaRecorder(recorder);
+      recorder.start();
+      setIsRecording(true);
+
+      const audioChunks = [];
+      recorder.ondataavailable = (event) => {
+        audioChunks.push(event.data);
+      };
+
+      recorder.onstop = () => {
+        const blob = new Blob(audioChunks, { type: "audio/mpeg" });
+        setAudioBlob(blob);
+      };
+    } catch (error) {
+      console.error("Erreur lors du démarrage de l'enregistrement :", error);
+      toast.error("Impossible d'accéder au micro.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('nom', data.nom);
+    formData.append('typeCible', data.typeCible);
+    formData.append('sujet', data.sujet);
+    formData.append('typeReclamation', data.typeReclamation);
+    formData.append('contenu', data.contenu);
+
+    if (audioBlob) {
+      const audioFile = new File([audioBlob], "recording.mp3", { type: "audio/mpeg" });
+      formData.append("vocal", audioFile);
+    }
+
+    const response = await fetch(SummaryApi.AddReclamation.url, {
+      method: SummaryApi.AddReclamation.method,
+      credentials: "include",
+      body: formData,
+    });
+    const result = await response.json();
+    if (result.success) {
+      toast.success(result.message);
+    } else {
+      toast.error(result.message);
+    }
+  };
+
+  const handleOnChange = (e) => {
+    const { name, type, files } = e.target;
+    if (type === "file") {
+      const file = files[0];
+      if (file && allowedFileTypes[name].includes(file.type)) {
+        setData((prev) => ({ ...prev, [name]: file }));
+      } else {
+        toast.error("Format de fichier non accepté");
+      }
+    } else {
+      setData((prev) => ({ ...prev, [name]: e.target.value }));
+    }
+  };
+
+
+  useEffect(() => {
+    const fetchServiceDetails = async () => {
+      try {
+        const response = await fetch(`${SummaryApi.serviceDetails.url}/${id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const dataResponse = await response.json();
+        if (dataResponse?.data) {
+          setData((prev) => ({
+            ...prev,
+            typeCible: "Service",  // Ensure typeCible is set
+            nom: dataResponse.data.nom,  // Set the name here
+          }));
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement des données :", error);
+      }
+    };
+
+    fetchServiceDetails();
+  }, [id]);
+
+
 
   return (
     <>
+      <ToastContainer position='top-center' />
+
       <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0">
         <div className="rounded-t bg-white mb-0 px-6 py-6">
           <div className="text-center flex justify-between">
@@ -16,9 +143,8 @@ export default function CardAddRec() {
           </div>
         </div>
         <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="flex flex-wrap">
-              
               <div className="w-full lg:w-6/12 px-4">
                 <div className="relative w-full mb-3">
                   <label
@@ -29,6 +155,8 @@ export default function CardAddRec() {
                   </label>
                   <select
                     id="nom-cible"
+                    value={data.typeCible}
+                    disabled
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   >
                     <option value="Produit">Produit</option>
@@ -45,13 +173,13 @@ export default function CardAddRec() {
                   >
                     Nom de Cible
                   </label>
-                  <select
-                    id="nom-cible"
+                  <input
+                    type="text"
+                    id="cible"
+                    value={data.nom}
+                    readOnly
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  >
-                    <option value="cible1">cible1</option>
-                    <option value="cible2">cible2</option>
-                  </select>
+                  />
                 </div>
               </div>
 
@@ -66,30 +194,31 @@ export default function CardAddRec() {
                   <input
                     type="text"
                     id="sujet"
+                    name="sujet"
+                    onChange={handleOnChange}
+                    value={data.sujet}
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    defaultValue="Mauvaise qualité..."
+                    placeholder="Mauvaise qualité..."
                   />
                 </div>
               </div>
+
               <div className="w-full lg:w-6/12 px-4">
                 <div className="relative w-full mb-3">
-                  <label
-                    className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                    htmlFor="type-reclamation"
-                  >
+                  <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2">
                     Type de Réclamation
                   </label>
                   <select
-                    id="type-reclamation"
                     value={typeReclamation}
                     onChange={handleReclamationTypeChange}
-                    className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                    className="border-0 px-3 py-3 text-blueGray-600 bg-white rounded text-sm shadow w-full"
                   >
-                    <option value="textuelle">textuelle</option>
+                    <option value="textuelle">Textuelle</option>
                     <option value="vocal">Vocal</option>
                   </select>
                 </div>
               </div>
+
               <div className="w-full lg:w-6/12 px-4">
                 <div className="relative w-full mb-3">
                   <label
@@ -101,6 +230,8 @@ export default function CardAddRec() {
                   <input
                     type="file"
                     id="document"
+                    name="fichierJoint"
+                    onChange={handleOnChange}
                     className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   />
                 </div>
@@ -120,48 +251,53 @@ export default function CardAddRec() {
                       Description
                     </label>
                     <textarea
-                      id="description"
+                      id="contenu"
+                      value={data.contenu}
+                      name="contenu"
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                      defaultValue="Je me permets de vous contacter pour exprimer mon mécontentement concernant..."
+                      onChange={handleOnChange}
+                      placeholder="Je me permets de vous contacter pour exprimer mon mécontentement concernant..."
                       rows="4"
                     ></textarea>
                   </div>
                 </div>
               ) : (
-                <div className="w-full lg:w-12/12 px-4">
-                <div className="relative w-full mb-3">
-                  <label
-                    className="block uppercase text-center text-blueGray-600 text-xs font-bold mb-2"
-                    htmlFor="enregistrement-vocal"
-                  >
-                    Enregistrement Vocal
-                  </label>
-                  <button
-                    id="enregistrement-vocal"
-                    className="flex justify-center items-center bg-orange-dys text-white active:bg-lightBlue-600 font-bold uppercase text-lg px-12 py-4 rounded-full shadow hover:shadow-md outline-none focus:outline-none mx-auto ease-linear transition-all duration-150"
-                  >
-                    <i className="fas fa-microphone"></i>
-                  </button>
+                <div className="w-full lg:w-12/12 px-4 flex flex-col items-center">
+                  <div className="relative w-full mb-3 text-center">
+                    <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2">
+                      Enregistrement Vocal
+                    </label>
+                    <button
+                      type="button"
+                      onClick={isRecording ? stopRecording : startRecording}
+                      className={`text-black font-bold px-6 py-3 rounded-full shadow-lg transition-all 
+                      ${isRecording ? "bg-red-600" : "bg-orange-dys"} hover:opacity-80`}
+                    >
+                      <i className="fas fa-microphone text-white text-lg"></i>
+                    </button>
+                    {data.vocal && (
+                      <p className="mt-2 text-green-600 font-semibold">Audio enregistré !</p>
+                    )}
+                    {audioBlob && (
+                      <audio controls src={URL.createObjectURL(audioBlob)} className="mt-3 w-full max-w-xs" />
+                    )}
+                  </div>
                 </div>
-              </div>
-              
               )}
             </div>
 
-          </form>
-
-          <div className="rounded-t bg-white mb-0 px-6 py-6">
-            <div className="text-center flex justify-end">
-              <button
-                className="bg-orange-dys text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-6 py-3 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
-                type="button"
-              >
-                              <i className="fas fa-paper-plane mr-2"></i>
-
-                Envoyer
-              </button>
+            <div className="rounded-t bg-white mb-0 px-6 py-6">
+              <div className="text-center flex justify-end">
+                <button
+                  className="bg-orange-dys text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-6 py-3 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
+                  type="submit"
+                >
+                  <i className="fas fa-paper-plane mr-2"></i>
+                  Envoyer
+                </button>
+              </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </>

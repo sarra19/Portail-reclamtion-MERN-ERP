@@ -37,7 +37,26 @@ const SummaryApi = {
         url: `${backendDomin}/getServiceDetails`,
         method: "get"
     },
-
+    AddReclamation: {
+        url: `${backendDomin}/addReclamation`,
+        method: "post"
+    },
+    allProduit: {
+        url: `${backendDomin}/getAllProduit`,
+        method: 'get'
+    },
+    produitDetails: {
+        url: `${backendDomin}/getProduitDetails`,
+        method: "get"
+    },
+    allReclamation: {
+        url: `${backendDomin}/getAllReclamation`,
+        method: 'get'
+    },
+    mesReclamations: {
+        url: `${backendDomin}/mesReclamations`,
+        method: 'get'
+    },
 }
 
 

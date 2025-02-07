@@ -13,9 +13,8 @@ const réclamationController=require("../controller/réclamationController");
 const remboursementController=require("../controller/remboursementController");
 const réponseController=require("../controller/réponseController");
 const userController=require("../controller/userController");
-
 const authToken = require('../middleware/authToken')
-
+const upload = require("../middleware/multerConfig");
 
 //service
 router.post("/addService",serviceController.add)
@@ -27,7 +26,7 @@ router.delete('/deleteService/:id',serviceController.deleteService);
 //produit
 router.post("/addProduit",produitController.add)
 router.get("/getAllProduit",produitController.getall)
-router.get("/getProduit/:id",produitController.getbyid)
+router.get("/getProduitDetails/:id",produitController.getProduitDetails)
 router.put('/updateProduit/:id',produitController.updateProduit);
 router.delete('/deleteProduit/:id',produitController.deleteProduit);
 
@@ -81,16 +80,17 @@ router.put('/updateNotification/:id',notificationController.updateNotification);
 router.delete('/deleteNotification/:id',notificationController.deleteNotification);
 
 //réclamation
-router.post("/addReclamation",réclamationController.add)
+router.post("/addReclamation", authToken, upload.fields([{ name: "vocal", maxCount: 1 }, { name: "fichierJoint", maxCount: 1 }]),  réclamationController.add);
 router.get("/getAllReclamation",réclamationController.getall)
 router.get("/getReclamation/:id",réclamationController.getbyid)
+router.get("/mesReclamations",authToken,réclamationController.mesReclamations)
 router.put('/updateReclamation/:id',réclamationController.updateRéclamation);
 router.delete('/deleteReclamation/:id',réclamationController.deleteRéclamation);
 
 //Remboursement
 router.post("/addRemboursement",remboursementController.add)
 router.get("/getAllRemboursement",remboursementController.getall)
-router.get("/getRemboursement/:id",remboursementController.getbyid)
+router.get("/getRemboursement",authToken,remboursementController.getbyid)
 router.put('/updateRemboursement/:id',remboursementController.updateRemboursement);
 router.delete('/deleteRemboursement/:id',remboursementController.deleteRemboursement);
 

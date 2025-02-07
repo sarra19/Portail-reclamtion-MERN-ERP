@@ -1,13 +1,16 @@
-import React, { useState } from "react";
-import { Link ,useHistory } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Link, useHistory } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SummaryApi from '../../common';
+import Context from '../../context';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
+  const { fetchUserDetails } = useContext(Context);
+
   const [data, setData] = useState({
     email: "",
     motdePasse: ""
@@ -50,6 +53,7 @@ export default function Login() {
 
     return null;
   };
+
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     const error = validateField(name, value);
@@ -62,6 +66,7 @@ export default function Login() {
       [name]: error
     }));
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -100,8 +105,7 @@ export default function Login() {
       if (dataApi.success) {
         toast.success(dataApi.message);
         history.push('/');
-        // fetchUserDetails();
-        // fetchUserAddToCart();
+        fetchUserDetails();
       } else if (dataApi.error) {
         toast.error(dataApi.message);
       }
@@ -109,10 +113,10 @@ export default function Login() {
       toast.error('An error occurred during login.');
     }
   };
+
   return (
     <>
-              <ToastContainer position='top-center' />
-
+      <ToastContainer position='top-center' />
       <div className="container mx-auto px-4 h-full">
         <div className="flex content-center items-center justify-start h-full">
           <div className="w-full lg:w-4/12 px-4">
@@ -164,7 +168,7 @@ export default function Login() {
                 <div className="text-blueGray-400 text-center mb-3 font-bold">
                   <small>Ou connecter avec</small>
                 </div>
-                <form  onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit}>
                   <div className="relative w-full mb-3">
                     <label
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -190,23 +194,21 @@ export default function Login() {
                       Mot de passe
                     </label>
                     <div className="flex">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="entrer votre Password"
-                      value={data.motdePasse}
-                      name='motdePasse'
-                      onChange={handleOnChange} className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                    />
-                    <div className=' ml-2 mt-3 cursor-pointer text-xl' onClick={() => setShowPassword(prev => !prev)}>
-                      <span>
-                        {showPassword ? <FaEyeSlash /> : <FaEye />}
-                      </span>
-                    </div>
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="entrer votre Password"
+                        value={data.motdePasse}
+                        name='motdePasse'
+                        onChange={handleOnChange} className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                      />
+                      <div className=' ml-2 mt-3 cursor-pointer text-xl' onClick={() => setShowPassword(prev => !prev)}>
+                        <span>
+                          {showPassword ? <FaEyeSlash /> : <FaEye />}
+                        </span>
+                      </div>
                     </div>
                     {errors.password && <p className='text-red-500 text-sm'>{errors.password}</p>}
-
                   </div>
-
 
                   <div className="text-center mt-6">
                     <button

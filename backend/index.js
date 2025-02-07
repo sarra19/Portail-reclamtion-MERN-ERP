@@ -9,6 +9,7 @@ const app = express();
 const indexRouter = require('./routes/index');
 const MongoStore = require('connect-mongo');
 const cors = require('cors');
+const path = require("path");
 
 // var usersRouter = require('./routes/users');
 // app.use('/users', usersRouter);
@@ -29,10 +30,11 @@ app.use(
             collectionName: 'sessions',
         }),
         cookie: {
-            sameSite: "lax", 
-            secure: false, 
-            maxAge: 1000 * 60 * 60 * 24 // 1 jour
+            sameSite: "none",
+            secure: true,
+            maxAge: 1000 * 60 * 60 * 24 // 1 day
         }
+  
     })
 );
 
@@ -42,7 +44,7 @@ app.use(cookieParser());
 app.use(bodyParser.json({ limit: '10mb' })); 
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use('/', indexRouter);
-
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 const PORT = process.env.PORT || 8081;
 
 connectDB().then(() => {

@@ -2,13 +2,33 @@ const réclamationModel = require("../models/réclamationModel");
 
 async function add(req, res) {
     try {
-        console.log('data', req.body.name)
-        const réclamation = new réclamationModel(req.body)
-        await réclamation.save();
-        res.status(200).send("add good")
+        const userId = req.userId; // Récupération de l'ID utilisateur
+        if (!userId) {
+            return res.status(401).json({ message: "Utilisateur non authentifié" });
+        }
+
+        console.log("ID utilisateur:", userId);
+        console.log("Données reçues:", req.body);
+
+        const vocal = req.files.vocal ? req.files.vocal[0].path : null;
+        const fichierJoint = req.files?.fichierJoint ? req.files.fichierJoint[0].path : null;
+        const reclamation = new réclamationModel({
+            ...req.body,
+            userId,
+            fichierJoint,
+            vocal, 
+        });
+        const saveReclamation = await reclamation.save();
+
+        res.status(201).json({
+            data: saveReclamation,
+            success: true,
+            error: false,
+            message: "Réclamation créée avec succès!",
+        });
     } catch (err) {
-        res.status(400).send({ error: err });
-        console.log()
+        console.error("Erreur lors de l'ajout de la réclamation:", err);
+        res.status(400).send({ error: err.message });
     }
 }
 async function getall(req, res) {
@@ -40,6 +60,24 @@ async function getbyid(req, res) {
         res.status(400).send(err);
     }
 }
+async function mesReclamations(req, res) {
+    try {
+        const userId = req.userId; // Récupération de l'ID utilisateur
+        if (!userId) {
+            return res.status(401).json({ message: "Utilisateur non authentifié" });
+        }
+        
+
+        // Récupérer les réclamations de l'utilisateur connecté
+        const data = await réclamationModel.find({ userId: req.userId });
+
+        res.status(200).json(data);
+    } catch (err) {
+        console.error("Erreur lors de la récupération des réclamations:", err);
+        res.status(500).json({ error: "Erreur serveur" });
+    }
+}
+
 async function deleteRéclamation(req, res) {
     try {
         await réclamationModel.findByIdAndDelete(req.params.id);
@@ -53,4 +91,4 @@ async function deleteRéclamation(req, res) {
 
 
 
-module.exports = { add, getall, getbyid, updateRéclamation, deleteRéclamation }
+module.exports = { add, getall, getbyid,mesReclamations, updateRéclamation, deleteRéclamation }

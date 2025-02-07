@@ -33,7 +33,6 @@ async function updateService(req, res) {
 }
 async function getServiceDetails(req, res) {
     try{
-
         const service = await serviceModel.findById(req.params.id)
         
         res.json({

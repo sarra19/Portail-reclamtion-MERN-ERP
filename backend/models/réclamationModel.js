@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 
 const réclamationSchema = new mongoose.Schema({
-    typeCible: String, //(Service,produit)
-    nomCible: {type:String,required: true},
+    typeCible:{type:String,required: true}, //(Service,produit)
+    nom: {type:String,required: true},
     sujet: {type:String,required: true},
-    typeRéclamation: {type:String,required: true,enum: ['textuelle', 'vocal']},
-    fichierJoint:String,
-    description:String,
-    vocal:String,
+    typeReclamation: {type:String,required: true,enum: ['textuelle', 'vocal']},//
+    fichierJoint:String,//
+    contenu:String,//
+    vocal:String, //
     statut:{type:String,enum: ['en cours', 'résolu'],default: 'en cours'}, //ouverte,encours,résolue
-
+    userId : String,
 
 }, {
     timestamps: true
