@@ -5,6 +5,7 @@ const serviceSchema = new mongoose.Schema({
     nom: { type: String, required: true },
     description: String,
     prix: {type: Number, required: true},
+    //likes
 
 }, {
     timestamps: true

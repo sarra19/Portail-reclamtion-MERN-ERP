@@ -1,32 +1,18 @@
 import React, { useState, useEffect } from "react";
 import SummaryApi from '../../../common';
 import { useParams } from 'react-router-dom';
+import { FaStar, FaRegStar, FaSmile, FaPaperclip, FaPaperPlane, FaThumbsUp, FaShare, FaComment } from 'react-icons/fa';
 
 export default function CardDétailsServiceFront() {
-  const [showForm, setShowForm] = React.useState(false);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState([]);
   const { id } = useParams();
-
-  const handleButtonClick = () => {
-    setShowForm(!showForm);
-  };
-  const [rating, setRating] = React.useState(0);
-  const [submitted, setSubmitted] = React.useState(false);
-  const [data, setData] = useState({
-    image: "",
-    nom: "",
-    description: "",
-    prix: "",
-
-  })
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setSubmitted(true);
-  };
-
-  const handleStarClick = (newRating) => {
-    setRating(newRating);
-  };
+  const [rating, setRating] = useState(0);
+  const [data, setData] = useState({ image: "", nom: "", description: "", prix: "" });
+  const [likes, setLikes] = useState(42); // État pour les likes
+  const [isLiked, setIsLiked] = useState(false); // État pour vérifier si l'utilisateur a aimé
+  const [showComments, setShowComments] = useState(false); // État pour afficher/masquer les commentaires
+  const [newComment, setNewComment] = useState(""); // État pour stocker le nouveau commentaire
 
   useEffect(() => {
     const fetchServiceDetails = async () => {
@@ -34,11 +20,8 @@ export default function CardDétailsServiceFront() {
         setLoading(true);
         const response = await fetch(`${SummaryApi.serviceDetails.url}/${id}`, {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         });
-
         const dataResponse = await response.json();
         setData(dataResponse?.data);
       } catch (error) {
@@ -48,145 +31,170 @@ export default function CardDétailsServiceFront() {
       }
     };
 
-    fetchServiceDetails();
-    console.log(data)
+    const fetchComments = async () => {
+      try {
+        const response = await fetch(`${SummaryApi.getCommentsByService.url}/${id}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        const commentsResponse = await response.json();
+        setComments(commentsResponse?.data || []);
+      } catch (error) {
+        console.error("Erreur lors du chargement des commentaires :", error);
+      }
+    };
 
+    fetchServiceDetails();
+    fetchComments();
   }, [id]);
 
+  const getTimeAgo = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000);
+
+    if (diff < 60) return `publié il y a ${diff} sec `;
+    if (diff < 3600) return `publié il y a ${Math.floor(diff / 60)} min `;
+    if (diff < 86400) return `publié il y a ${Math.floor(diff / 3600)} h `;
+    return `publié il y a ${Math.floor(diff / 86400)} jours`;
+  };
+
+  // Fonction pour gérer les likes
+  const handleLike = () => {
+    if (isLiked) {
+      setLikes(likes - 1);
+    } else {
+      setLikes(likes + 1);
+    }
+    setIsLiked(!isLiked);
+  };
+
+  // Fonction pour gérer l'affichage des commentaires
+  const toggleComments = () => {
+    setShowComments(!showComments);
+  };
+
+  // Fonction pour ajouter un nouveau commentaire
+  const handleAddComment = (e) => {
+    e.preventDefault();
+    if (newComment.trim() === "") return; // Ne pas ajouter de commentaire vide
+
+    const comment = {
+      id: comments.length + 1, // Générer un ID unique (à adapter selon votre backend)
+      text: newComment,
+      user: "Utilisateur Actuel", // Remplacez par le nom de l'utilisateur connecté
+    };
+
+    setComments([...comments, comment]); // Ajouter le nouveau commentaire à la liste
+    setNewComment(""); // Réinitialiser le champ de saisie
+  };
+
   return (
-    <>
-      <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded w-11/12 md:w-11/12 lg:w-11/12 px-12 md:px-4 mr-auto ml-auto -mt-32">
-        <div className="rounded-t mb-0 px-4 py-3 border-0">
-          <div className="flex flex-wrap items-center">
-            <div className="relative w-full px-4 max-w-full flex-grow flex-1">
-              <h3 className="font-semibold text-base text-blueGray-700">
-                Détails de Service
-              </h3>
-            </div>
-          </div>
-        </div>
-        <div className="block w-full overflow-x-auto">
-          {loading ? (
-            <p className="text-center text-blueGray-700">Chargement...</p>
-          ) : (
-            <div className="hover:-mt-4 relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-lg bg-bleu-dys ease-linear transition-all duration-150">
-              <blockquote className="relative p-8 mb-4 flex items-center">
-                <div className="text-section w-1/2">
-                  <h2 className="mt-2 font-bold text-white">{data.nom}</h2>
-                  <p className="mt-2 text-white">{data.description}</p>
-                  <p className=" mt-12 text-white">Prix: {data.prix} TND</p>
-                </div>
+    <div className="bg-gray-100 min-h-screen flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-8/12">
+        {loading ? (
+          <p className="text-center text-gray-700">Chargement...</p>
+        ) : (
+          <>
 
-                <div className="image-section ml-4 w-1/2">
-                  <img
-                    alt={data.nom}
-                    src={require(`assets/img/${data.image}`)}
-                    className="w-full h-auto object-cover rounded-lg"
-                  />
+
+            <div className="flex justify-center ">
+
+              <img
+                src={require(`assets/img/${data.image}`)}
+                alt={data.nom}
+                className="w-6/12 h-32 p-4 object-cover rounded-md"
+              />
+              <div className=" p-4 mt-24  ">
+                <div className="mb-4">
+                  <p className="text-xl font-semibold text-orange-dys flex justify-center">{data.nom}</p>
                 </div>
-              </blockquote>
+                <p className=" font-normal text-gray-700 dark:text-gray-400 flex justify-center">{data.description}</p>
+                <div className="mt-10">
+
+                  <p className="font-semibold text-gray-900 dark:text-white flex justify-center">Prix: {data.prix} TND</p>              </div>
+              </div>
             </div>
-          )}
-        </div>
-        <div className="text-center flex justify-end">
-          <a href="#!" onClick={handleButtonClick}>
-            <button
-              className="bg-orange-dys text-white font-bold uppercase text-sm px-4 py-2 mt-2 shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none"
-              type="button"
-            >
-              <i className="fas fa-pen mr-2"></i>
-              Donner un avis
-            </button>
-          </a>
-        </div>
-        {showForm && (
-          <div className="mt-8 p-6 bg-white rounded-lg shadow-lg animate-fade-in w-full max-w-md mx-auto">
-            <form onSubmit={handleSubmit}>
-              <div className="mb-6 ">
-                <label className="block text-sm font-medium text-gray-700 mb-2  flex justify-center">Note</label>
-                <div className="flex gap-2 justify-center">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      className={`text-4xl transition-transform duration-200 ease-in-out transform hover:scale-110 active:scale-90 
-        ${star <= rating ? 'text-yellow-400 drop-shadow-md' : 'text-gray-300'}
-        hover:text-yellow-500`}
-                      onClick={() => handleStarClick(star)}
-                      aria-label={`Note ${star} étoiles`}
-                    >
-                      ★
+
+            {/* Section J'aime, Commenter, Partager */}
+            <div className="flex items-center justify-between text-gray-500 border-t border-b py-2">
+              <button
+                onClick={handleLike}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100 ${isLiked ? 'text-blue-600' : 'text-gray-500'}`}
+              >
+                <FaThumbsUp className="w-5 h-5 mr-2" />
+                <span>J'aime ({likes})</span>
+              </button>
+              <button
+                onClick={toggleComments}
+                className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100"
+              >
+                <FaComment className="w-5 h-5 mr-2" />
+                <span>Commenter</span>
+              </button>
+
+            </div>
+
+            {/* Section des commentaires (affichée uniquement si showComments est true) */}
+            {showComments && (
+              <div className="mt-4">
+                <hr className="mt-2 mb-2" />
+                <p className="text-gray-800 font-semibold">Commentaires</p>
+                <hr className="mt-2 mb-2" />
+                {comments.length > 0 ? (
+                  comments.map((comment, index) => (
+                    <div key={index} className="flex items-center space-x-2 mt-4">
+                      <img
+                        src={require(`assets/img/${comment.userId?.imageprofile}`)} alt="User Avatar"
+                        className="w-8 h-8 mr-2 rounded-full"
+                      />
+                      <div>
+                        <p className="text-gray-800 font-semibold">{comment.userId?.prenom} {comment.userId?.nom}</p>
+                        <p className="text-gray-500 text-sm">{comment.contenu}</p>
+                        <p className="text-gray-500 text-sm">{comment.fichierJoint}</p>
+                        <p className="text-gray-400 text-xs mt-1">{getTimeAgo(comment.createdAt)}</p>
+
+
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center text-gray-500 w-full">Aucun commentaire disponible.</p>
+                )}
+
+
+
+                <form>
+                  <label for="chat" class="sr-only">Your message</label>
+                  <div class="flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700">
+                    <button type="button" class="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                      <svg class="w-5 h-5 text-orange-dys " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
+                        <path fill="currentColor" d="M13 5.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0ZM7.565 7.423 4.5 14h11.518l-2.516-3.71L11 13 7.565 7.423Z" />
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 1H2a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z" />
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0ZM7.565 7.423 4.5 14h11.518l-2.516-3.71L11 13 7.565 7.423Z" />
+                      </svg>
+                      <span class="sr-only">Upload image</span>
                     </button>
-                  ))}
-                </div>
+                    <button type="button" class="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                      <svg class="w-5 h-5 text-orange-dys " aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.408 7.5h.01m-6.876 0h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM4.6 11a5.5 5.5 0 0 0 10.81 0H4.6Z" />
+                      </svg>
+                      <span class="sr-only">Add emoji</span>
+                    </button>
+                    <textarea id="chat" rows="1" class="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Your message..."></textarea>
+                    <button type="submit" class="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
+                    <i class="fas fa-paper-plane text-xl text-orange-dys transform rotate-45"></i>
+                    <span class="sr-only">Send message</span>
+</button>
 
-              </div>
-              <div className="mb-6">
+                  </div>
+                </form>
 
-                <textarea
-                  id="description"
-                  name="description"
-                  rows="4"
-                  className="mt-1 p-3 block w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-dys focus:border-orange-dys transition-all duration-300"
-                  placeholder="Donnez votre avis sur le service..."
-                ></textarea>
-
-                <input
-                  type="file"
-                  className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                />
-              </div>
-
-
-              <div className="text-center flex justify-end">
-                <a href="/Envoyer-réclamation">
-                  <button
-                    className="text-center bg-orange-dys text-white font-bold uppercase text-sm px-4 py-2 mt-2 shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none"
-                    type="submit"
-                  >
-                    Soumettre
-                  </button>
-
-                </a>
-              </div>
-            </form>
-
-            {submitted && (
-              <div className="mt-4 p-4 bg-green-100 text-green-700 rounded-lg">
-                Merci pour votre avis !
               </div>
             )}
-          </div>
+          </>
         )}
-
-        <div className="rounded-t mb-0 px-4 mb-4 mt-4 border-0">
-          <div className="flex flex-wrap items-center">
-            <div className="relative w-full px-4 max-w-full flex-grow flex-1">
-              <h3 className="font-semibold text-base text-blueGray-500">
-                Commentaires :
-              </h3>
-            </div>
-          </div>
-        </div>
-        <div className="relative mt-5 w-full px-4 max-w-full flex flex-grow flex-1 justify-between">
-          <p className=" text-base text-sm text-black">
-            Commentaire 1
-          </p>
-          <div>
-            <a href="#">
-              <button className="bg-orange-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-2 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
-                <i className="fas fa-pen"></i>
-              </button>
-            </a>
-            <a href="#">
-              <button className="bg-blueGray-dys-2 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-2 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
-                <i className="fas fa-trash"></i>
-              </button>
-            </a>
-
-          </div>
-        </div>
       </div>
-    </>
+    </div >
   );
 }

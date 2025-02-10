@@ -10,7 +10,8 @@ export default function CardAddRecProd() {
   const { id } = useParams();
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
-  const [audioBlob, setAudioBlob] = useState(null); const [data, setData] = useState({
+  const [audioBlob, setAudioBlob] = useState(null); 
+  const [data, setData] = useState({
     nom: "",
     typeCible: "",
     sujet: "",

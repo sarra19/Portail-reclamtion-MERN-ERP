@@ -45,9 +45,10 @@ router.put('/updateChat/:id',chatController.updateChat);
 router.delete('/deleteChat/:id',chatController.deleteChat);
 
 //commentaire
-router.post("/addCommentaire",commentaireController.add)
+router.post("/addCommentaire", authToken, upload.fields([{ name: "fichierJoint", maxCount: 1 }]),commentaireController.add)
 router.get("/getAllCommentaire",commentaireController.getall)
 router.get("/getCommentaire/:id",commentaireController.getbyid)
+router.get("/getCommentsByService/:id",commentaireController.getCommentsByService)
 router.put('/updateCommentaire/:id',commentaireController.updateCommentaire);
 router.delete('/deleteCommentaire/:id',commentaireController.deleteCommentaire);
 

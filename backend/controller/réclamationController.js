@@ -2,7 +2,7 @@ const réclamationModel = require("../models/réclamationModel");
 
 async function add(req, res) {
     try {
-        const userId = req.userId; // Récupération de l'ID utilisateur
+        const userId = req.userId; 
         if (!userId) {
             return res.status(401).json({ message: "Utilisateur non authentifié" });
         }

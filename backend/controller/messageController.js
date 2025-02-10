@@ -2,8 +2,10 @@ const messageModel = require("../models/messageModel");
 
 async function add(req, res) {
     try {
+        const userId = req.userId; 
         console.log('data', req.body.name)
-        const message = new messageModel(req.body)
+        const message = new messageModel( ...req.body,
+            userId)
         await message.save();
         res.status(200).send("add good")
     } catch (err) {

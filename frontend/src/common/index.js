@@ -21,6 +21,10 @@ const SummaryApi = {
         url: `${backendDomin}/all-user`,
         method: 'get'
     },
+    getUser: {
+        url: `${backendDomin}/getUser`,
+        method: 'get'
+    },
     updateUser: {
         url: `${backendDomin}/update-user`,
         method: "post"
@@ -57,6 +61,19 @@ const SummaryApi = {
         url: `${backendDomin}/mesReclamations`,
         method: 'get'
     },
+    addCommentaire: {
+        url: `${backendDomin}/addCommentaire`,
+        method: 'post'
+    },
+    getAllCommentaire: {
+        url: `${backendDomin}/getAllCommentaire`,
+        method: 'get'
+    }, 
+    getCommentsByService: {
+        url: `${backendDomin}/getCommentsByService`,
+        method: 'get'
+    },
+
 }
 
 

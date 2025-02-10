@@ -1,14 +1,18 @@
 const mongoose = require('mongoose');
 
 const commentaireSchema = new mongoose.Schema({
-   contenu: {type:String, required: true}, 
-   note:{type:Number, min: 1, max: 5 } ,
-//    auteur:{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }, //user fk
-   statut: {type:String, required: true, enum: ['supprimé', 'publié', 'modifié'],  default: 'publié'   }, 
-   fichier:String,
+   contenu: { type: String, required: true },
+   statut: { type: String, required: true, enum: ['supprimé', 'publié', 'modifié'], default: 'publié' },
+   fichierJoint: String,
+   serviceId: String,
+   produitId: String,
+   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true } // Référence au modèle User
+
+
+
 
 }, {
-    timestamps: true
+   timestamps: true
 });
 
 const commentaireModel = mongoose.model('commentaire', commentaireSchema);

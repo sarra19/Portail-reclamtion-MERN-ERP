@@ -2,8 +2,14 @@ const commentaireModel = require("../models/commentaireModel");
 
 async function add(req, res) {
     try {
-        console.log('data', req.body.name)
-        const commentaire = new commentaireModel(req.body)
+        const userId = req.userId;
+        const fichierJoint = req.files?.fichierJoint ? req.files.fichierJoint[0].path : null;
+
+        const commentaire = new commentaireModel({
+            ...req.body,
+            userId,
+            fichierJoint,
+        });
         await commentaire.save();
         res.status(200).send("add good")
     } catch (err) {
@@ -40,6 +46,17 @@ async function getbyid(req, res) {
         res.status(400).send(err);
     }
 }
+async function getCommentsByService(req, res) {
+    try {
+        const comments = await commentaireModel.find({ serviceId: req.params.id })
+            .populate("userId", "nom prenom imageprofile"); // Récupérer le nom et prénom de l'utilisateur
+
+        res.status(200).json({ success: true, data: comments });
+    } catch (err) {
+        console.error("Erreur lors de la récupération des commentaires :", err);
+        res.status(500).json({ success: false, message: "Erreur serveur", error: err.message });
+    }
+}
 async function deleteCommentaire(req, res) {
     try {
         await commentaireModel.findByIdAndDelete(req.params.id);
@@ -53,4 +70,4 @@ async function deleteCommentaire(req, res) {
 
 
 
-module.exports = { add, getall, getbyid, updateCommentaire, deleteCommentaire }
+module.exports = { add, getall, getbyid,getCommentsByService, updateCommentaire, deleteCommentaire }
