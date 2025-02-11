@@ -45,7 +45,7 @@ router.put('/updateChat/:id',chatController.updateChat);
 router.delete('/deleteChat/:id',chatController.deleteChat);
 
 //commentaire
-router.post("/addCommentaire", authToken, upload.fields([{ name: "fichierJoint", maxCount: 1 }]),commentaireController.add)
+router.post("/addCommentaire", authToken,commentaireController.add)
 router.get("/getAllCommentaire",commentaireController.getall)
 router.get("/getCommentaire/:id",commentaireController.getbyid)
 router.get("/getCommentsByService/:id",commentaireController.getCommentsByService)
@@ -81,7 +81,7 @@ router.put('/updateNotification/:id',notificationController.updateNotification);
 router.delete('/deleteNotification/:id',notificationController.deleteNotification);
 
 //réclamation
-router.post("/addReclamation", authToken, upload.fields([{ name: "vocal", maxCount: 1 }, { name: "fichierJoint", maxCount: 1 }]),  réclamationController.add);
+router.post("/addReclamation", authToken,réclamationController.add);
 router.get("/getAllReclamation",réclamationController.getall)
 router.get("/getReclamation/:id",réclamationController.getbyid)
 router.get("/mesReclamations",authToken,réclamationController.mesReclamations)

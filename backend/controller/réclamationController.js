@@ -10,13 +10,11 @@ async function add(req, res) {
         console.log("ID utilisateur:", userId);
         console.log("Données reçues:", req.body);
 
-        const vocal = req.files.vocal ? req.files.vocal[0].path : null;
-        const fichierJoint = req.files?.fichierJoint ? req.files.fichierJoint[0].path : null;
+       
         const reclamation = new réclamationModel({
             ...req.body,
             userId,
-            fichierJoint,
-            vocal, 
+          
         });
         const saveReclamation = await reclamation.save();
 

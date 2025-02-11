@@ -3,10 +3,10 @@ const mongoose = require('mongoose');
 const commentaireSchema = new mongoose.Schema({
    contenu: { type: String, required: true },
    statut: { type: String, required: true, enum: ['supprimé', 'publié', 'modifié'], default: 'publié' },
-   fichierJoint: String,
+   fichierJoint: [],
    serviceId: String,
    produitId: String,
-   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true } // Référence au modèle User
+   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true } 
 
 
 

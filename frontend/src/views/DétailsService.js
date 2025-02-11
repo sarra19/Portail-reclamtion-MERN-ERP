@@ -67,12 +67,15 @@ export default function DétailsService() {
           </div>
         </div>
         <section className="relative py-16 bg-blueGray-200">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 ">
               <div className="px-6">
 
               <CardDétailsServiceFront/>
               </div>
           </div>
+        </section>
+        <section className="relative py-16 bg-blueGray-200">
+         
         </section>
       </main>
       <Footer />

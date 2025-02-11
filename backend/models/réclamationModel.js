@@ -5,7 +5,7 @@ const réclamationSchema = new mongoose.Schema({
     nom: {type:String,required: true},
     sujet: {type:String,required: true},
     typeReclamation: {type:String,required: true,enum: ['textuelle', 'vocal']},//
-    fichierJoint:String,//
+    fichierJoint:[],//
     contenu:String,//
     vocal:String, //
     statut:{type:String,enum: ['en cours', 'résolu'],default: 'en cours'}, //ouverte,encours,résolue

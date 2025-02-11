@@ -2,20 +2,26 @@ const commentaireModel = require("../models/commentaireModel");
 
 async function add(req, res) {
     try {
+
         const userId = req.userId;
-        const fichierJoint = req.files?.fichierJoint ? req.files.fichierJoint[0].path : null;
 
         const commentaire = new commentaireModel({
             ...req.body,
             userId,
-            fichierJoint,
         });
         await commentaire.save();
-        res.status(200).send("add good")
+       
+        res.status(201).json({
+            data: commentaire,
+            success: true,
+            error: false,
+            message: "commentaire créée avec succès!",
+        });
     } catch (err) {
-        res.status(400).send({ error: err });
-        console.log()
+        console.error("Erreur lors de l'ajout de commentaire:", err);
+        res.status(400).send({ error: err.message });
     }
+ 
 }
 async function getall(req, res) {
     try {
