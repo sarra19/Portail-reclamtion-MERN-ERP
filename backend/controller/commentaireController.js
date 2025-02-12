@@ -55,7 +55,7 @@ async function getbyid(req, res) {
 async function getCommentsByService(req, res) {
     try {
         const comments = await commentaireModel.find({ serviceId: req.params.id })
-            .populate("userId", "nom prenom imageprofile"); // Récupérer le nom et prénom de l'utilisateur
+            .populate("userId", "nom prenom imageprofile"); 
 
         res.status(200).json({ success: true, data: comments });
     } catch (err) {

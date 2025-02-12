@@ -59,14 +59,7 @@ async function getbyid(req, res) {
     }
 }
 async function mesReclamations(req, res) {
-    try {
-        const userId = req.userId; // Récupération de l'ID utilisateur
-        if (!userId) {
-            return res.status(401).json({ message: "Utilisateur non authentifié" });
-        }
-        
-
-        // Récupérer les réclamations de l'utilisateur connecté
+    try {// Récupération de l'ID utilisateur
         const data = await réclamationModel.find({ userId: req.userId });
 
         res.status(200).json(data);

@@ -6,6 +6,7 @@ const serviceSchema = new mongoose.Schema({
     description: String,
     prix: {type: Number, required: true},
     //likes
+    tags:String,
 
 }, {
     timestamps: true

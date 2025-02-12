@@ -17,6 +17,9 @@ export default function CardAddRec() {
     const [audioBlob, setAudioBlob] = useState(null);
     const [openFullScreenImage, setOpenFullScreenImage] = useState(false);
     const [fullScreenImage, setFullScreenImage] = useState("");
+    const [sujetsReclamation, setSujetsReclamation] = useState([]);
+    const [nouveauSujet, setNouveauSujet] = useState("");
+    const [showAutreInput, setShowAutreInput] = useState(false);
     const [data, setData] = useState({
         nom: "",
         typeCible: "Service",
@@ -49,7 +52,7 @@ export default function CardAddRec() {
             recorder.onstop = () => {
                 const blob = new Blob(audioChunks, { type: "audio/mpeg" });
                 setAudioBlob(blob);
-                setData((prev) => ({ ...prev, vocal: blob })); 
+                setData((prev) => ({ ...prev, vocal: blob }));
             };
         } catch (error) {
             console.error("Erreur lors du démarrage de l'enregistrement :", error);
@@ -81,13 +84,13 @@ export default function CardAddRec() {
             if (audioBlob) {
                 const audioFile = new File([audioBlob], "recording.mp3", { type: "audio/mpeg" });
                 const audioUploadResponse = await uploadFile(audioFile);
-                formData.vocal = audioUploadResponse.url; 
+                formData.vocal = audioUploadResponse.url;
             }
 
             if (data.fichierJoint.length > 0) {
                 for (const file of data.fichierJoint) {
                     const fileUploadResponse = await uploadFile(file);
-                    formData.fichierJoint.push(fileUploadResponse.url); 
+                    formData.fichierJoint.push(fileUploadResponse.url);
                 }
             }
 
@@ -120,13 +123,13 @@ export default function CardAddRec() {
         }
 
         const allowedTypes = [
-          "image/jpeg", 
-          "image/png", 
-          "image/gif", 
-          "application/pdf",       
-          "application/msword",    
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" // DOCX files
-      ];        const maxSize = 5 * 1024 * 1024; // 5MB
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" // DOCX files
+        ]; const maxSize = 5 * 1024 * 1024; // 5MB
 
         if (!allowedTypes.includes(file.type)) {
             toast.error("Invalid file type. Please upload an image (JPEG, PNG, GIF,PDF,DOC,DOCX).");
@@ -169,8 +172,8 @@ export default function CardAddRec() {
                 if (dataResponse?.data) {
                     setData((prev) => ({
                         ...prev,
-                        typeCible: "Service",  
-                        nom: dataResponse.data.nom,  
+                        typeCible: "Service",
+                        nom: dataResponse.data.nom,
                     }));
                 }
             } catch (error) {
@@ -180,63 +183,160 @@ export default function CardAddRec() {
 
         fetchServiceDetails();
     }, [id]);
+    useEffect(() => {
+        if (data.nom === "Conseil stratégique") {
+            setSujetsReclamation([
+                "Conseils non adaptés",
+                "Manque d'expertise",
+                "Mauvaise communication",
+                "Délais non respectés",
+                "Facturation excessive",
+                "Résultats insatisfaisants",
+                "Méthodologie inefficace",
+                "Manque de professionnalisme",
+                "Problèmes de confidentialité",
+                "Support post-projet absent",
+                "autre"
+            ]);
+        } else if (data.nom === "Intégration ERP") {
+            setSujetsReclamation([
+                "Problèmes de configuration",
+                "Erreurs de migration des données",
+                "Manque de formation",
+                "Délais de déploiement non respectés",
+                "Compatibilité matérielle/logicielle",
+                "Problèmes de performance",
+                "Manque de support technique",
+                "Facturation excessive",
+                "Problèmes de personnalisation",
+                "autre",
+            ]);
+        } else if (data.nom === "Formation et assistance technique") {
+            setSujetsReclamation([
+                "Contenu de formation inadéquat",
+                "Formateur non qualifié",
+                "Manque de supports pédagogiques",
+                "Délais de formation non respectés",
+                "Problèmes techniques pendant la formation",
+                "Assistance technique insuffisante",
+                "Facturation excessive",
+                "autre",
+            ]);
+        } else if (data.nom === "Support et maintenance") {
+            setSujetsReclamation([
+                "Temps de réponse trop long",
+                "Problèmes non résolus",
+                "Manque de disponibilité du support",
+                "Maintenance préventive insuffisante",
+                "Facturation excessive",
+                "autre",
+            ]);
+        } else if (data.nom === "Solutions collaboratives") {
+            setSujetsReclamation([
+                "Problèmes de configuration",
+                "Manque de fonctionnalités",
+                "Problèmes de performance",
+                "Manque de support technique",
+                "Facturation excessive",
+                "autre",
+            ]);
+        } else if (data.nom === "Missions d'audit") {
+            setSujetsReclamation([
+                "Audit incomplet",
+                "Manque de professionnalisme",
+                "Rapport d'audit non clair",
+                "Délais non respectés",
+                "Facturation excessive",
+                "autre",
+            ]);
+        }
+        else {
+            setSujetsReclamation([]);
+        }
+    }, [data.nom]);
+
+    // Gérer la sélection du sujet
+    const handleSujetChange = (e) => {
+        const selectedValue = e.target.value;
+        if (selectedValue === "autre") {
+            setShowAutreInput(true); // Afficher le champ pour saisir un nouveau sujet
+            setData((prev) => ({ ...prev, sujet: "" })); // Réinitialiser data.sujet
+        } else {
+            setShowAutreInput(false); // Masquer le champ "autre"
+            setData((prev) => ({ ...prev, sujet: selectedValue })); // Mettre à jour data.sujet
+        }
+    };
+
+    // Ajouter un nouveau sujet à la liste
+    const ajouterNouveauSujet = () => {
+        if (nouveauSujet.trim() === "") {
+            toast.error("Veuillez saisir un sujet valide.");
+            return;
+        }
+
+        if (!sujetsReclamation.includes(nouveauSujet)) {
+            setSujetsReclamation((prev) => [...prev, nouveauSujet]); // Ajouter le nouveau sujet à la liste
+            setData((prev) => ({ ...prev, sujet: nouveauSujet })); // Mettre à jour data.sujet
+            setNouveauSujet(""); // Réinitialiser le champ
+            setShowAutreInput(false); // Masquer le champ "autre"
+            toast.success("Nouveau sujet ajouté avec succès !");
+        } else {
+            toast.error("Ce sujet existe déjà dans la liste.");
+        }
+    };
 
     return (
         <>
             <ToastContainer position='top-center' />
             <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0">
-                <div className="rounded-t bg-white mb-0 px-6 py-6">
+                <div className="rounded-t bg-white mb-0 px-6 py-6 mt-4 flex justify-center">
                     <div className="text-center flex justify-between">
-                        <h6 className="text-blueGray-700 text-xl font-bold">Saisir votre Réclamation</h6>
+                        <h6 className="text-blueGray-700 text-xl font-bold">
+                            Saisir votre Réclamation pour le {data.typeCible}
+                            <span className="text-orange-dys font-semibold"> {data.nom}</span>
+                        </h6>
                     </div>
                 </div>
-                <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
+                <div className="flex-auto px-4 lg:px-10 py-10 mt-2">
                     <form onSubmit={handleSubmit}>
                         <div className="flex flex-wrap">
-                            <div className="w-full lg:w-6/12 px-4">
-                                <div className="relative w-full mb-3">
-                                    <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" htmlFor="nom-cible">
-                                        Type de Cible
-                                    </label>
-                                    <select
-                                        id="typeCible"
-                                        value={data.typeCible}
-                                        disabled
-                                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                                    >
-                                        <option value="Produit">Produit</option>
-                                        <option value="Service">Service</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="w-full lg:w-6/12 px-4">
-                                <div className="relative w-full mb-3">
-                                    <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" htmlFor="nom-cible">
-                                        Nom de Cible
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="nom"
-                                        value={data.nom}
-                                        readOnly
-                                        className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                                    />
-                                </div>
-                            </div>
                             <div className="w-full lg:w-6/12 px-4">
                                 <div className="relative w-full mb-3">
                                     <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" htmlFor="sujet">
                                         Sujet
                                     </label>
-                                    <input
-                                        type="text"
+                                    <select
                                         id="sujet"
                                         name="sujet"
-                                        onChange={(e) => setData((prev) => ({ ...prev, sujet: e.target.value }))}
+                                        onChange={handleSujetChange}
                                         value={data.sujet}
                                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                                        placeholder="Mauvaise qualité..."
-                                    />
+                                    >
+                                        <option value="">Sélectionnez un sujet</option>
+                                        {sujetsReclamation.map((sujet, index) => (
+                                            <option key={index} value={sujet}>
+                                                {sujet}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {showAutreInput && (
+                                        <div className="mt-2">
+                                            <input
+                                                type="text"
+                                                value={nouveauSujet}
+                                                onChange={(e) => setNouveauSujet(e.target.value)}
+                                                placeholder="Saisir un nouveau sujet"
+                                                className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={ajouterNouveauSujet}
+                                                className="bg-orange-dys text-white px-4 py-2 rounded mt-2"
+                                            >
+                                                Ajouter
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="w-full lg:w-6/12 px-4">
@@ -266,40 +366,40 @@ export default function CardAddRec() {
                                     </label>
                                 </div>
                                 <div>
-                                {data.fichierJoint.length > 0 ? (
-        <div className='flex items-center gap-2'>
-            {data.fichierJoint.map((el, index) => {
-                const isDocument = [
-                    "application/pdf",
-                    "application/msword",
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                ].includes(el.type);
-                
-                const defaultDocImage = require("assets/img/file.png"); 
+                                    {data.fichierJoint.length > 0 ? (
+                                        <div className='flex items-center gap-2'>
+                                            {data.fichierJoint.map((el, index) => {
+                                                const isDocument = [
+                                                    "application/pdf",
+                                                    "application/msword",
+                                                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                                ].includes(el.type);
 
-                return (
-                    <div className='relative group' key={index}>
-                        <img
-                            src={isDocument ? defaultDocImage : URL.createObjectURL(el)} 
-                            alt={el.name}
-                            width={80}
-                            height={80}
-                            className='bg-slate-100 border cursor-pointer'
-                            onClick={() => {
-                                setOpenFullScreenImage(true);
-                                setFullScreenImage(isDocument ? defaultDocImage : URL.createObjectURL(el));
-                            }}
-                        />
-                        <p>{el.name}</p>
-                        <div className='absolute bottom-0 right-0 p-1 text-white bg-pink-600 rounded-full hidden group-hover:block cursor-pointer' onClick={() => handleDeleteImage(index)}>
-                            <MdDelete />
-                        </div>
-                    </div>
-                );
-            })}
-        </div>
-    ) : (
-        <p className='text-pink-600 text-xs'>*Importer voter fichier</p>
+                                                const defaultDocImage = require("assets/img/file.png");
+
+                                                return (
+                                                    <div className='relative group' key={index}>
+                                                        <img
+                                                            src={isDocument ? defaultDocImage : URL.createObjectURL(el)}
+                                                            alt={el.name}
+                                                            width={80}
+                                                            height={80}
+                                                            className='bg-slate-100 border cursor-pointer'
+                                                            onClick={() => {
+                                                                setOpenFullScreenImage(true);
+                                                                setFullScreenImage(isDocument ? defaultDocImage : URL.createObjectURL(el));
+                                                            }}
+                                                        />
+                                                        <p>{el.name}</p>
+                                                        <div className='absolute bottom-0 right-0 p-1 text-white bg-pink-600 rounded-full hidden group-hover:block cursor-pointer' onClick={() => handleDeleteImage(index)}>
+                                                            <MdDelete />
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    ) : (
+                                        <p className='text-pink-600 text-xs'>*Importer voter fichier</p>
                                     )}
                                 </div>
                             </div>
