@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
-const connectDB = require('./config/db');
+const { connectDB } = require("./config/dbConfig");
 // const router = require('./routes');
 const session = require("express-session");
 const app = express();
@@ -41,15 +41,14 @@ app.use(
   
 app.use(express.json());
 app.use(cookieParser());
-app.use(bodyParser.json({ limit: '10mb' })); 
-app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({ extended: true })); 
 app.use('/', indexRouter);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 const PORT = process.env.PORT || 8081;
 
 connectDB().then(() => {
     app.listen(PORT, () => {
-        console.log("Connected to DB");
-        console.log("Server is running on port " + PORT);
+      console.log("🚀 Serveur démarré sur le port " + PORT);
     });
-});
+  });
