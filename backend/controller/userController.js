@@ -42,7 +42,7 @@ async function generateUniqueNo(pool) {
 
 async function SignUp(req, res) {
     try {
-        const { Email, Password, FirstName, LastName, Verified } = req.body;
+        const { Email, Password, FirstName, LastName, ProfileImage,Verified } = req.body;
         console.log(`Email length: ${Email.length}`);
         console.log(`FirstName length: ${FirstName.length}`);
         console.log(`LastName length: ${LastName.length}`);
@@ -109,8 +109,8 @@ if (ProfileImage.length > 40000) { // Si la taille dépasse 1000 caractères
         const token = jwt.sign(tokenData, process.env.TOKEN_SECRET_KEY, { expiresIn: "1h" });
 
         const insertUserQuery = `
-            INSERT INTO [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2] (No_, Email, Password, FirstName, LastName, Role,Verified, Secret)
-            VALUES (@No_, @Email, @Password, @FirstName, @LastName, @Role,@Verified, @Secret)
+            INSERT INTO [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2] (No_, Email, Password, FirstName, LastName, Role,Verified, ProfileImage,Secret)
+            VALUES (@No_, @Email, @Password, @FirstName, @LastName, @Role,@Verified,@ProfileImage, @Secret)
         `;
         await pool.request()
             .input('No_', sql.NVarChar, No_)
@@ -120,6 +120,7 @@ if (ProfileImage.length > 40000) { // Si la taille dépasse 1000 caractères
             .input('LastName', sql.NVarChar, LastName)
             .input('Role', sql.Int, 1)
             .input('Verified', sql.Int, Verified)
+            .input('ProfileImage', sql.NVarChar, ProfileImage)
             .input('Secret', sql.NVarChar, token)
             .query(insertUserQuery);
 
@@ -143,7 +144,7 @@ if (ProfileImage.length > 40000) { // Si la taille dépasse 1000 caractères
         });
 
         res.status(201).json({
-            data: { email: Email, firstName: FirstName, lastName: LastName},
+            data: { email: Email, firstName: FirstName, lastName: LastName, ProfileImage:ProfileImage},
             success: true,
             error: false,
             message: "Utilisateur créé avec succès! Vérifiez votre compte par mail.",
