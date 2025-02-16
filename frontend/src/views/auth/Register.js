@@ -1,21 +1,23 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import imageTobase64 from '../../helpers/imageTobase64';
 import loginIcons from '../../assets/img/signup.gif';
 import SummaryApi from '../../common';
 import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import uploadFile from '../../helpers/uploadFile';
+import imageTobase64 from "helpers/imageTobase64";
+
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [data, setData] = useState({
-    email: '',
-    prénom: '',
-    nom: '',
-    motdePasse: '',
+    Email: '',
+    FirstName: '',
+    LastName: '',
+    Password: '',
     confirmPassword: '',
-    imageprofile: '',
+    ProfileImage: '',
 
   });
   const [errors, setErrors] = useState({});
@@ -30,38 +32,71 @@ export default function Register() {
 
     validateField(name, value);
   };
+const handleUploadFile = async (e) => {
+        const file = e.target.files[0];
+        const imagePic = await imageTobase64(file);
+        if (!file) {
+            toast.error("No file selected.");
+            return;
+        }
+
+        const allowedTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" // DOCX files
+        ]; const maxSize = 5 * 1024 * 1024; // 5MB
+
+        if (!allowedTypes.includes(file.type)) {
+            toast.error("Invalid file type. Please upload an image (JPEG, PNG, GIF,PDF,DOC,DOCX).");
+            return;
+        }
+
+        if (file.size > maxSize) {
+            toast.error("File size exceeds the limit of 5MB.");
+            return;
+        }
+
+        setData((prev) => ({
+            ...prev,
+           ProfileImage: imagePic,
+        }));
+        toast.success("File selected successfully!");
+    };
 
   const validateField = (name, value) => {
     let error = '';
     switch (name) {
 
-      case 'email':
+      case 'Email':
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
           error = 'format email Invalid .';
         }
         break;
-      case 'prénom':
+      case 'FirstName':
         if (value.length < 3) {
           error = 'Prénom minmum 3 characters.';
         } else if (!/^[a-zA-Z\s]+$/.test(value)) {
           error = 'Prénom doit avoir des letters ou espaces.';
         }
         break;
-      case 'nom':
+      case 'LastName':
         if (value.length < 3) {
           error = 'Prénom minmum 3 characters.';
         } else if (!/^[a-zA-Z\s]+$/.test(value)) {
           error = 'Nom doit avoir des letters ou espaces.';
         }
         break;
-      case 'motdePasse':
+      case 'Password':
         const motdePasseError = validateMotdePasse(value);
         if (motdePasseError) {
           error = motdePasseError;
         }
         break;
       case 'confirmPassword':
-        if (value !== data.motdePasse) {
+        if (value !== data.Password) {
           error = 'Passwords do not match.';
         }
         break;
@@ -92,20 +127,25 @@ export default function Register() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const passwordError = validateMotdePasse(data.motdePasse);
+    if (data.ProfileImage.length > 0) {
+      for (const file of data.ProfileImage) {
+          const fileUploadResponse = await uploadFile(file);
+          data.ProfileImage.push(fileUploadResponse.url);
+      }
+  }
+    const passwordError = validateMotdePasse(data.Password);
     if (passwordError) {
       toast.error(passwordError);
       return;
     }
 
-    if (data.motdePasse !== data.confirmPassword) {
-      toast.error('Passwords do not match.');
+    if (data.Password !== data.confirmPassword) {
+      toast.error('Vos mots de passe ne se correspond pas.');
       return;
     }
 
     if (Object.values(errors).some((error) => error)) {
-      toast.error('Please fix the errors before submitting.');
+      toast.error('Fixer vos erreurs.');
       return;
     }
 
@@ -119,6 +159,8 @@ export default function Register() {
 
     const dataApi = await dataResponse.json();
 
+    
+
     if (dataApi.success) {
       toast.success(dataApi.message);
       //navigate('/login');
@@ -127,15 +169,7 @@ export default function Register() {
     }
   };
 
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    const imagePic = await imageTobase64(file);
-
-    setData((prev) => ({
-      ...prev,
-      imageprofile: imagePic,
-    }));
-  };
+ 
   return (
     <>
           <ToastContainer position='top-center' />
@@ -193,13 +227,13 @@ export default function Register() {
                 </div>
                 <div className='w-16 h-16 mx-auto relative overflow-hidden rounded-full'>
                   <div>
-                    <img src={data.imageprofile || loginIcons} alt='profile' />
+                    <img src={data.ProfileImage || loginIcons} alt='profile' />
                   </div>
                   <form>
                     <label>
                       <div className='text-xs bg-opacity-80 bg-slate-200 pb-4 pt-2 cursor-pointer text-center absolute bottom-0 w-full'>
                       </div>
-                      <input type='file' className='hidden' onChange={handleFileUpload} />
+                      <input type='file' className='hidden' onChange={handleUploadFile} />
                     </label>
                   </form>
                 </div>
@@ -215,15 +249,15 @@ export default function Register() {
                       <input
                         type='text'
                         placeholder='Enter votre prénom'
-                        name='prénom'
-                        value={data.prénom}
+                        name='FirstName'
+                        value={data.FirstName}
                         onChange={handleOnChange}
                         required
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       />
 
                     </div>
-                    {errors.prénom && <p className='text-red-500 text-sm'>{errors.prénom}</p>}
+                    {errors.FirstName && <p className='text-red-500 text-sm'>{errors.FirstName}</p>}
 
                   </div>
                   <div>
@@ -238,15 +272,15 @@ export default function Register() {
                       <input
                         type='text'
                         placeholder='Enter votre Nom'
-                        name='nom'
-                        value={data.nom}
+                        name='LastName'
+                        value={data.LastName}
                         onChange={handleOnChange}
                         required
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       />
 
                     </div>
-                    {errors.nom && <p className='text-red-500 text-sm'>{errors.nom}</p>}
+                    {errors.LastName && <p className='text-red-500 text-sm'>{errors.LastName}</p>}
 
                   </div>
                   <div>
@@ -260,14 +294,14 @@ export default function Register() {
                       <input
                         type='email'
                         placeholder='Enter email'
-                        name='email'
-                        value={data.email}
+                        name='Email'
+                        value={data.Email}
                         onChange={handleOnChange}
                         required
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       />
                     </div>
-                    {errors.email && <p className='text-red-500 text-sm'>{errors.email}</p>}
+                    {errors.Email && <p className='text-red-500 text-sm'>{errors.Email}</p>}
 
                   </div>
                   <div className="relative w-full mb-3">
@@ -282,8 +316,8 @@ export default function Register() {
                       <input
                         type={showPassword ? 'text' : 'password'}
                         placeholder='Enter votre Mot de Passe'
-                        name='motdePasse'
-                        value={data.motdePasse}
+                        name='Password'
+                        value={data.Password}
                         onChange={handleOnChange}
                         required
                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
@@ -293,7 +327,7 @@ export default function Register() {
                 </div>
                     </div>
                   </div>
-                  {errors.motdePasse && <p className='text-red-500 text-sm'>{errors.motdePasse}</p>}
+                  {errors.Password && <p className='text-red-500 text-sm'>{errors.Password}</p>}
 
                   <div className="relative w-full mb-3">
                     <label
