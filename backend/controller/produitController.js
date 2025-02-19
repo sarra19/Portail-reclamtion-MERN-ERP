@@ -7,7 +7,7 @@ async function add(req, res) {
 
         const checkQuery = `
     SELECT COUNT(*) AS count
-    FROM [dbo].[CRONUS International Ltd_$Item$437dbf0e-84ff-417a-965d-ed2bb9650972]
+    FROM [dbo].[CRONUS International Ltd_$Produit$deddd337-e674-44a0-998f-8ddd7c79c8b2]
     WHERE [No_] = @No_
   `;
 
@@ -16,22 +16,24 @@ async function add(req, res) {
             .query(checkQuery);
 
         if (result.recordset[0].count > 0) {
-            // If No_ already exists, return an error response
             return res.status(400).send({ error: 'Product No_ must be unique.' });
         }
 
         const query = `
-      INSERT INTO [dbo].[CRONUS International Ltd_$Item$437dbf0e-84ff-417a-965d-ed2bb9650972] 
-      ([No_], [Description], [Unit Price], [Vendor No_])
+      INSERT INTO [dbo].[CRONUS International Ltd_$Produit$deddd337-e674-44a0-998f-8ddd7c79c8b2] 
+      ([No_],[Name], [Description], [Price], [Vendor],[Image])
       VALUES
-      (@No_, @Description, @UnitPrice, @VendorNo)
+      (@No_,@Name, @Description, @Price, @Vendor,@Image)
     `;
 
         await pool.request()
             .input('No_', sql.NVarChar, req.body.No_)
+            .input('Name', sql.NVarChar, req.body.Name)
             .input('Description', sql.NVarChar, req.body.description)
-            .input('UnitPrice', sql.Decimal, req.body.unitPrice)
-            .input('VendorNo', sql.NVarChar, req.body.vendorNo)
+            .input('Price', sql.Decimal, req.body.Price)
+            .input('Vendor', sql.NVarChar, req.body.Vendor)
+            .input('Image', sql.NVarChar, req.body.Image)
+
             .query(query);
 
         res.status(200).send("Product added successfully");
@@ -49,64 +51,66 @@ async function getall(req, res) {
 
         const result = await pool.request().query(`
               SELECT 
-               [timestamp],[No_], [Description], [Unit Price],[Vendor No_]
-              FROM [dbo].[CRONUS International Ltd_$Item$437dbf0e-84ff-417a-965d-ed2bb9650972]
+               [timestamp],[No_],[Name], [Description],[Price],[Image],[Vendor]
+              FROM [dbo].[CRONUS International Ltd_$Produit$deddd337-e674-44a0-998f-8ddd7c79c8b2]
             `);
-
-        res.status(200).json(result.recordset);
+        const data = result.recordset
+        console.log("data :", data)
+        res.status(200).json(data);
     } catch (err) {
         res.status(400).json({ error: 'Erreur lors de la récupération des produits', details: err.message });
     }
 }
 
-async function getProduitDetails(req, res) {
+async function getProductDetails(req, res) {
     try {
         const pool = await connectDB();
 
         const produit = await pool.request()
-            .input('No_', sql.NVarChar, req.params.id) // Securely bind the parameter
+            .input('No_', sql.NVarChar, req.params.id)
             .query(`
-        SELECT 
-         [timestamp],
-          [No_], 
-          [Description], 
-          [Unit Price], 
-          [Vendor No_]
-         
-        FROM [dbo].[CRONUS International Ltd_$Item$437dbf0e-84ff-417a-965d-ed2bb9650972]
-        WHERE [No_] = @No_
-      `);
+                SELECT 
+                    [timestamp],
+                    [No_] AS id,
+                    [Name], 
+                    [Description] , 
+                    [Price] ,
+                    [Image] ,
+                    [Vendor] 
+                FROM [dbo].[CRONUS International Ltd_$Produit$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+                WHERE [No_] = @No_
+            `);
 
-        res.status(200).json(produit.recordset);
-
+        res.status(200).json({ data: produit.recordset[0] });
 
     } catch (err) {
         res.json({
             message: err?.message || err,
             error: true,
             success: false
-        })
+        });
     }
 }
+
 async function updateProduit(req, res) {
     try {
         const pool = await connectDB();
-        const { description, unitPrice, vendorNo } = req.body;
+        const { description, Price, Vendor } = req.body;
         const { id } = req.params;
 
 
         const updateQuery = `
-            UPDATE [dbo].[CRONUS International Ltd_$Item$437dbf0e-84ff-417a-965d-ed2bb9650972] 
+            UPDATE [dbo].[CRONUS International Ltd_$Produit$deddd337-e674-44a0-998f-8ddd7c79c8b2] 
             SET [Description] = @Description, 
-                [Unit Price] = @UnitPrice, 
-                [Vendor No_] = @VendorNo
+                [Price] = @Price, 
+                [Vendor] = @Vendor
             WHERE [No_] = @No_
         `;
 
         const result = await pool.request()
             .input('Description', sql.NVarChar, description)
-            .input('UnitPrice', sql.Decimal, unitPrice)
-            .input('VendorNo', sql.NVarChar, vendorNo)
+            .input('Price', sql.Decimal, Price)
+            .input('Vendor', sql.NVarChar, Vendor)
             .input('No_', sql.NVarChar, id)
             .query(updateQuery);
 
@@ -130,7 +134,7 @@ async function deleteProduit(req, res) {
 
 
         const deleteQuery = `
-            DELETE [dbo].[CRONUS International Ltd_$Item$437dbf0e-84ff-417a-965d-ed2bb9650972] 
+            DELETE [dbo].[CRONUS International Ltd_$Produit$deddd337-e674-44a0-998f-8ddd7c79c8b2] 
             WHERE [No_] = @No_
         `;
 
@@ -153,4 +157,4 @@ async function deleteProduit(req, res) {
 
 
 
-module.exports = { add, getall, getProduitDetails, updateProduit, deleteProduit }
+module.exports = { add, getall, getProductDetails, updateProduit, deleteProduit }

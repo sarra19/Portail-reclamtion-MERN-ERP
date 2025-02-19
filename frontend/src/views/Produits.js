@@ -71,8 +71,8 @@ export default function Produits() {
                   <div key={index} className="w-10/12 md:w-6/12 lg:w-4/12 px-12 md:px-4 mr-auto ml-auto -mt-32">
                     <div className="hover:-mt-4 relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg bg-bleu-dys ease-linear transition-all duration-150">
                       <img
-                        alt={produit.nom}
-                        src={require(`assets/img/${produit.image}`)} 
+                        alt={produit.Name}
+                        src={require(`assets/img/${produit.Image}`)} 
                         className="w-full align-middle"
                       />
                          {/* <img
@@ -81,17 +81,17 @@ export default function Produits() {
                     className="w-full align-middle"
                   /> */}
                       <blockquote className="relative p-8 mb-4">
-                        <a href={`/détails-produit/${produit._id}`}>
-                          <h4 className="text-xl font-bold text-white cursor-pointer">{produit.nom}</h4>
+                        <a href={`/détails-produit/${produit.No_}`}>
+                          <h4 className="text-xl font-bold text-white cursor-pointer">{produit.Name}</h4>
                         </a>
                         <a
-                          href={`/détails-produit/${produit._id}`}
+                          href={`/détails-produit/${produit.No_}`}
                           className="mt-4 flex justify-end font-bold text-white text-sm hover:text-white ease-linear transition-all duration-150"
                         >
                           En Savoir plus <i className="fa fa-angle-double-right ml-1 leading-relaxed"></i>
                         </a>
                         <a
-                          href={`/Envoyer-réclamation-produit/${produit._id}`}
+                          href={`/Envoyer-réclamation-produit/${produit.No_}`}
                           className="flex justify-center inline-block font-semibold mt-4 px-12 py-3 text-white bg-orange-dys shadow hover:bg-orange-600 transition duration-150 ease-in-out"
                         >
                           Réclamer

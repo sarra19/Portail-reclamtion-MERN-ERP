@@ -12,8 +12,8 @@ export default function Login() {
   const { fetchUserDetails } = useContext(Context);
 
   const [data, setData] = useState({
-    email: "",
-    motdePasse: ""
+    Email: "",
+    Password: ""
   });
   const [errors, setErrors] = useState({});
   const history = useHistory();
@@ -21,12 +21,12 @@ export default function Login() {
   const validateField = (name, value) => {
     let error = '';
     switch (name) {
-      case 'email':
+      case 'Email':
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
           error = 'Invalid email format.';
         }
         break;
-      case 'motdePasse':
+      case 'Password':
         const passwordError = validatePassword(value);
         if (passwordError) {
           error = passwordError;
@@ -73,13 +73,13 @@ export default function Login() {
     let formIsValid = true;
     const newErrors = {};
 
-    const emailError = validateField('email', data.email);
+    const emailError = validateField('Email', data.Email);
     if (emailError) {
-      newErrors.email = emailError;
+      newErrors.Email = emailError;
       formIsValid = false;
     }
 
-    const passwordError = validateField('motdePasse', data.motdePasse);
+    const passwordError = validateField('Password', data.Password);
     if (passwordError) {
       newErrors.password = passwordError;
       formIsValid = false;
@@ -179,11 +179,11 @@ export default function Login() {
                     <input
                       type='email'
                       placeholder='Entrer votre email'
-                      name='email'
-                      value={data.email}
+                      name='Email'
+                      value={data.Email}
                       onChange={handleOnChange}
                       className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150" />
-                    {errors.email && <p className='text-red-500 text-sm'>{errors.email}</p>}
+                    {errors.Email && <p className='text-red-500 text-sm'>{errors.email}</p>}
                   </div>
 
                   <div className="relative w-full mb-3">
@@ -197,8 +197,8 @@ export default function Login() {
                       <input
                         type={showPassword ? "text" : "password"}
                         placeholder="entrer votre Password"
-                        value={data.motdePasse}
-                        name='motdePasse'
+                        value={data.Password}
+                        name='Password'
                         onChange={handleOnChange} className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                       />
                       <div className=' ml-2 mt-3 cursor-pointer text-xl' onClick={() => setShowPassword(prev => !prev)}>

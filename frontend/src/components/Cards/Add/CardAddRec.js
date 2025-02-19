@@ -10,30 +10,30 @@ import { MdDelete } from "react-icons/md";
 import DisplayImage from "helpers/DisplayImage";
 
 export default function CardAddRec() {
-    const [typeReclamation, setTypeReclamation] = useState("textuelle");
+    const [ComplaintType, setTypeReclamation] = useState("0");
     const { id } = useParams();
     const [isRecording, setIsRecording] = useState(false);
     const [mediaRecorder, setMediaRecorder] = useState(null);
     const [audioBlob, setAudioBlob] = useState(null);
     const [openFullScreenImage, setOpenFullScreenImage] = useState(false);
     const [fullScreenImage, setFullScreenImage] = useState("");
-    const [sujetsReclamation, setSujetsReclamation] = useState([]);
+    const [SubjectsReclamation, setSujetsReclamation] = useState([]);
     const [nouveauSujet, setNouveauSujet] = useState("");
     const [showAutreInput, setShowAutreInput] = useState(false);
     const [data, setData] = useState({
-        nom: "",
-        typeCible: "Service",
-        sujet: "",
-        typeReclamation: "textuelle",
-        fichierJoint: [],
-        contenu: "",
-        vocal: null,
+        Name: "",
+        TargetType: "Service",
+        Subject: "",
+        ComplaintType: "0",
+        AttachedFile: "",
+        Content: "",
+        VoiceNote: null,
     });
 
     const handleReclamationTypeChange = (event) => {
         const selectedType = event.target.value;
         setTypeReclamation(selectedType);
-        setData((prev) => ({ ...prev, typeReclamation: selectedType }));
+        setData((prev) => ({ ...prev, ComplaintType: selectedType }));
     };
 
     const startRecording = async () => {
@@ -52,7 +52,7 @@ export default function CardAddRec() {
             recorder.onstop = () => {
                 const blob = new Blob(audioChunks, { type: "audio/mpeg" });
                 setAudioBlob(blob);
-                setData((prev) => ({ ...prev, vocal: blob }));
+                setData((prev) => ({ ...prev, VoiceNote: blob }));
             };
         } catch (error) {
             console.error("Erreur lors du démarrage de l'enregistrement :", error);
@@ -69,31 +69,34 @@ export default function CardAddRec() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         try {
             const formData = {
-                nom: data.nom,
-                typeCible: data.typeCible,
-                sujet: data.sujet,
-                typeReclamation: data.typeReclamation,
-                contenu: data.contenu,
-                vocal: null,
-                fichierJoint: [],
+                Name: data.Name,
+                TargetType: data.TargetType,
+                Subject: data.Subject,
+                ComplaintType: data.ComplaintType,
+                Content: data.Content,
+                VoiceNote: null,
+                AttachedFile: "", 
             };
-
+    
             if (audioBlob) {
                 const audioFile = new File([audioBlob], "recording.mp3", { type: "audio/mpeg" });
                 const audioUploadResponse = await uploadFile(audioFile);
-                formData.vocal = audioUploadResponse.url;
+                formData.VoiceNote = audioUploadResponse.url;
             }
-
-            if (data.fichierJoint.length > 0) {
-                for (const file of data.fichierJoint) {
+    
+            if (data.AttachedFile.length > 0) {
+                const fileUrls = [];
+                for (const file of data.AttachedFile) {
                     const fileUploadResponse = await uploadFile(file);
-                    formData.fichierJoint.push(fileUploadResponse.url);
+                    fileUrls.push(fileUploadResponse.url);
                 }
+                formData.AttachedFile = fileUrls.join(","); 
             }
-
+    
+          
             const response = await fetch(SummaryApi.AddReclamation.url, {
                 method: SummaryApi.AddReclamation.method,
                 credentials: "include",
@@ -102,7 +105,7 @@ export default function CardAddRec() {
                 },
                 body: JSON.stringify(formData),
             });
-
+    
             const result = await response.json();
             if (result.success) {
                 toast.success(result.message);
@@ -143,18 +146,18 @@ export default function CardAddRec() {
 
         setData((prev) => ({
             ...prev,
-            fichierJoint: [...prev.fichierJoint, file],
+            AttachedFile: [...prev.AttachedFile, file],
         }));
         toast.success("File selected successfully!");
     };
 
     const handleDeleteImage = (index) => {
-        const newImage = [...data.fichierJoint];
+        const newImage = [...data.AttachedFile];
         newImage.splice(index, 1);
 
         setData((prev) => ({
             ...prev,
-            fichierJoint: [...newImage]
+            AttachedFile: [...newImage]
         }));
     };
 
@@ -172,8 +175,8 @@ export default function CardAddRec() {
                 if (dataResponse?.data) {
                     setData((prev) => ({
                         ...prev,
-                        typeCible: "Service",
-                        nom: dataResponse.data.nom,
+                        TargetType: "Service",
+                        Name: dataResponse.data.Name,
                     }));
                 }
             } catch (error) {
@@ -184,7 +187,7 @@ export default function CardAddRec() {
         fetchServiceDetails();
     }, [id]);
     useEffect(() => {
-        if (data.nom === "Conseil stratégique") {
+        if (data.Name === "Conseil stratégique") {
             setSujetsReclamation([
                 "Conseils non adaptés",
                 "Manque d'expertise",
@@ -196,9 +199,9 @@ export default function CardAddRec() {
                 "Manque de professionnalisme",
                 "Problèmes de confidentialité",
                 "Support post-projet absent",
-                "autre"
+                "Autre"
             ]);
-        } else if (data.nom === "Intégration ERP") {
+        } else if (data.Name === "Intégration ERP") {
             setSujetsReclamation([
                 "Problèmes de configuration",
                 "Erreurs de migration des données",
@@ -209,9 +212,9 @@ export default function CardAddRec() {
                 "Manque de support technique",
                 "Facturation excessive",
                 "Problèmes de personnalisation",
-                "autre",
+                "Autre",
             ]);
-        } else if (data.nom === "Formation et assistance technique") {
+        } else if (data.Name === "Formation et assistance technique") {
             setSujetsReclamation([
                 "Contenu de formation inadéquat",
                 "Formateur non qualifié",
@@ -220,68 +223,67 @@ export default function CardAddRec() {
                 "Problèmes techniques pendant la formation",
                 "Assistance technique insuffisante",
                 "Facturation excessive",
-                "autre",
+                "Autre",
             ]);
-        } else if (data.nom === "Support et maintenance") {
+        } else if (data.Name === "Support et maintenance") {
             setSujetsReclamation([
                 "Temps de réponse trop long",
                 "Problèmes non résolus",
                 "Manque de disponibilité du support",
                 "Maintenance préventive insuffisante",
                 "Facturation excessive",
-                "autre",
+                "Autre",
             ]);
-        } else if (data.nom === "Solutions collaboratives") {
+        } else if (data.Name === "Solutions collaboratives") {
             setSujetsReclamation([
                 "Problèmes de configuration",
                 "Manque de fonctionnalités",
                 "Problèmes de performance",
                 "Manque de support technique",
                 "Facturation excessive",
-                "autre",
+                "Autre",
             ]);
-        } else if (data.nom === "Missions d'audit") {
+        } else if (data.Name === "Missions d’audit") {
             setSujetsReclamation([
                 "Audit incomplet",
                 "Manque de professionnalisme",
                 "Rapport d'audit non clair",
                 "Délais non respectés",
                 "Facturation excessive",
-                "autre",
+                "Autre",
             ]);
         }
         else {
             setSujetsReclamation([]);
         }
-    }, [data.nom]);
+    }, [data.Name]);
 
-    // Gérer la sélection du sujet
     const handleSujetChange = (e) => {
         const selectedValue = e.target.value;
-        if (selectedValue === "autre") {
-            setShowAutreInput(true); // Afficher le champ pour saisir un nouveau sujet
-            setData((prev) => ({ ...prev, sujet: "" })); // Réinitialiser data.sujet
+        if (selectedValue === "Autre") {
+            setShowAutreInput(true); 
+            setData((prev) => ({ ...prev, Subject: "" })); 
         } else {
             setShowAutreInput(false); // Masquer le champ "autre"
-            setData((prev) => ({ ...prev, sujet: selectedValue })); // Mettre à jour data.sujet
+            setData((prev) => ({ ...prev, Subject: selectedValue })); 
         }
     };
 
-    // Ajouter un nouveau sujet à la liste
+    // Ajouter un nouveau Subject à la liste
     const ajouterNouveauSujet = () => {
         if (nouveauSujet.trim() === "") {
-            toast.error("Veuillez saisir un sujet valide.");
+            toast.error("Veuillez saisir un Subject valide.");
             return;
         }
 
-        if (!sujetsReclamation.includes(nouveauSujet)) {
-            setSujetsReclamation((prev) => [...prev, nouveauSujet]); // Ajouter le nouveau sujet à la liste
-            setData((prev) => ({ ...prev, sujet: nouveauSujet })); // Mettre à jour data.sujet
-            setNouveauSujet(""); // Réinitialiser le champ
-            setShowAutreInput(false); // Masquer le champ "autre"
-            toast.success("Nouveau sujet ajouté avec succès !");
+        if (!SubjectsReclamation.includes(nouveauSujet)) {
+            setSujetsReclamation((prev) => [...prev, nouveauSujet]);
+            setData((prev) => ({ ...prev, Subject: nouveauSujet })); 
+            setNouveauSujet(""); 
+            setShowAutreInput(false); 
+            toast.success("Nouveau Subject ajouté avec succès !");
         } else {
-            toast.error("Ce sujet existe déjà dans la liste.");
+            toast.error("Ce Subject existe déjà dans la liste.");
         }
     };
 
@@ -292,8 +294,8 @@ export default function CardAddRec() {
                 <div className="rounded-t bg-white mb-0 px-6 py-6 mt-4 flex justify-center">
                     <div className="text-center flex justify-between">
                         <h6 className="text-blueGray-700 text-xl font-bold">
-                            Saisir votre Réclamation pour le {data.typeCible}
-                            <span className="text-orange-dys font-semibold"> {data.nom}</span>
+                            Saisir votre Réclamation pour le {data.TargetType}
+                            <span className="text-orange-dys font-semibold"> {data.Name}</span>
                         </h6>
                     </div>
                 </div>
@@ -302,20 +304,20 @@ export default function CardAddRec() {
                         <div className="flex flex-wrap">
                             <div className="w-full lg:w-6/12 px-4">
                                 <div className="relative w-full mb-3">
-                                    <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" htmlFor="sujet">
+                                    <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" htmlFor="Subject">
                                         Sujet
                                     </label>
                                     <select
-                                        id="sujet"
-                                        name="sujet"
+                                        id="Subject"
+                                        name="Subject"
                                         onChange={handleSujetChange}
-                                        value={data.sujet}
+                                        value={data.Subject}
                                         className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                                     >
-                                        <option value="">Sélectionnez un sujet</option>
-                                        {sujetsReclamation.map((sujet, index) => (
-                                            <option key={index} value={sujet}>
-                                                {sujet}
+                                        <option value="">Sélectionnez un Subject</option>
+                                        {SubjectsReclamation.map((Subject, index) => (
+                                            <option key={index} value={Subject}>
+                                                {Subject}
                                             </option>
                                         ))}
                                     </select>
@@ -325,7 +327,7 @@ export default function CardAddRec() {
                                                 type="text"
                                                 value={nouveauSujet}
                                                 onChange={(e) => setNouveauSujet(e.target.value)}
-                                                placeholder="Saisir un nouveau sujet"
+                                                placeholder="Saisir un nouveau Subject"
                                                 className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                                             />
                                             <button
@@ -343,12 +345,12 @@ export default function CardAddRec() {
                                 <div className="relative w-full mb-3">
                                     <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2">Type de Réclamation</label>
                                     <select
-                                        value={typeReclamation}
+                                        value={ComplaintType}
                                         onChange={handleReclamationTypeChange}
                                         className="border-0 px-3 py-3 text-blueGray-600 bg-white rounded text-sm shadow w-full"
                                     >
-                                        <option value="textuelle">Textuelle</option>
-                                        <option value="vocal">Vocal</option>
+                                        <option value="0">Textuelle</option>
+                                        <option value="1">Vocal</option>
                                     </select>
                                 </div>
                             </div>
@@ -366,9 +368,9 @@ export default function CardAddRec() {
                                     </label>
                                 </div>
                                 <div>
-                                    {data.fichierJoint.length > 0 ? (
+                                    {data.AttachedFile.length > 0 ? (
                                         <div className='flex items-center gap-2'>
-                                            {data.fichierJoint.map((el, index) => {
+                                            {data.AttachedFile.map((el, index) => {
                                                 const isDocument = [
                                                     "application/pdf",
                                                     "application/msword",
@@ -408,18 +410,18 @@ export default function CardAddRec() {
                         <hr className="mt-6 border-b-1 border-blueGray-300 mb-6" />
 
                         <div className="flex flex-wrap">
-                            {typeReclamation === "textuelle" ? (
+                            {ComplaintType === "0" ? (
                                 <div className="w-full lg:w-12/12 px-4">
                                     <div className="relative w-full mb-3">
                                         <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" htmlFor="description">
                                             Description
                                         </label>
                                         <textarea
-                                            id="contenu"
-                                            value={data.contenu}
-                                            name="contenu"
+                                            id="Content"
+                                            value={data.Content}
+                                            name="Content"
                                             className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                                            onChange={(e) => setData((prev) => ({ ...prev, contenu: e.target.value }))}
+                                            onChange={(e) => setData((prev) => ({ ...prev, Content: e.target.value }))}
                                             placeholder="Je me permets de vous contacter pour exprimer mon mécontentement concernant..."
                                             rows="4"
                                         ></textarea>

@@ -49,8 +49,8 @@ const SummaryApi = {
         url: `${backendDomin}/getAllProduit`,
         method: 'get'
     },
-    produitDetails: {
-        url: `${backendDomin}/getProduitDetails`,
+    productDetails: {
+        url: `${backendDomin}/getProductDetails`,
         method: "get"
     },
     allReclamation: {
@@ -71,6 +71,10 @@ const SummaryApi = {
     }, 
     getCommentsByService: {
         url: `${backendDomin}/getCommentsByService`,
+        method: 'get'
+    },
+    getCommentsByProduct: {
+        url: `${backendDomin}/getCommentsByProduct`,
         method: 'get'
     },
 

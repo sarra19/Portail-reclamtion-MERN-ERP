@@ -105,10 +105,10 @@ export default function Service() {
               allService.map((service, index) => (
                 <div key={index} className="w-full lg:w-6/12 xl:w-3/12 px-4">
                   <CardStats
-                    statTitle={service.nom} 
-                    statDescripiron={service.description} 
-                    statImage={require(`assets/img/${service.image}`)} 
-                    id={service._id}
+                    statTitle={service.Name} 
+                    statDescripiron={service.Description} 
+                    statImage={require(`assets/img/${service.Image}`)} 
+                    id={service.No_}
                   />
                 </div>
               ))

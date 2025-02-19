@@ -26,7 +26,7 @@ router.delete('/deleteService/:id',serviceController.deleteService);
 //produit
 router.post("/addProduit",produitController.add)
 router.get("/getAllProduit",produitController.getall)
-router.get("/getProduitDetails/:id",produitController.getProduitDetails)
+router.get("/getProductDetails/:id",produitController.getProductDetails)
 router.put('/updateProduit/:id',produitController.updateProduit);
 router.delete('/deleteProduit/:id',produitController.deleteProduit);
 
@@ -49,6 +49,7 @@ router.post("/addCommentaire", authToken,commentaireController.add)
 router.get("/getAllCommentaire",commentaireController.getall)
 router.get("/getCommentaire/:id",commentaireController.getbyid)
 router.get("/getCommentsByService/:id",commentaireController.getCommentsByService)
+router.get("/getCommentsByProduct/:id",commentaireController.getCommentsByProduct)
 router.put('/updateCommentaire/:id',commentaireController.updateCommentaire);
 router.delete('/deleteCommentaire/:id',commentaireController.deleteCommentaire);
 

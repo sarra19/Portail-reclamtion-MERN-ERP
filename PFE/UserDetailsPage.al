@@ -13,7 +13,7 @@ page 50100 "User Details List"
         {
             repeater(Group)
             {
-                field("No."; Rec."No.") { ApplicationArea = Basic; }
+                field("No."; Rec."No_") { ApplicationArea = Basic; }
                 field("First Name"; Rec."FirstName") { ApplicationArea = Basic; }
                 field("Last Name"; Rec."LastName") { ApplicationArea = Basic; }
                 field("Email"; Rec.Email) { ApplicationArea = Basic; }

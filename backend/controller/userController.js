@@ -83,24 +83,24 @@ if (ProfileImage.length > 40000) { // Si la taille dépasse 1000 caractères
                 success: false,
             });
         }
+
         const No_ = await generateUniqueNo(pool);
-
         const checkNoQuery = `
-            SELECT COUNT(*) AS count
-            FROM [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
-            WHERE [No_] = @No_
-        `;
-        const checkNoResult = await pool.request()
-            .input('No_', sql.NVarChar, No_)
-            .query(checkNoQuery);
+        SELECT COUNT(*) AS count
+        FROM [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+        WHERE [No_] = @No_
+    `;
+    const checkNoResult = await pool.request()
+        .input('No_', sql.NVarChar, No_)
+        .query(checkNoQuery);
 
-        if (checkNoResult.recordset[0].count > 0) {
-            return res.status(400).json({
-                message: "Le No_ existe déjà.",
-                error: true,
-                success: false,
-            });
-        }
+    if (checkNoResult.recordset[0].count > 0) {
+        return res.status(400).json({
+            message: "Le No_ existe déjà.",
+            error: true,
+            success: false,
+        });
+    }
 
         const salt = bcrypt.genSaltSync(10);
         const hashPassword = bcrypt.hashSync(Password, salt);
@@ -119,7 +119,7 @@ if (ProfileImage.length > 40000) { // Si la taille dépasse 1000 caractères
             .input('FirstName', sql.NVarChar, FirstName)
             .input('LastName', sql.NVarChar, LastName)
             .input('Role', sql.Int, 1)
-            .input('Verified', sql.Int, Verified)
+            .input('Verified', sql.Int, 0)
             .input('ProfileImage', sql.NVarChar, ProfileImage)
             .input('Secret', sql.NVarChar, token)
             .query(insertUserQuery);
@@ -280,24 +280,58 @@ async function userLogout(req, res) {
 
 async function userDetails(req, res) {
     try {
-        console.log("userId", req.userId)
-        const user = await userModel.findById(req.userId)
+        console.log("userId", req.userId);
+
+        const pool = await connectDB();
+
+        const result = await pool.request()
+            .input('userId', req.userId)
+            .query(`
+                SELECT 
+                    [No_],
+                    [FirstName],
+                    [LastName],
+                    [Email],
+                    [Password],
+                    [ProfileImage],
+                    [Address],
+                    [Country],
+                    [City],
+                    [PostalCode],
+                    [Biography],
+                    [Gender],
+                    [Phone],
+                    [Role],
+                    [Verified]
+                FROM [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+                WHERE [No_] = @userId
+            `);
+
+        if (result.recordset.length === 0) {
+            return res.status(404).json({
+                message: "User not found",
+                error: true,
+                success: false,
+            });
+        }
+
+        const user = result.recordset[0]; // Define the user variable
+        console.log("utilisateur", user); // Log the user details
 
         res.status(200).json({
-            data: user,
+            data: user, // Send the user details in the response
             error: false,
             success: true,
-            message: " details d'Utilisateur"
-        })
-
-        console.log("utilisateur", user)
+            message: "User details fetched successfully"
+        });
 
     } catch (err) {
+        console.error("Error in userDetails:", err); // Log the error for debugging
         res.status(400).json({
             message: err.message || err,
             error: true,
             success: false
-        })
+        });
     }
 }
 

@@ -12,16 +12,14 @@ export default function CardDétailsServiceFront() {
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState([]);
   const { id } = useParams();
-  const [data, setData] = useState({ image: "", nom: "", description: "", prix: "" });
+  const [data, setData] = useState({ Image: "", Name: "", Description: "", AttachedFile: [] });
   const [likes, setLikes] = useState(42);
   const [isLiked, setIsLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Fetch current user details
   const fetchCurrentUser = async () => {
     try {
       const response = await fetch(SummaryApi.current_user.url, {
@@ -39,115 +37,8 @@ export default function CardDétailsServiceFront() {
       toast.error("Failed to fetch user details.");
     }
   };
-  const handleAddComment = async (e) => {
-    e.preventDefault();
-    if (newComment.trim() === "" && !selectedFile) return;
 
-    const formData = {
-      contenu: newComment,
-      serviceId: id,
-      fichierJoint: [],
-    };
-
-    if (selectedFile) {
-      const fileUploadResponse = await uploadFile(selectedFile);
-      formData.fichierJoint.push(fileUploadResponse.url); 
-    }
-
-    try {
-      const response = await fetch(SummaryApi.addCommentaire.url, {
-        method: SummaryApi.addCommentaire.method,
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const result = await response.json();
-      if (result.success) {
-        const newCommentData = {
-          contenu: newComment,
-          fichierJoint: selectedFile ? [formData.fichierJoint[0]] : [],
-          userId: {
-            prenom: currentUser?.prenom,
-            nom: currentUser?.nom,
-            imageprofile: currentUser?.imageprofile,
-          },
-          createdAt: new Date().toISOString(),
-        };
-        setComments((prevComments) => [newCommentData, ...prevComments]);
-        toast.success(result.message);
-        setNewComment("");
-        setSelectedFile(null);
-      } else {
-        toast.error(result.message);
-      }
-    } catch (error) {
-      console.error("Erreur lors de l'ajout du commentaire :", error);
-      toast.error("Une erreur s'est produite lors de l'ajout du commentaire.");
-    }
-  };
- 
-
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await fetch(`${SummaryApi.getCommentsByService.url}/${id}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-        const commentsResponse = await response.json();
-        setComments(commentsResponse?.data || []);
-      } catch (error) {
-        console.error("Erreur lors du chargement des commentaires :", error);
-      }
-    };
-    const fetchServiceDetails = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`${SummaryApi.serviceDetails.url}/${id}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-        const dataResponse = await response.json();
-        setData(dataResponse?.data);
-      } catch (error) {
-        console.error("Erreur lors du chargement des données :", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCurrentUser();
-    fetchServiceDetails();
-    fetchComments();
-  }, [id]);
-
-  const getTimeAgo = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = Math.floor((now - date) / 1000);
-
-    if (diff < 60) return `publié il y a ${diff} sec `;
-    if (diff < 3600) return `publié il y a ${Math.floor(diff / 60)} min `;
-    if (diff < 86400) return `publié il y a ${Math.floor(diff / 3600)} h `;
-    return `publié il y a ${Math.floor(diff / 86400)} jours`;
-  };
-
-  const handleLike = () => {
-    if (isLiked) {
-      setLikes(likes - 1);
-    } else {
-      setLikes(likes + 1);
-    }
-    setIsLiked(!isLiked);
-  };
-
-  const toggleComments = () => {
-    setShowComments(!showComments);
-  };
-
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) {
       toast.error("No file selected.");
@@ -174,8 +65,146 @@ export default function CardDétailsServiceFront() {
       return;
     }
 
-    setSelectedFile(file);
+    setData((prev) => ({
+      ...prev,
+      AttachedFile: [...(prev.AttachedFile || []), file], 
+    }));
     toast.success("File selected successfully!");
+  };
+  const handleAddComment = async (e) => {
+    e.preventDefault();
+    if (newComment.trim() === "" && data.AttachedFile.length === 0) return;
+
+    if (!currentUser) {
+        toast.error("Vous devez être connecté pour ajouter un commentaire.");
+        return;
+    }
+
+    const formData = {
+        Content: newComment,
+        ServiceId: id,
+        AttachedFile: "",
+    };
+
+    if (data.AttachedFile && data.AttachedFile.length > 0) {
+        const fileUrls = [];
+        for (const file of data.AttachedFile) {
+            const fileUploadResponse = await uploadFile(file);
+            fileUrls.push(fileUploadResponse.url);
+        }
+        formData.AttachedFile = fileUrls.join(",");
+    }
+
+    try {
+        const response = await fetch(SummaryApi.addCommentaire.url, {
+            method: SummaryApi.addCommentaire.method,
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            const newCommentData = {
+                Content: newComment,
+                AttachedFile: formData.AttachedFile,
+                UserId: currentUser?.No_,
+                CreatedAt: result.data.CreatedAt, 
+                user: {
+                    FirstName: currentUser?.FirstName,
+                    LastName: currentUser?.LastName,
+                    ProfileImage: currentUser?.ProfileImage,
+                }
+            };
+            setComments((prevComments) => [newCommentData, ...prevComments]);
+            toast.success(result.message);
+            setNewComment("");
+            setData((prev) => ({ ...prev, AttachedFile: [] }));
+        } else {
+            toast.error(result.message);
+        }
+    } catch (error) {
+        console.error("Erreur lors de l'ajout du commentaire :", error);
+        toast.error("Une erreur s'est produite lors de l'ajout du commentaire.");
+    }
+};
+  function timeAgo(createdAt) {
+    const now = new Date();
+    const past = new Date(createdAt);
+    const diffInSeconds = Math.floor((now - past) / 1000);
+
+    if (diffInSeconds < 60) {
+        return `envoyé il y a ${diffInSeconds} s`;
+    }
+
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+        return `envoyé il y a ${diffInMinutes} min`;
+    }
+
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+        return `envoyé il y a ${diffInHours} h`;
+    }
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `envoyé il y a ${diffInDays} j`;
+}
+
+
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await fetch(`${SummaryApi.getCommentsByService.url}/${id}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        const commentsResponse = await response.json();
+        setComments(commentsResponse?.data || []);
+      } catch (error) {
+        console.error("Erreur lors du chargement des commentaires :", error);
+      }
+    };
+
+    const fetchServiceDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${SummaryApi.serviceDetails.url}/${id}`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        const dataResponse = await response.json();
+        setData({
+          ...dataResponse?.data,
+          AttachedFile: dataResponse?.data?.AttachedFile || [],
+        });
+      } catch (error) {
+        console.error("Erreur lors du chargement des données :", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCurrentUser();
+    fetchServiceDetails();
+    fetchComments();
+  }, [id]);
+
+
+  const handleLike = () => {
+    if (isLiked) {
+      setLikes(likes - 1);
+    } else {
+      setLikes(likes + 1);
+    }
+    setIsLiked(!isLiked);
+  };
+
+  const toggleComments = () => {
+    setShowComments(!showComments);
   };
 
   const handleEmojiClick = (emojiObject) => {
@@ -193,18 +222,15 @@ export default function CardDétailsServiceFront() {
           <>
             <div className="flex justify-center">
               <img
-                src={require(`assets/img/${data.image}`)}
-                alt={data.nom}
+                src={require(`assets/img/${data.Image}`)}
+                alt={data.Name}
                 className="w-6/12 h-32 p-4 object-cover rounded-md"
               />
               <div className="p-4 mt-24">
                 <div className="mb-4">
-                  <p className="text-xl font-semibold text-orange-dys flex justify-center">{data.nom}</p>
+                  <p className="text-xl font-semibold text-orange-dys flex justify-center">{data.Name}</p>
                 </div>
-                <p className="font-normal text-gray-700 dark:text-gray-400 flex justify-center">{data.description}</p>
-                <div className="mt-10">
-                  <p className="font-semibold text-gray-900 dark:text-white flex justify-center">Prix: {data.prix} TND</p>
-                </div>
+                <p className="font-normal text-gray-700 dark:text-gray-400 flex justify-center">{data.Description}</p>
               </div>
             </div>
 
@@ -232,24 +258,27 @@ export default function CardDétailsServiceFront() {
                 <hr className="mt-2 mb-2" />
                 {comments.length > 0 ? (
                   comments.map((comment, index) => (
+                    
+                    
                     <div key={index} className="flex items-center space-x-2 mt-4">
                       <img
-                        src={require(`assets/img/${comment.userId?.imageprofile}`)}
+                        src={comment.user?.ProfileImage}
                         alt="User Avatar"
                         className="w-8 h-8 mr-2 rounded-full"
                       />
                       <div>
-                        <p className="text-gray-800 font-semibold">{comment.userId?.prenom} {comment.userId?.nom}</p>
-                        <p className="text-gray-500 text-sm">{comment.contenu}</p>
-                        <img
-                          src={comment.fichierJoint} 
-                          alt="mageee"
-                          width={80}
-                          height={80}
-                          className='bg-slate-100 border cursor-pointer'
-
-                        />
-                        <p className="text-gray-400 text-xs mt-1">{getTimeAgo(comment.createdAt)}</p>
+                        <p className="text-gray-800 font-semibold">{comment.user?.FirstName} {comment.user?.LastName}</p>
+                        <p className="text-gray-500 text-sm">{comment.Content}</p>
+                        {comment.AttachedFile && comment.AttachedFile.trim() !== "" && (
+                      <img
+                        src={comment.AttachedFile}
+                        alt="Attached File"
+                        width={80}
+                        height={80}
+                        className="bg-slate-100 border cursor-pointer"
+                      />
+                    )}
+                        <p className="text-gray-400 text-xs mt-1">{timeAgo(comment.CreatedAt)}</p>
                       </div>
                     </div>
                   ))
@@ -308,12 +337,17 @@ export default function CardDétailsServiceFront() {
                       <span className="sr-only">Send message</span>
                     </button>
                   </div>
-                  {selectedFile && selectedFile.type.startsWith("image/") && (
-                    <img
-                      src={URL.createObjectURL(selectedFile)}
-                      alt="File Preview"
-                      className="w-20 h-20 mt-2 object-cover rounded-md"
-                    />
+                  {data.AttachedFile && data.AttachedFile.length > 0 && (
+                    <div className="mt-2">
+                      {data.AttachedFile.map((file, index) => (
+                        <img
+                          key={index}
+                          src={URL.createObjectURL(file)}
+                          alt="File Preview"
+                          className="w-20 h-20 mt-2 object-cover rounded-md"
+                        />
+                      ))}
+                    </div>
                   )}
                 </form>
               </div>

@@ -21,7 +21,7 @@ async function authToken(req,res,next){
                 console.log("error auth", err)
             }
 
-            req.userId = decoded?._id
+            req.userId = decoded?.id
 
             next()
         });
