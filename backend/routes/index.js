@@ -13,6 +13,8 @@ const réclamationController=require("../controller/réclamationController");
 const remboursementController=require("../controller/remboursementController");
 const réponseController=require("../controller/réponseController");
 const userController=require("../controller/userController");
+const likeController=require("../controller/likeController");
+
 const authToken = require('../middleware/authToken')
 const upload = require("../middleware/multerConfig");
 
@@ -29,6 +31,8 @@ router.get("/getAllProduit",produitController.getall)
 router.get("/getProductDetails/:id",produitController.getProductDetails)
 router.put('/updateProduit/:id',produitController.updateProduit);
 router.delete('/deleteProduit/:id',produitController.deleteProduit);
+
+
 
 //appel
 router.post("/addAppel",appelController.add)
@@ -52,6 +56,12 @@ router.get("/getCommentsByService/:id",commentaireController.getCommentsByServic
 router.get("/getCommentsByProduct/:id",commentaireController.getCommentsByProduct)
 router.put('/updateCommentaire/:id',commentaireController.updateCommentaire);
 router.delete('/deleteCommentaire/:id',commentaireController.deleteCommentaire);
+
+
+router.post("/addLike", authToken,likeController.add)
+router.get("/getLikeStatus",likeController.getLikeStatus)
+
+
 
 //historique
 router.post("/addHistorique",historiqueController.add)

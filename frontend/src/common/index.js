@@ -77,6 +77,19 @@ const SummaryApi = {
         url: `${backendDomin}/getCommentsByProduct`,
         method: 'get'
     },
+    addLikeProduct: {
+        url: `${backendDomin}/addLike`,
+        method: 'post'
+    },
+    getLikeStatus: {
+        url: `${backendDomin}/getLikeStatus`,
+        method: 'get'
+    },
+    DeleteLikeProduct: {
+        url: `${backendDomin}/DeleteLikeProduct`,
+        method: 'put'
+    },
+
 
 }
 

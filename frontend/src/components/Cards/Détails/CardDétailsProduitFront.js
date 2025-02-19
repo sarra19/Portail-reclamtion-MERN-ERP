@@ -15,7 +15,7 @@ export default function CardDétailsProduitFront() {
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
-  const [likes, setLikes] = useState(42);
+  const [likes, setLikes] = useState();
   const [isLiked, setIsLiked] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [data, setData] = useState({
@@ -89,14 +89,6 @@ export default function CardDétailsProduitFront() {
     }
   };
 
-  const handleLike = () => {
-    if (isLiked) {
-      setLikes(likes - 1);
-    } else {
-      setLikes(likes + 1);
-    }
-    setIsLiked(!isLiked);
-  };
 
   const toggleComments = () => {
     setShowComments(!showComments);
@@ -122,7 +114,7 @@ export default function CardDétailsProduitFront() {
       "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX files
     ];
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 5 * 1024 * 1024; 
 
     if (!allowedTypes.includes(file.type)) {
       toast.error("Invalid file type. Please upload an image (JPEG, PNG, GIF, PDF, DOC, DOCX).");
@@ -144,7 +136,6 @@ export default function CardDétailsProduitFront() {
   const handleAddComment = async (e) => {
     e.preventDefault();
 
-    // Vérifier si le commentaire est vide
     if (newComment.trim() === "") {
       toast.error("Le commentaire ne peut pas être vide.");
       return;
@@ -206,6 +197,61 @@ export default function CardDétailsProduitFront() {
     }
   };
 
+  const fetchLikeStatus = async () => {
+    if (!currentUser) return;
+
+    try {
+      const response = await fetch(`${SummaryApi.getLikeStatus.url}?ProductID=${id}&UserID=${currentUser.No_}`, {
+        method: SummaryApi.getLikeStatus.method,
+        credentials: "include",
+      });
+      const result = await response.json();
+      if (result.success) {
+        setIsLiked(result.data.isLiked); 
+        setLikes(result.data.likes); 
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Error fetching like status:", error);
+      toast.error("Failed to fetch like status.");
+    }
+  };
+
+  const handleLike = async () => {
+    if (!currentUser) {
+      toast.error("You must be logged in to like a product.");
+      return;
+    }
+
+    try {
+      const response = await fetch(SummaryApi.addLikeProduct.url, {
+        method: SummaryApi.addLikeProduct.method,
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ProductID: id, 
+          UserID: currentUser.No_, 
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setLikes(result.data.likes); 
+        setIsLiked(result.data.isLiked); 
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Error updating like:", error);
+      toast.error("Failed to update like.");
+    }
+  };
+
   const handleButtonClick = () => {
     setShowForm(!showForm);
   };
@@ -221,6 +267,11 @@ export default function CardDétailsProduitFront() {
   const handleStarClick = (newRating) => {
     setRating(newRating);
   };
+  useEffect(() => {
+    if (currentUser) {
+      fetchLikeStatus();
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     const fetchComments = async () => {

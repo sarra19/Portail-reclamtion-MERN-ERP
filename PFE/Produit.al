@@ -1,4 +1,4 @@
-table 50109 "Produit"
+table 50109 "Product"
 {
     DataClassification = ToBeClassified;
 
@@ -37,6 +37,7 @@ table 50109 "Produit"
             NotBlank = true;
 
         }
+      
 
     }
    

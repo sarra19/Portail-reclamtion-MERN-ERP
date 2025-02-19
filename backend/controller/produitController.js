@@ -7,7 +7,7 @@ async function add(req, res) {
 
         const checkQuery = `
     SELECT COUNT(*) AS count
-    FROM [dbo].[CRONUS International Ltd_$Produit$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+    FROM [dbo].[CRONUS International Ltd_$Product$deddd337-e674-44a0-998f-8ddd7c79c8b2]
     WHERE [No_] = @No_
   `;
 
@@ -20,7 +20,7 @@ async function add(req, res) {
         }
 
         const query = `
-      INSERT INTO [dbo].[CRONUS International Ltd_$Produit$deddd337-e674-44a0-998f-8ddd7c79c8b2] 
+      INSERT INTO [dbo].[CRONUS International Ltd_$Product$deddd337-e674-44a0-998f-8ddd7c79c8b2] 
       ([No_],[Name], [Description], [Price], [Vendor],[Image])
       VALUES
       (@No_,@Name, @Description, @Price, @Vendor,@Image)
@@ -52,7 +52,7 @@ async function getall(req, res) {
         const result = await pool.request().query(`
               SELECT 
                [timestamp],[No_],[Name], [Description],[Price],[Image],[Vendor]
-              FROM [dbo].[CRONUS International Ltd_$Produit$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+              FROM [dbo].[CRONUS International Ltd_$Product$deddd337-e674-44a0-998f-8ddd7c79c8b2]
             `);
         const data = result.recordset
         console.log("data :", data)
@@ -61,6 +61,7 @@ async function getall(req, res) {
         res.status(400).json({ error: 'Erreur lors de la récupération des produits', details: err.message });
     }
 }
+
 
 async function getProductDetails(req, res) {
     try {
@@ -76,8 +77,8 @@ async function getProductDetails(req, res) {
                     [Description] , 
                     [Price] ,
                     [Image] ,
-                    [Vendor] 
-                FROM [dbo].[CRONUS International Ltd_$Produit$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+                    [Vendor]
+                FROM [dbo].[CRONUS International Ltd_$Product$deddd337-e674-44a0-998f-8ddd7c79c8b2]
                 WHERE [No_] = @No_
             `);
 
@@ -100,7 +101,7 @@ async function updateProduit(req, res) {
 
 
         const updateQuery = `
-            UPDATE [dbo].[CRONUS International Ltd_$Produit$deddd337-e674-44a0-998f-8ddd7c79c8b2] 
+            UPDATE [dbo].[CRONUS International Ltd_$Product$deddd337-e674-44a0-998f-8ddd7c79c8b2] 
             SET [Description] = @Description, 
                 [Price] = @Price, 
                 [Vendor] = @Vendor
@@ -134,7 +135,7 @@ async function deleteProduit(req, res) {
 
 
         const deleteQuery = `
-            DELETE [dbo].[CRONUS International Ltd_$Produit$deddd337-e674-44a0-998f-8ddd7c79c8b2] 
+            DELETE [dbo].[CRONUS International Ltd_$Product$deddd337-e674-44a0-998f-8ddd7c79c8b2] 
             WHERE [No_] = @No_
         `;
 
