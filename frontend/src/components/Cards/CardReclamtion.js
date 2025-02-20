@@ -3,7 +3,7 @@ import SummaryApi from "../../common";
 
 export default function CardReclamation() {
   const [allReclamation, setAllReclamation] = useState([]);
-  const [activeTab, setActiveTab] = useState("Produit");
+  const [activeTab, setActiveTab] = useState("Product");
 
   const fetchAllReclamation = async () => {
     try {
@@ -18,24 +18,23 @@ export default function CardReclamation() {
       const dataResponse = await response.json();
       console.log("Reclamation data:", dataResponse);
 
-      if (Array.isArray(dataResponse) && dataResponse.length > 0) {
+      if (dataResponse && typeof dataResponse === "object" && !Array.isArray(dataResponse)) {
+        setAllReclamation([dataResponse]);
+      } else if (Array.isArray(dataResponse) && dataResponse.length > 0) {
         setAllReclamation(dataResponse);
       } else {
-        console.error(
-          "Aucune donnée de Reclamation disponible dans la réponse de l'API."
-        );
+        console.error("Aucune donnée de Reclamation disponible dans la réponse de l'API.");
       }
     } catch (error) {
       console.error("Erreur lors de la récupération des Reclamations:", error);
     }
   };
-
   useEffect(() => {
     fetchAllReclamation();
   }, []);
 
   const filteredReclamations = allReclamation.filter(
-    (reclamation) => reclamation.typeCible === activeTab
+    (reclamation) => reclamation.TargetType === activeTab
   );
 
   return (
@@ -52,16 +51,16 @@ export default function CardReclamation() {
         </div>
 
         <div className="flex space-x-4 px-4 py-2">
-          {["Produit", "Service"].map((tab) => (
+          {["Product", "Service"].map((tab) => (
             <button
               key={tab}
               className={`px-4 py-2 rounded-t-lg text-sm font-bold uppercase transition-all duration-300 ${activeTab === tab
-                  ? "bg-blue-600 text-gray-700"
-                  : "bg-gray-200 text-gray-700"
+                ? "bg-blue-600 text-gray-700"
+                : "bg-gray-200 text-gray-700"
                 }`}
               onClick={() => setActiveTab(tab)}
             >
-              {tab === "Produit" ? "Produits" : "Services"}
+              {tab === "Product" ? "Produits" : "Services"}
             </button>
           ))}
         </div>
@@ -86,17 +85,22 @@ export default function CardReclamation() {
                 filteredReclamations.map((reclamation, index) => (
                   <tr key={index} className="border-t">
                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                      {reclamation.sujet}
+                      {reclamation.Subject}
                     </td>
                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                      {reclamation.statut}
+                      {reclamation.Statut === 0
+                        ? "En cours"
+                        : reclamation.Statut === 1
+                          ? "Traitée"
+                          : "Résolue"}
                     </td>
+
                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                      {reclamation.nom}
+                      {reclamation.Name}
                     </td>
                     <td className="px-6 py-4 flex space-x-2"></td>
                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                      <a href={`/détails-réclamations/${reclamation._id}`}>
+                      <a href={`/détails-réclamations/${reclamation.No_}`}>
                         <button
                           className="bg-orange-dys text-white active:bg-orange-dys font-bold uppercase text-xs px-6 py-2 mt-4 shadow hover:shadow-md outline-none focus:outline-none mr-1 animate-ease-in-out animate-fill-forwards hover:animate-jump hover:animate-once hover:animate-duration-[2000ms] "
                           type="button"
@@ -106,10 +110,10 @@ export default function CardReclamation() {
                       </a>
                     </td>
                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                      <a href={`/réponse-réclamations/${reclamation._id}`}>
+                      <a href={`/réponse-réclamations/${reclamation.No_}`}>
                         <button
-                  className="bg-bleu-dys text-white active:bg-bleu-dys font-bold uppercase text-xs px-6 py-2 mt-4 shadow hover:shadow-md outline-none focus:outline-none mr-1 animate-ease-in-out animate-fill-forwards hover:animate-jump hover:animate-once hover:animate-duration-[2000ms] "
-                  type="button"
+                          className="bg-bleu-dys text-white active:bg-bleu-dys font-bold uppercase text-xs px-6 py-2 mt-4 shadow hover:shadow-md outline-none focus:outline-none mr-1 animate-ease-in-out animate-fill-forwards hover:animate-jump hover:animate-once hover:animate-duration-[2000ms] "
+                          type="button"
                         >
                           <i className="fas fa-paper-plane mr-2"></i>
                           Répondre

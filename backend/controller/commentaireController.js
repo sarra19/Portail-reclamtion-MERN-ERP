@@ -21,12 +21,14 @@ async function add(req, res) {
             VALUES 
             (@Content, @Status, @ServiceId, @ProductId, @AttachedFile, @UserId,@CreatedAt)
         `;
+        const defaultProductId = ProductId || "vide"
+        const defaultServiceId = ServiceId || "vide"
 
         const createdAt = new Date();
         await pool.request()
             .input('Content', sql.NVarChar, Content)
-            .input('ServiceId', sql.NVarChar, ServiceId)
-            .input('ProductId', sql.NVarChar, ProductId)
+            .input('ServiceId', sql.NVarChar, defaultServiceId)
+            .input('ProductId', sql.NVarChar, defaultProductId)
             .input('AttachedFile', sql.NVarChar, AttachedFile)
             .input('UserId', sql.NVarChar, userId)
             .input('Status', sql.Int, 0)
@@ -115,6 +117,25 @@ async function getbyid(req, res) {
     }
 }
 
+async function deleteComment(req, res) {
+    try {
+        const pool = await connectDB();
+        const userId = req.userId;
+
+        const comment = await pool.request()
+        .input('No_', sql.NVarChar, req.params.id)
+        .input('UserId', sql.NVarChar, userId)
+        .query(`
+              Delete FROM 
+                [dbo].[CRONUS International Ltd_$Comment$deddd337-e674-44a0-998f-8ddd7c79c8b2] 
+                WHERE [No_] = @No_ AND [UserId] = @UserId
+            `);
+
+        res.status(200).json({ data: comment.recordset[0] });
+    } catch (err) {
+        res.status(400).send(err);
+    }
+}
 
 async function getCommentsByService(req, res) {
     try {
@@ -174,9 +195,9 @@ async function getCommentsByService(req, res) {
 
 async function getCommentsByProduct(req, res) {
     try {
-        const serviceId = req.params.id;
-        console.log("sproduit :", req.params.id)
-        if (!serviceId) {
+        const ProductId = req.params.id;
+        console.log("produit :", req.params.id)
+        if (!ProductId) {
             return res.status(400).json({ success: false, message: "Product ID is required" });
         }
 
@@ -205,7 +226,7 @@ async function getCommentsByProduct(req, res) {
         `;
 
         const result = await pool.request()
-            .input('ProductId', sql.NVarChar, serviceId)
+            .input('ProductId', sql.NVarChar, ProductId)
             .query(query);
         const comments = result.recordset.map(comment => ({
             Content: comment.Content,
@@ -227,17 +248,9 @@ async function getCommentsByProduct(req, res) {
         res.status(500).json({ success: false, message: "Erreur serveur", error: err.message });
     }
 }
-async function deleteCommentaire(req, res) {
-    // try {
-    //     await commentaireModel.findByIdAndDelete(req.params.id);
-    //     res.status(200).send("commentaire deleted")
-
-    // } catch (err) {
-    //     res.status(500).json(err);
-    // }
-}
 
 
 
 
-module.exports = { add, getall, getbyid, getCommentsByService, getCommentsByProduct, updateCommentaire, deleteCommentaire }
+
+module.exports = { add, getall, getbyid, getCommentsByService, getCommentsByProduct, updateCommentaire, deleteComment }

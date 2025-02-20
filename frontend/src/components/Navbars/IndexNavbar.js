@@ -1,6 +1,6 @@
 /*eslint-disable*/
 import IndexDropdown from "components/Dropdowns/IndexDropdown";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 // components
 import { useHistory } from 'react-router-dom';
@@ -12,6 +12,26 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function Navbar(props) {
   const history = useHistory();
   const [navbarOpen, setNavbarOpen] = React.useState(false);
+
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await fetch(SummaryApi.current_user.url, {
+        method: SummaryApi.current_user.method,
+        credentials: "include",
+      });
+      const result = await response.json();
+      if (result.success) {
+        setCurrentUser(result.data);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+      toast.error("Failed to fetch user details.");
+    }
+  };
   const handleLogout = async () => {
     try {
       const fetchData = await fetch(SummaryApi.logout_user.url, {
@@ -32,6 +52,10 @@ export default function Navbar(props) {
       toast.error("An error occurred while logging out. Please try again.");
     }
   };
+  useEffect(() => {
+    fetchCurrentUser();
+
+  }, []);
   return (
     <>
 
@@ -137,15 +161,7 @@ export default function Navbar(props) {
                     </a>
                   </li></ul>
               </li>
-              <li className="flex items-center">
-                <a
-                  className="hover:text-black text-black px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
-                  href="/profile"
-                >
-                  <i className="text-black fas fa-user text-lg leading-lg " />
-                  <span className="lg:hidden inline-block ml-2">Profile</span>
-                </a>
-              </li>
+           
 
               <li className="flex items-center">
                 <IndexDropdown />
@@ -160,7 +176,18 @@ export default function Navbar(props) {
                   <span className="lg:hidden inline-block ml-2">Chat</span>
                 </a>
               </li>
-
+              <li className="flex items-center">
+              <a
+                  className="hover:text-black text-black px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
+                  href="/profile"
+                > 
+              <img
+                        src={currentUser?.ProfileImage}
+                        alt="User Avatar"
+                        className="w-8 h-8 mr-2 rounded-full"
+                      />
+                      </a>
+              </li>
 
             </ul>
           </div>

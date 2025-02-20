@@ -3,17 +3,7 @@ const bcrypt = require('bcryptjs');
 const sendEmail = require("../utils/sendEmail");
 const jwt = require('jsonwebtoken')
 const { sql, connectDB } = require("../config/dbConfig")
-async function add(req, res) {
-    try {
-        console.log('data', req.body.name)
-        const user = new userModel(req.body)
-        await user.save();
-        res.status(200).send("add good")
-    } catch (err) {
-        res.status(400).send({ error: err });
-        console.log()
-    }
-}
+
 
 async function generateUniqueNo(pool) {
     let uniqueNo;
@@ -302,7 +292,9 @@ async function userDetails(req, res) {
                     [Gender],
                     [Phone],
                     [Role],
-                    [Verified]
+                    [Verified],
+                    [OccupationUser]
+                    ,[CompagnyUser]
                 FROM [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
                 WHERE [No_] = @userId
             `);
@@ -399,4 +391,4 @@ async function deleteUser(req, res) {
 
 
 
-module.exports = { add, SignUp, userVerify, userDetails, SignIn, userLogout, getall, getbyid, updateUser, deleteUser }
+module.exports = {  SignUp, userVerify, userDetails, SignIn, userLogout, getall, getbyid, updateUser, deleteUser }

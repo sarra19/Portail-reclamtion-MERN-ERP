@@ -7,13 +7,14 @@ import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import uploadFile from '../../../helpers/uploadFile';
+import TableDropdown from "components/Dropdowns/TableDropdown.js";
 
 export default function CardDétailsServiceFront() {
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState([]);
   const { id } = useParams();
   const [data, setData] = useState({ Image: "", Name: "", Description: "", AttachedFile: [] });
-  const [likes, setLikes] = useState(42);
+  const [likes, setLikes] = useState();
   const [isLiked, setIsLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [newComment, setNewComment] = useState("");
@@ -35,6 +36,61 @@ export default function CardDétailsServiceFront() {
     } catch (error) {
       console.error("Error fetching user details:", error);
       toast.error("Failed to fetch user details.");
+    }
+  };
+
+  const fetchLikeStatus = async () => {
+    if (!currentUser) return;
+
+    try {
+      const response = await fetch(`${SummaryApi.getLikeStatusService.url}?ServiceID=${id}&UserID=${currentUser.No_}`, {
+        method: SummaryApi.getLikeStatusService.method,
+        credentials: "include",
+      });
+      const result = await response.json();
+      if (result.success) {
+        setIsLiked(result.data.isLiked);
+        setLikes(result.data.likes);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Error fetching like status:", error);
+      toast.error("Failed to fetch like status.");
+    }
+  };
+
+  const handleLike = async () => {
+    if (!currentUser) {
+      toast.error("You must be logged in to like a service.");
+      return;
+    }
+
+    try {
+      const response = await fetch(SummaryApi.addLikeService.url, {
+        method: SummaryApi.addLikeService.method,
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ServiceID: id,
+          UserID: currentUser.No_,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setLikes(result.data.likes);
+        setIsLiked(result.data.isLiked);
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Error updating like:", error);
+      toast.error("Failed to update like.");
     }
   };
 
@@ -67,7 +123,7 @@ export default function CardDétailsServiceFront() {
 
     setData((prev) => ({
       ...prev,
-      AttachedFile: [...(prev.AttachedFile || []), file], 
+      AttachedFile: [...(prev.AttachedFile || []), file],
     }));
     toast.success("File selected successfully!");
   };
@@ -76,82 +132,82 @@ export default function CardDétailsServiceFront() {
     if (newComment.trim() === "" && data.AttachedFile.length === 0) return;
 
     if (!currentUser) {
-        toast.error("Vous devez être connecté pour ajouter un commentaire.");
-        return;
+      toast.error("Vous devez être connecté pour ajouter un commentaire.");
+      return;
     }
 
     const formData = {
-        Content: newComment,
-        ServiceId: id,
-        AttachedFile: "",
+      Content: newComment,
+      ServiceId: id,
+      AttachedFile: "",
     };
 
     if (data.AttachedFile && data.AttachedFile.length > 0) {
-        const fileUrls = [];
-        for (const file of data.AttachedFile) {
-            const fileUploadResponse = await uploadFile(file);
-            fileUrls.push(fileUploadResponse.url);
-        }
-        formData.AttachedFile = fileUrls.join(",");
+      const fileUrls = [];
+      for (const file of data.AttachedFile) {
+        const fileUploadResponse = await uploadFile(file);
+        fileUrls.push(fileUploadResponse.url);
+      }
+      formData.AttachedFile = fileUrls.join(",");
     }
 
     try {
-        const response = await fetch(SummaryApi.addCommentaire.url, {
-            method: SummaryApi.addCommentaire.method,
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-        });
+      const response = await fetch(SummaryApi.addCommentaire.url, {
+        method: SummaryApi.addCommentaire.method,
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-        const result = await response.json();
-        if (result.success) {
-            const newCommentData = {
-                Content: newComment,
-                AttachedFile: formData.AttachedFile,
-                UserId: currentUser?.No_,
-                CreatedAt: result.data.CreatedAt, 
-                user: {
-                    FirstName: currentUser?.FirstName,
-                    LastName: currentUser?.LastName,
-                    ProfileImage: currentUser?.ProfileImage,
-                }
-            };
-            setComments((prevComments) => [newCommentData, ...prevComments]);
-            toast.success(result.message);
-            setNewComment("");
-            setData((prev) => ({ ...prev, AttachedFile: [] }));
-        } else {
-            toast.error(result.message);
-        }
+      const result = await response.json();
+      if (result.success) {
+        const newCommentData = {
+          Content: newComment,
+          AttachedFile: formData.AttachedFile,
+          UserId: currentUser?.No_,
+          CreatedAt: result.data.CreatedAt,
+          user: {
+            FirstName: currentUser?.FirstName,
+            LastName: currentUser?.LastName,
+            ProfileImage: currentUser?.ProfileImage,
+          }
+        };
+        setComments((prevComments) => [newCommentData, ...prevComments]);
+        toast.success(result.message);
+        setNewComment("");
+        setData((prev) => ({ ...prev, AttachedFile: [] }));
+      } else {
+        toast.error(result.message);
+      }
     } catch (error) {
-        console.error("Erreur lors de l'ajout du commentaire :", error);
-        toast.error("Une erreur s'est produite lors de l'ajout du commentaire.");
+      console.error("Erreur lors de l'ajout du commentaire :", error);
+      toast.error("Une erreur s'est produite lors de l'ajout du commentaire.");
     }
-};
+  };
   function timeAgo(createdAt) {
     const now = new Date();
     const past = new Date(createdAt);
     const diffInSeconds = Math.floor((now - past) / 1000);
 
     if (diffInSeconds < 60) {
-        return `envoyé il y a ${diffInSeconds} s`;
+      return `envoyé il y a ${diffInSeconds} s`;
     }
 
     const diffInMinutes = Math.floor(diffInSeconds / 60);
     if (diffInMinutes < 60) {
-        return `envoyé il y a ${diffInMinutes} min`;
+      return `envoyé il y a ${diffInMinutes} min`;
     }
 
     const diffInHours = Math.floor(diffInMinutes / 60);
     if (diffInHours < 24) {
-        return `envoyé il y a ${diffInHours} h`;
+      return `envoyé il y a ${diffInHours} h`;
     }
 
     const diffInDays = Math.floor(diffInHours / 24);
     return `envoyé il y a ${diffInDays} j`;
-}
+  }
 
 
 
@@ -193,15 +249,12 @@ export default function CardDétailsServiceFront() {
     fetchComments();
   }, [id]);
 
-
-  const handleLike = () => {
-    if (isLiked) {
-      setLikes(likes - 1);
-    } else {
-      setLikes(likes + 1);
+  useEffect(() => {
+    if (currentUser) {
+      fetchLikeStatus();
     }
-    setIsLiked(!isLiked);
-  };
+  }, [currentUser]);
+
 
   const toggleComments = () => {
     setShowComments(!showComments);
@@ -240,7 +293,7 @@ export default function CardDétailsServiceFront() {
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-100 ${isLiked ? 'text-blue-600' : 'text-gray-500'}`}
               >
                 <FaThumbsUp className="w-5 h-5 mr-2" />
-                <span>J'aime ({data.Likes})</span>
+                <span>J'aime ({likes})</span>
               </button>
               <button
                 onClick={toggleComments}
@@ -256,32 +309,42 @@ export default function CardDétailsServiceFront() {
                 <hr className="mt-2 mb-2" />
                 <p className="text-gray-800 font-semibold">Commentaires</p>
                 <hr className="mt-2 mb-2" />
+
                 {comments.length > 0 ? (
                   comments.map((comment, index) => (
-                    
-                    
-                    <div key={index} className="flex items-center space-x-2 mt-4">
-                      <img
-                        src={comment.user?.ProfileImage}
-                        alt="User Avatar"
-                        className="w-8 h-8 mr-2 rounded-full"
-                      />
+
+
+                    <div key={index} className="flex items-center space-x-2 mt-4 justify-between">
                       <div>
-                        <p className="text-gray-800 font-semibold">{comment.user?.FirstName} {comment.user?.LastName}</p>
-                        <p className="text-gray-500 text-sm">{comment.Content}</p>
-                        {comment.AttachedFile && comment.AttachedFile.trim() !== "" && (
-                      <img
-                        src={comment.AttachedFile}
-                        alt="Attached File"
-                        width={80}
-                        height={80}
-                        className="bg-slate-100 border cursor-pointer"
-                      />
-                    )}
-                        <p className="text-gray-400 text-xs mt-1">{timeAgo(comment.CreatedAt)}</p>
+                        <div className="flex items-center space-x-2 mt-4 ">
+
+                          <img
+                            src={comment.user?.ProfileImage}
+                            alt="User Avatar"
+                            className="w-8 h-8 mr-2 rounded-full"
+                          />
+                          <div>
+                            <p className="text-gray-800 font-semibold">{comment.user?.FirstName} {comment.user?.LastName}</p>
+                            <p className="text-gray-500 text-sm">{comment.Content}</p>
+                            {comment.AttachedFile && comment.AttachedFile.trim() !== "" && (
+                              <img
+                                src={comment.AttachedFile}
+                                alt="Attached File"
+                                width={80}
+                                height={80}
+                                className="bg-slate-100 border cursor-pointer"
+                              />
+                            )}
+                            <p className="text-gray-400 text-xs mt-1">{timeAgo(comment.CreatedAt)}</p>
+                          </div>
+                        </div>
                       </div>
+                      <TableDropdown id={comment.No_} />
+
                     </div>
+
                   ))
+
                 ) : (
                   <p className="text-center text-gray-500 w-full">Aucun commentaire disponible.</p>
                 )}

@@ -1,8 +1,55 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import SummaryApi from '../../common';
+import { useHistory } from 'react-router-dom';
 
+import { toast } from 'react-toastify';
 // components
 
 export default function CardProfile() {
+  const [currentUser, setCurrentUser] = useState(null);
+  const history = useHistory();
+
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await fetch(SummaryApi.current_user.url, {
+        method: SummaryApi.current_user.method,
+        credentials: "include",
+      });
+      const result = await response.json();
+      if (result.success) {
+        setCurrentUser(result.data);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+      toast.error("Failed to fetch user details.");
+    }
+  };
+  const handleLogout = async () => {
+    try {
+      const fetchData = await fetch(SummaryApi.logout_user.url, {
+        method: SummaryApi.logout_user.method,
+        credentials: 'include',
+      });
+
+      const data = await fetchData.json();
+
+      if (data.success) {
+        toast.success(data.message);
+        // dispatch(setUserDetails(null));
+        history.push('/auth/login');
+      } else if (data.error) {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error("An error occurred while logging out. Please try again.");
+    }
+  };
+  useEffect(() => {
+    fetchCurrentUser();
+
+  }, []);
   return (
     <>
       <div className="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-xl rounded-lg mt-16">
@@ -12,7 +59,7 @@ export default function CardProfile() {
               <div className="relative">
                 <img
                   alt="..."
-                  src={require("assets/img/team-2-800x800.jpg")}
+                  src={currentUser?.ProfileImage}
                   className="shadow-xl rounded-full h-auto align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-150-px"
                 />
               </div>

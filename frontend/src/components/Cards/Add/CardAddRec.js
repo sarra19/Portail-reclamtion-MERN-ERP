@@ -69,7 +69,7 @@ export default function CardAddRec() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+    console.log( "service id " , id)
         try {
             const formData = {
                 Name: data.Name,
@@ -79,6 +79,7 @@ export default function CardAddRec() {
                 Content: data.Content,
                 VoiceNote: null,
                 AttachedFile: "", 
+                ServiceId: id, 
             };
     
             if (audioBlob) {

@@ -1,4 +1,4 @@
-table 50111 "Reclamations"
+table 50111 "Reclamation"
 {
     DataClassification = ToBeClassified;
 
@@ -34,19 +34,31 @@ table 50111 "Reclamations"
             NotBlank = false;
         }
         field(8; "VoiceNote"; Text[255])
-        {
-            NotBlank = false;
-        }
+        {        }
         field(9; "Status"; Option)
         {
-            OptionMembers = in_progress,resolved;
-            OptionCaption = 'In Progress,Resolved';
+            OptionMembers = in_progress,processed,resolved;
+            OptionCaption = 'In Progress,processed,Resolved';
             InitValue = in_progress;
         }
         field(10; "UserId"; Text[50])
         {
             NotBlank = false;
         }
+        field(11; "ServiceId"; Text[50])
+        {
+            NotBlank = false;
+        }
+        field(12; "ProductId"; Text[50])
+        {
+            NotBlank = false;
+        }
     }
-  
+    keys
+    {
+        key(MyKey; "No_")
+        {
+
+        }
+    }
 }

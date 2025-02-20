@@ -55,11 +55,13 @@ router.get("/getCommentaire/:id",commentaireController.getbyid)
 router.get("/getCommentsByService/:id",commentaireController.getCommentsByService)
 router.get("/getCommentsByProduct/:id",commentaireController.getCommentsByProduct)
 router.put('/updateCommentaire/:id',commentaireController.updateCommentaire);
-router.delete('/deleteCommentaire/:id',commentaireController.deleteCommentaire);
+router.delete('/deleteComment/:id',authToken,commentaireController.deleteComment);
 
 
 router.post("/addLike", authToken,likeController.add)
+router.post("/addLikeService", authToken,likeController.addLikeService)
 router.get("/getLikeStatus",likeController.getLikeStatus)
+router.get("/getLikeStatusService",likeController.getLikeStatusService)
 
 
 

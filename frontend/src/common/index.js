@@ -81,13 +81,25 @@ const SummaryApi = {
         url: `${backendDomin}/addLike`,
         method: 'post'
     },
+    addLikeService :{
+        url: `${backendDomin}/addLikeService`,
+        method: 'post'
+    },
     getLikeStatus: {
         url: `${backendDomin}/getLikeStatus`,
+        method: 'get'
+    },
+    getLikeStatusService: {
+        url: `${backendDomin}/getLikeStatusService`,
         method: 'get'
     },
     DeleteLikeProduct: {
         url: `${backendDomin}/DeleteLikeProduct`,
         method: 'put'
+    }, 
+    deleteComment: {
+        url: `${backendDomin}/deleteComment`,
+        method: 'delete'
     },
 
 

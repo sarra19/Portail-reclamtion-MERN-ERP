@@ -40,6 +40,8 @@ table 50106 "User_Details"
         } field(200; "Address"; Text[255])
         {
         }
+        field(201; "OccupationUser"; Text[255]){ }
+        field(202; "CompagnyUser"; Text[255]){ }
     }
  
 

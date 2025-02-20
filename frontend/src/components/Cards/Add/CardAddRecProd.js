@@ -79,6 +79,7 @@ export default function CardAddRec() {
         Content: data.Content,
         VoiceNote: null,
         AttachedFile: "",
+        ProductId: id
       };
 
       if (audioBlob) {

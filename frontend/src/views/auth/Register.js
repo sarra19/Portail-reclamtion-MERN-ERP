@@ -38,7 +38,7 @@ export default function Register() {
       toast.error("No file selected.");
       return;
     }
-  
+
     const allowedTypes = [
       "image/jpeg",
       "image/png",
@@ -48,61 +48,61 @@ export default function Register() {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX files
     ];
     const maxSize = 5 * 1024 * 1024; // 5MB
-  
+
     if (!allowedTypes.includes(file.type)) {
       toast.error("Invalid file type. Please upload an image (JPEG, PNG, GIF, PDF, DOC, DOCX).");
       return;
     }
-  
+
     if (file.size > maxSize) {
       toast.error("File size exceeds the limit of 5MB.");
       return;
     }
-  
+
+
     setData((prev) => ({
       ...prev,
-      ProfileImage: file, // Store the File object directly
+      ProfileImage: [...prev.ProfileImage, file],
     }));
     setSelectedFile(file);
 
     toast.success("File selected successfully!");
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     const passwordError = validateMotdePasse(data.Password);
     if (passwordError) {
       toast.error(passwordError);
       return;
     }
-  
+
     if (data.Password !== data.confirmPassword) {
       toast.error('Vos mots de passe ne se correspondent pas.');
       return;
     }
-  
+
     if (Object.values(errors).some((error) => error)) {
       toast.error('Fixez vos erreurs.');
       return;
     }
-  
-    let profileImageUrl = '';
-    if (data.ProfileImage) {
-      try {
-        const fileUploadResponse = await uploadFile(data.ProfileImage);
-        profileImageUrl = fileUploadResponse.url; // Get the URL after uploading
-      } catch (error) {
-        toast.error('Failed to upload profile image.');
-        return;
+
+    if (data.ProfileImage.length > 0) {
+      const fileUrls = [];
+
+      for (const file of data.ProfileImage) {
+
+        const fileUploadResponse = await uploadFile(file);
+        fileUrls.push(fileUploadResponse.url);
+
       }
+      data.ProfileImage = fileUrls.join(",");
+
     }
-  
-    const requestData = {
-      ...data,
-      ProfileImage: profileImageUrl, 
-    };
-  
+
+
+
     // Send data to the server
     try {
       const dataResponse = await fetch(SummaryApi.signUP.url, {
@@ -110,11 +110,11 @@ export default function Register() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestData),
+        body: JSON.stringify(data),
       });
-  
+
       const dataApi = await dataResponse.json();
-  
+
       if (dataApi.success) {
         toast.success(dataApi.message);
         // navigate('/login'); // Uncomment if you have a navigation function
@@ -219,9 +219,14 @@ export default function Register() {
                   <small>Ou tapez vos cordonnées</small>
                 </div>
                 <div className='w-16 h-16 mx-auto relative overflow-hidden rounded-full'>
-                  <div>
-                    <img src={selectedFile ? URL.createObjectURL(selectedFile) : loginIcons} alt='profile' className='object-cover w-full h-full' />
-                  </div>
+                    <div >
+                      <img
+                        src={selectedFile ? URL.createObjectURL(selectedFile) : loginIcons} alt='profile' className='object-cover w-full h-full' />
+
+
+                    </div>
+                 
+
                   <form>
                     <label>
                       <div className='text-xs bg-opacity-80 bg-slate-200 pb-4 pt-2 cursor-pointer text-center absolute bottom-0 w-full'>

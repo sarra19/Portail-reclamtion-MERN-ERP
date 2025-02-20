@@ -1,7 +1,9 @@
 import React from "react";
 import { createPopper } from "@popperjs/core";
+import SummaryApi from "common";
+import { toast } from "react-toastify";
 
-const NotificationDropdown = () => {
+const NotificationDropdown = ({id}) => {
   // dropdown props
   const [dropdownPopoverShow, setDropdownPopoverShow] = React.useState(false);
   const btnDropdownRef = React.createRef();
@@ -14,6 +16,25 @@ const NotificationDropdown = () => {
   };
   const closeDropdownPopover = () => {
     setDropdownPopoverShow(false);
+  };
+
+  const deleteComment = async () => {
+
+    try {
+      const response = await fetch(`${SummaryApi.deleteComment.url}/${id}`, {
+        method: SummaryApi.deleteComment.method,
+        credentials: "include",
+      });
+      const result = await response.json();
+      if (result.success) {
+       toast.info("delete succesful")
+      } else {
+                toast.error(result.message);
+        
+      }
+    } catch (error) {
+      console.error("Error fetching like status:", error);
+    }
   };
   return (
     <>
@@ -42,26 +63,21 @@ const NotificationDropdown = () => {
           }
           onClick={(e) => e.preventDefault()}
         >
-          Action
+          Modifier
         </a>
         <a
           href="#pablo"
           className={
             "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
           }
-          onClick={(e) => e.preventDefault()}
+          onClick={(e) => {
+            e.preventDefault();
+            deleteComment(); 
+          }}
         >
-          Another action
+          Supprimer
         </a>
-        <a
-          href="#pablo"
-          className={
-            "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-          }
-          onClick={(e) => e.preventDefault()}
-        >
-          Something else here
-        </a>
+       
       </div>
     </>
   );
