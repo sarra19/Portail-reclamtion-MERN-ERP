@@ -177,17 +177,21 @@ export default function Navbar(props) {
                 </a>
               </li>
               <li className="flex items-center">
-              <a
-                  className="hover:text-black text-black px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
-                  href="/profile"
-                > 
-              <img
-                        src={currentUser?.ProfileImage}
-                        alt="User Avatar"
-                        className="w-8 h-8 mr-2 rounded-full"
-                      />
-                      </a>
-              </li>
+    <a
+        className="hover:text-black text-black px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
+        href="/profile"
+    >
+        {currentUser?.ProfileImage ? (
+            <img
+                src={currentUser.ProfileImage}
+                alt="User Avatar"
+                className="w-8 h-8 mr-2 rounded-full"
+            />
+        ) : (
+            <i className="text-black fas fa-user text-lg leading-lg" />
+        )}
+    </a>
+</li>
 
             </ul>
           </div>

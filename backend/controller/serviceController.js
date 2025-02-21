@@ -34,13 +34,7 @@ async function getall(req, res) {
 
         const result = await pool.request().query(`
               SELECT 
-               [timestamp]
-                ,[No_] 
-                ,[Image] 
-                ,[Name] 
-                ,[Description] 
-                ,[Tags]
-      
+             *
   FROM [Demo Database BC (24-0)].[dbo].[CRONUS International Ltd_$Service$deddd337-e674-44a0-998f-8ddd7c79c8b2]
             `);
         const data = result.recordset

@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import SummaryApi from '../../../common';
 import { useParams } from 'react-router-dom';
-import { FaSmile, FaPaperclip, FaThumbsUp, FaTimes, FaComment } from 'react-icons/fa';
+import { FaSmile, FaPaperclip, FaThumbsUp, FaTimes, FaComment, FaTrash } from 'react-icons/fa';
 import EmojiPicker from 'emoji-picker-react';
 import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import uploadFile from '../../../helpers/uploadFile';
-import TableDropdown from "components/Dropdowns/TableDropdown.js";
 
 export default function CardDétailsServiceFront() {
   const [loading, setLoading] = useState(true);
@@ -21,6 +20,7 @@ export default function CardDétailsServiceFront() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
+  // Fonction pour récupérer l'utilisateur actuel
   const fetchCurrentUser = async () => {
     try {
       const response = await fetch(SummaryApi.current_user.url, {
@@ -39,6 +39,7 @@ export default function CardDétailsServiceFront() {
     }
   };
 
+  // Fonction pour récupérer le statut "J'aime"
   const fetchLikeStatus = async () => {
     if (!currentUser) return;
 
@@ -60,6 +61,7 @@ export default function CardDétailsServiceFront() {
     }
   };
 
+  // Fonction pour gérer le clic sur "J'aime"
   const handleLike = async () => {
     if (!currentUser) {
       toast.error("You must be logged in to like a service.");
@@ -94,6 +96,7 @@ export default function CardDétailsServiceFront() {
     }
   };
 
+  // Fonction pour gérer le changement de fichier
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) {
@@ -127,6 +130,8 @@ export default function CardDétailsServiceFront() {
     }));
     toast.success("File selected successfully!");
   };
+
+  // Fonction pour ajouter un commentaire
   const handleAddComment = async (e) => {
     e.preventDefault();
     if (newComment.trim() === "" && data.AttachedFile.length === 0) return;
@@ -138,7 +143,7 @@ export default function CardDétailsServiceFront() {
 
     const formData = {
       Content: newComment,
-      ServiceId: id,
+      ServiceID: id,
       AttachedFile: "",
     };
 
@@ -186,6 +191,8 @@ export default function CardDétailsServiceFront() {
       toast.error("Une erreur s'est produite lors de l'ajout du commentaire.");
     }
   };
+
+  // Fonction pour formater la date
   function timeAgo(createdAt) {
     const now = new Date();
     const past = new Date(createdAt);
@@ -209,8 +216,28 @@ export default function CardDétailsServiceFront() {
     return `envoyé il y a ${diffInDays} j`;
   }
 
+  // Fonction pour supprimer un commentaire
+  const handleDeleteComment = async (commentId) => {
+    console.log("Comment to delete:", comments.find(comment => comment.No_ === commentId));
+    try {
+      const response = await fetch(`${SummaryApi.deleteComment.url}/${commentId}`, {
+        method: SummaryApi.deleteComment.method,
+        credentials: "include",
+      });
+      const result = await response.json();
+      if (result.success) {
+        toast.info("Commentaire supprimé avec succès");
+        setComments((prevComments) => prevComments.filter(comment => comment.No_ !== commentId));
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la suppression du commentaire :", error);
+      toast.error("Échec de la suppression du commentaire");
+    }
+  };
 
-
+  // Effet pour charger les commentaires et les détails du service
   useEffect(() => {
     const fetchComments = async () => {
       try {
@@ -249,17 +276,19 @@ export default function CardDétailsServiceFront() {
     fetchComments();
   }, [id]);
 
+  // Effet pour charger le statut "J'aime" lorsque l'utilisateur est connecté
   useEffect(() => {
     if (currentUser) {
       fetchLikeStatus();
     }
   }, [currentUser]);
 
-
+  // Fonction pour basculer l'affichage des commentaires
   const toggleComments = () => {
     setShowComments(!showComments);
   };
 
+  // Fonction pour gérer le clic sur un emoji
   const handleEmojiClick = (emojiObject) => {
     setNewComment(newComment + emojiObject.emoji);
     setShowEmojiPicker(false);
@@ -312,12 +341,9 @@ export default function CardDétailsServiceFront() {
 
                 {comments.length > 0 ? (
                   comments.map((comment, index) => (
-
-
                     <div key={index} className="flex items-center space-x-2 mt-4 justify-between">
                       <div>
                         <div className="flex items-center space-x-2 mt-4 ">
-
                           <img
                             src={comment.user?.ProfileImage}
                             alt="User Avatar"
@@ -339,12 +365,14 @@ export default function CardDétailsServiceFront() {
                           </div>
                         </div>
                       </div>
-                      <TableDropdown id={comment.No_} />
-
+                      <button
+                        onClick={() => handleDeleteComment(comment.No_)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <FaTrash className="w-5 h-5" />
+                      </button>
                     </div>
-
                   ))
-
                 ) : (
                   <p className="text-center text-gray-500 w-full">Aucun commentaire disponible.</p>
                 )}

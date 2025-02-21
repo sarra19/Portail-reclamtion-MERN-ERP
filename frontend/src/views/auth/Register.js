@@ -117,6 +117,14 @@ export default function Register() {
 
       if (dataApi.success) {
         toast.success(dataApi.message);
+        setData({ // Appel correct de la fonction setData avec un objet
+          Email: '',
+          FirstName: '',
+          LastName: '',
+          Password: '',
+          confirmPassword: '',
+          ProfileImage: ''
+      });
         // navigate('/login'); // Uncomment if you have a navigation function
       } else if (dataApi.error) {
         toast.error(dataApi.message);

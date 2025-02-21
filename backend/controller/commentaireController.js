@@ -61,6 +61,7 @@ async function getall(req, res) {
 
         const result = await pool.request().query(`
                    SELECT 
+                   c.[No_]
                 c.[Content], 
                 c.[Status], 
                 c.[ServiceId], 
@@ -98,6 +99,7 @@ async function getbyid(req, res) {
             .input('No_', sql.NVarChar, req.params.id)
             .query(`
                  SELECT 
+                 c.[No_]
                 c.[Content], 
                 c.[Status], 
                 c.[ServiceId], 
@@ -150,6 +152,7 @@ async function getCommentsByService(req, res) {
 
         const query = `
             SELECT 
+             c.[No_]
                 c.[Content], 
                 c.[Status], 
                 c.[ServiceId], 
@@ -205,6 +208,7 @@ async function getCommentsByProduct(req, res) {
 
         const query = `
             SELECT 
+             c.[No_]
                 c.[Content], 
                 c.[Status], 
                 c.[ServiceId], 

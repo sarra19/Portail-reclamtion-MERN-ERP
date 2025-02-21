@@ -267,6 +267,49 @@ async function userLogout(req, res) {
         })
     }
 }
+async function getUser(req, res) {
+    try {
+        console.log("userId", req.params.id);
+
+        const pool = await connectDB();
+
+        const result = await pool.request()
+            .input('userId', req.userId)
+            .query(`
+                SELECT 
+                   *
+                FROM [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+                WHERE [No_] = @userId
+            `);
+
+        if (result.recordset.length === 0) {
+            return res.status(404).json({
+                message: "User not found",
+                error: true,
+                success: false,
+            });
+        }
+
+        const user = result.recordset[0]; // Define the user variable
+        console.log("utilisateur", user); // Log the user details
+
+        res.status(200).json({
+            data: user, // Send the user details in the response
+            error: false,
+            success: true,
+            message: "User details fetched successfully"
+        });
+
+    } catch (err) {
+        console.error("Error in userDetails:", err); // Log the error for debugging
+        res.status(400).json({
+            message: err.message || err,
+            error: true,
+            success: false
+        });
+    }
+}
+
 
 async function userDetails(req, res) {
     try {
@@ -334,23 +377,7 @@ async function getall(req, res) {
         const pool = await connectDB();
 
         const result = await pool.request().query(`
-              SELECT 
-               [No_]
-           ,[FirstName]
-           ,[LastName]
-           ,[Email]
-           ,[Password]
-           ,[ProfileImage]
-           ,[Address]
-           ,[Country]
-           ,[City]
-           ,[PostalCode]
-           ,[Biography]
-           ,[Gender]
-           ,[Phone]
-           ,[Role]
-           ,[Verified]
-              FROM [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+              SELECT * FROM [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
             `);
 
         res.status(200).json(result.recordset);
@@ -380,15 +407,36 @@ async function getbyid(req, res) {
 }
 async function deleteUser(req, res) {
     try {
-        await userModel.findByIdAndDelete(req.params.id);
-        res.status(200).send("user deleted")
+
+        const pool = await connectDB();
+
+      await pool.request()
+            .input('userId',req.params.id)
+            .query(`
+                DELETE FROM [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+                WHERE [No_] = @userId
+            `);
+
+       
+       
+
+        res.status(200).json({
+            error: false,
+            success: true,
+            message: "User supprimé avec succés"
+        });
 
     } catch (err) {
-        res.status(500).json(err);
+        console.error("Erreur dans suppression d' utilisateur:", err);
+        res.status(400).json({
+            message: err.message || err,
+            error: true,
+            success: false
+        });
     }
 }
 
 
 
 
-module.exports = {  SignUp, userVerify, userDetails, SignIn, userLogout, getall, getbyid, updateUser, deleteUser }
+module.exports = {  SignUp, userVerify,getUser, userDetails, SignIn, userLogout, getall, getbyid, updateUser, deleteUser }

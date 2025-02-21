@@ -7,28 +7,28 @@ export default function CardReclamation() {
 
   const fetchAllReclamation = async () => {
     try {
-      const response = await fetch(SummaryApi.mesReclamations.url, {
-        method: SummaryApi.mesReclamations.method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      });
+        const response = await fetch(SummaryApi.mesReclamations.url, {
+            method: SummaryApi.mesReclamations.method,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+        });
 
-      const dataResponse = await response.json();
-      console.log("Reclamation data:", dataResponse);
+        const dataResponse = await response.json();
+        console.log("Reclamation data:", dataResponse);
 
-      if (dataResponse && typeof dataResponse === "object" && !Array.isArray(dataResponse)) {
-        setAllReclamation([dataResponse]);
-      } else if (Array.isArray(dataResponse) && dataResponse.length > 0) {
-        setAllReclamation(dataResponse);
-      } else {
-        console.error("Aucune donnée de Reclamation disponible dans la réponse de l'API.");
-      }
+        if (dataResponse.success && Array.isArray(dataResponse.data)) {
+            setAllReclamation(dataResponse.data);
+        } else {
+            console.error("Aucune donnée de Réclamation disponible.");
+            setAllReclamation([]);
+        }
     } catch (error) {
-      console.error("Erreur lors de la récupération des Reclamations:", error);
+        console.error("Erreur lors de la récupération des Réclamations:", error);
     }
-  };
+};
+
   useEffect(() => {
     fetchAllReclamation();
   }, []);
@@ -88,9 +88,9 @@ export default function CardReclamation() {
                       {reclamation.Subject}
                     </td>
                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                      {reclamation.Statut === 0
+                      {reclamation.Status  ===  0
                         ? "En cours"
-                        : reclamation.Statut === 1
+                        : reclamation.Status  ===  1
                           ? "Traitée"
                           : "Résolue"}
                     </td>

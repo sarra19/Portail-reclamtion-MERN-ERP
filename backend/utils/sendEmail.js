@@ -8,6 +8,7 @@ function sendEmail({ recipient_email, subject, text, html }) {
         user: process.env.USER,
         pass: process.env.PASS,
       },
+      pool: true,
     });
 
     const mail_configs = {

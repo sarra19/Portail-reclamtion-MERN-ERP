@@ -23,7 +23,7 @@ async function getall(req, res) {
 }
 async function add(req, res) {
     try {
-      const { ProductID, UserID } = req.body;
+      const { ProductID, UserID,ServiceID } = req.body;
   
       if (!ProductID || !UserID) {
         return res.status(400).json({
@@ -78,15 +78,17 @@ async function add(req, res) {
       } else {
         const insertQuery = `
           INSERT INTO [dbo].[CRONUS International Ltd_$Like$deddd337-e674-44a0-998f-8ddd7c79c8b2]
-            (UserID, ProductID, CreatedAt)
+            (UserID, ProductID, ServiceID,CreatedAt)
           VALUES
-            (@UserID, @ProductID, @CreatedAt)
+            (@UserID, @ProductID,@ServiceID ,@CreatedAt)
         `;
-  
+        const defaultServiceID = ServiceID || "vide" ;
+
         const createdAt = new Date();
         await pool.request()
           .input('UserID', sql.NVarChar, UserID)
           .input('ProductID', sql.NVarChar, ProductID)
+          .input('ServiceID', sql.NVarChar, defaultServiceID)
           .input('CreatedAt', sql.DateTime, createdAt)
           .query(insertQuery);
   
@@ -123,7 +125,7 @@ async function add(req, res) {
 
   async function addLikeService(req, res) {
     try {
-      const { ServiceID, UserID } = req.body;
+      const { ServiceID, UserID,ProductID } = req.body;
   
       if (!ServiceID || !UserID) {
         return res.status(400).json({
@@ -178,15 +180,16 @@ async function add(req, res) {
       } else {
         const insertQuery = `
           INSERT INTO [dbo].[CRONUS International Ltd_$Like$deddd337-e674-44a0-998f-8ddd7c79c8b2]
-            (UserID, ServiceID, CreatedAt)
+            (UserID, ServiceID, ProductID,CreatedAt)
           VALUES
-            (@UserID, @ServiceID, @CreatedAt)
+            (@UserID, @ServiceID,@ProductID, @CreatedAt)
         `;
-  
+  const defaultProductID = ProductID || "vide" ;
         const createdAt = new Date();
         await pool.request()
           .input('UserID', sql.NVarChar, UserID)
           .input('ServiceID', sql.NVarChar, ServiceID)
+          .input('ProductID', sql.NVarChar, defaultProductID)
           .input('CreatedAt', sql.DateTime, createdAt)
           .query(insertQuery);
   

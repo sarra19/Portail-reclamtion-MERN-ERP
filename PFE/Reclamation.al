@@ -34,7 +34,7 @@ table 50111 "Reclamation"
             NotBlank = false;
         }
         field(8; "VoiceNote"; Text[255])
-        {        }
+        { }
         field(9; "Status"; Option)
         {
             OptionMembers = in_progress,processed,resolved;
@@ -52,6 +52,9 @@ table 50111 "Reclamation"
         field(12; "ProductId"; Text[50])
         {
             NotBlank = false;
+        }
+        field(13; "CreatedAt"; Text[50])
+        {
         }
     }
     keys

@@ -18,7 +18,7 @@ const SummaryApi = {
         method: 'get'
     },
     allUser: {
-        url: `${backendDomin}/all-user`,
+        url: `${backendDomin}/getAllUser`,
         method: 'get'
     },
     getUser: {
@@ -29,14 +29,11 @@ const SummaryApi = {
         url: `${backendDomin}/update-user`,
         method: "post"
     },
-    delete_user: {
-        url: `${backendDomin}/delete-user`,
+    deleteUser: {
+        url: `${backendDomin}/deleteUser`,
         method: 'DELETE'
     },
-    allService: {
-        url: `${backendDomin}/getAllService`,
-        method: 'get'
-    },
+ 
     serviceDetails: {
         url: `${backendDomin}/getServiceDetails`,
         method: "get"
@@ -44,6 +41,10 @@ const SummaryApi = {
     AddReclamation: {
         url: `${backendDomin}/addReclamation`,
         method: "post"
+    },
+    getAllReclamation: {
+        url: `${backendDomin}/getAllReclamation`,
+        method: "get"
     },
     allProduit: {
         url: `${backendDomin}/getAllProduit`,
@@ -68,7 +69,7 @@ const SummaryApi = {
     getAllCommentaire: {
         url: `${backendDomin}/getAllCommentaire`,
         method: 'get'
-    }, 
+    },
     getCommentsByService: {
         url: `${backendDomin}/getCommentsByService`,
         method: 'get'
@@ -81,7 +82,7 @@ const SummaryApi = {
         url: `${backendDomin}/addLike`,
         method: 'post'
     },
-    addLikeService :{
+    addLikeService: {
         url: `${backendDomin}/addLikeService`,
         method: 'post'
     },
@@ -96,10 +97,25 @@ const SummaryApi = {
     DeleteLikeProduct: {
         url: `${backendDomin}/DeleteLikeProduct`,
         method: 'put'
-    }, 
+    },
     deleteComment: {
         url: `${backendDomin}/deleteComment`,
         method: 'delete'
+    },
+
+    //réponse
+
+    addReponse: {
+        url: `${backendDomin}/addReponse`,
+        method: 'post'
+    },
+    detailsReclamation: {
+        url: `${backendDomin}/detailsReclamation`,
+        method: 'get'
+    },
+    allService: {
+        url: `${backendDomin}/getAllService`,
+        method: 'get'
     },
 
 

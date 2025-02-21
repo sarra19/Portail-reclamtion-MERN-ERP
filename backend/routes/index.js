@@ -100,6 +100,7 @@ router.get("/getReclamation/:id",réclamationController.getbyid)
 router.get("/mesReclamations",authToken,réclamationController.mesReclamations)
 router.put('/updateReclamation/:id',réclamationController.updateRéclamation);
 router.delete('/deleteReclamation/:id',réclamationController.deleteRéclamation);
+router.get("/detailsReclamation/:id",réclamationController.detailsReclamation)
 
 //Remboursement
 router.post("/addRemboursement",remboursementController.add)
@@ -109,7 +110,7 @@ router.put('/updateRemboursement/:id',remboursementController.updateRemboursemen
 router.delete('/deleteRemboursement/:id',remboursementController.deleteRemboursement);
 
 //Réponse
-router.post("/addReponse",réponseController.add)
+router.post("/addReponse",authToken,réponseController.add)
 router.get("/getAllReponse",réponseController.getall)
 router.get("/getReponse/:id",réponseController.getbyid)
 router.put('/updateReponse/:id',réponseController.updateRéponse);
@@ -126,6 +127,7 @@ router.get("/getUser/:id",userController.getbyid)
 router.get("/user-details",authToken,userController.userDetails)
 router.put('/updateUser/:id',userController.updateUser);
 router.delete('/deleteUser/:id',userController.deleteUser);
+router.get("/getUser",userController.getUser)
 
 
 
