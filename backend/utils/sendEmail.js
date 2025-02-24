@@ -1,12 +1,14 @@
 const nodemailer = require("nodemailer");
 
 function sendEmail({ recipient_email, subject, text, html }) {
+  console.log("User:", process.env.USER);
+  console.log("App Password:", process.env.APP_PASSWORD);
   return new Promise((resolve, reject) => {
     const transporter = nodemailer.createTransport({
       service: process.env.SERVICE || "gmail",
       auth: {
         user: process.env.USER,
-        pass: process.env.PASS,
+        pass: process.env.APP_PASSWORD, // Use the app password here
       },
       pool: true,
     });
@@ -15,8 +17,8 @@ function sendEmail({ recipient_email, subject, text, html }) {
       from: process.env.USER,
       to: recipient_email,
       subject: subject,
-      text: text,  
-      html: html,  
+      text: text,
+      html: html,
     };
 
     transporter.sendMail(mail_configs, (error, info) => {

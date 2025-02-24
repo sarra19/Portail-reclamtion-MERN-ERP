@@ -99,8 +99,8 @@ if (ProfileImage.length > 40000) { // Si la taille dépasse 1000 caractères
         const token = jwt.sign(tokenData, process.env.TOKEN_SECRET_KEY, { expiresIn: "1h" });
 
         const insertUserQuery = `
-            INSERT INTO [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2] (No_, Email, Password, FirstName, LastName, Role,Verified, ProfileImage,Secret)
-            VALUES (@No_, @Email, @Password, @FirstName, @LastName, @Role,@Verified,@ProfileImage, @Secret)
+            INSERT INTO [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2] (No_, Email, Password, FirstName, LastName, Role,Verified, ProfileImage,Secret,City,PostalCode,Biography,Phone,Gender,Country,Address,OccupationUser,CompagnyUser)
+            VALUES (@No_, @Email, @Password, @FirstName, @LastName, @Role,@Verified,@ProfileImage, @Secret,@City,@PostalCode,@Biography,@Phone,@Gender,@Country,@Address,@OccupationUser,@CompagnyUser)
         `;
         await pool.request()
             .input('No_', sql.NVarChar, No_)
@@ -112,6 +112,18 @@ if (ProfileImage.length > 40000) { // Si la taille dépasse 1000 caractères
             .input('Verified', sql.Int, 0)
             .input('ProfileImage', sql.NVarChar, ProfileImage)
             .input('Secret', sql.NVarChar, token)
+            .input('City', sql.NVarChar, '')
+            .input('PostalCode', sql.NVarChar, '')
+            .input('Biography', sql.NVarChar, '')
+            .input('Phone', sql.NVarChar, '')
+            .input('Gender', sql.NVarChar, '')
+            .input('Country', sql.NVarChar, '')
+            .input('Address', sql.NVarChar, '')
+            .input('OccupationUser', sql.NVarChar, '')
+            .input('CompagnyUser', sql.NVarChar, '')
+
+
+
             .query(insertUserQuery);
 
 
@@ -274,7 +286,7 @@ async function getUser(req, res) {
         const pool = await connectDB();
 
         const result = await pool.request()
-            .input('userId', req.userId)
+            .input('userId', req.params.id)
             .query(`
                 SELECT 
                    *
@@ -309,6 +321,70 @@ async function getUser(req, res) {
         });
     }
 }
+async function getUserByReclamationId(req, res) {
+    try {
+      const reclamationId = req.params.id; // Get the reclamation ID from request parameters
+  
+      const pool = await connectDB(); // Establish DB connection
+  
+      // Get the reclamation details
+      const reclamationResult = await pool.request()
+        .input('reclamationId', reclamationId)
+        .query(`
+          SELECT UserId
+          FROM [dbo].[CRONUS International Ltd_$Reclamation$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+          WHERE [No_] = @reclamationId
+        `);
+  
+      if (reclamationResult.recordset.length === 0) {
+        return res.status(404).json({
+          message: "Reclamation not found",
+          error: true,
+          success: false,
+        });
+      }
+  
+      const reclamation = reclamationResult.recordset[0]; // Reclamation details
+      const userIdRec = reclamation.UserId; // Get the associated UserId
+  
+      if (!userIdRec) {
+        return res.status(400).json({
+          message: "UserId is missing in the reclamation data",
+          error: true,
+          success: false,
+        });
+      }
+  
+      // Get the user details associated with the reclamation
+      const userResult = await pool.request()
+        .input('userId', userIdRec)
+        .query(`
+          SELECT FirstName, LastName
+          FROM [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+          WHERE [No_] = @userId
+        `);
+  
+      if (userResult.recordset.length === 0) {
+        return res.status(404).json({
+          message: "User not found",
+          error: true,
+          success: false,
+        });
+      }
+  
+    
+      // Return both reclamation and user details
+      res.status(200).json({ data: userResult.recordset[0] });
+
+    } catch (err) {
+      console.error("Error in getUserByReclamationId:", err); // Log error for debugging
+      res.status(500).json({
+        message: err.message || "Internal server error",
+        error: true,
+        success: false
+      });
+    }
+  }
 
 
 async function userDetails(req, res) {
@@ -439,4 +515,4 @@ async function deleteUser(req, res) {
 
 
 
-module.exports = {  SignUp, userVerify,getUser, userDetails, SignIn, userLogout, getall, getbyid, updateUser, deleteUser }
+module.exports = {  SignUp, userVerify,getUserByReclamationId,getUser, userDetails, SignIn, userLogout, getall, getbyid, updateUser, deleteUser }

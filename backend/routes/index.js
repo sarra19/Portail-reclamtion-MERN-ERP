@@ -123,11 +123,12 @@ router.post("/signin",userController.SignIn)
 router.get("/userLogout",userController.userLogout)
 
 router.get("/getAllUser",userController.getall)
-router.get("/getUser/:id",userController.getbyid)
 router.get("/user-details",authToken,userController.userDetails)
 router.put('/updateUser/:id',userController.updateUser);
 router.delete('/deleteUser/:id',userController.deleteUser);
-router.get("/getUser",userController.getUser)
+router.get("/getUser/:id",userController.getUser)
+router.get("/getUserByReclamationId/:id",userController.getUserByReclamationId)
+
 
 
 

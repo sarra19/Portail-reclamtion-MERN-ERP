@@ -1,4 +1,4 @@
-table 50114 "ReponseReclamation"
+table 50114 "ResponseReclamation"
 {
     DataClassification = ToBeClassified;
 
@@ -12,7 +12,6 @@ table 50114 "ReponseReclamation"
         {
             NotBlank = true;
         }
-
         field(3; "AttachedFile"; Text[255])
         {
             NotBlank = false;
@@ -27,20 +26,17 @@ table 50114 "ReponseReclamation"
         }
         field(6; "ServiceSup"; Option)
         {
-            OptionMembers = NULL,Remboursement,Intervention;
+            OptionMembers = " ","Remboursement","Intervention","Deux";
         }
         field(7; "ReclamationId"; Text[50])
         { }
-        // field(8; "RemboursementId"; Text[50])
-        // { }
-        // field(9; "InterventionId"; Text[50])
-        // { }
     }
+
     keys
     {
-        key(MyKey; "No_")
+        key(PK; "No_")
         {
-
+            Clustered = true;
         }
     }
 }

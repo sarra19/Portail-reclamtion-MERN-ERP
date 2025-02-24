@@ -1,7 +1,6 @@
 const réponseModel = require("../models/réponseModel");
 const { sql, connectDB } = require("../config/dbConfig")
 
-
 async function add(req, res) {
     try {
         const userId = req.userId;
@@ -9,20 +8,52 @@ async function add(req, res) {
             return res.status(401).json({ message: "Utilisateur non authentifié" });
         }
 
-        const { Subject, AttachedFile, Content, ReclamationId, ServiceSup } = req.body;
-
+        const {
+            Subject,
+            AttachedFile,
+            Content,
+            ReclamationId,
+            ServiceSup,
+            Montant,
+            DatePrevu,
+            TechnicienResponsable,
+            DatePrevuInterv,
+          } = req.body;
+          
+          console.log("Données reçues :", {
+            Subject,
+            AttachedFile,
+            Content,
+            ReclamationId,
+            ServiceSup,
+            Montant,
+            DatePrevu,
+            TechnicienResponsable,
+            DatePrevuInterv,
+          });
+        // Validation des champs obligatoires
         if (!Subject || !Content || !ReclamationId) {
             return res.status(400).json({ message: "Tous les champs obligatoires doivent être remplis." });
         }
 
+        console.log("sevice sup :" , ServiceSup)
+        console.log("Montant sup :" , Montant)
+        console.log("date sup :" , DatePrevu)
+        // Déterminer la valeur de ServiceSup
+
+        
+        
+        console.log("DatePrevuInterv :", DatePrevuInterv);
+        console.log("TechnicienResponsable:", TechnicienResponsable);
+
         const pool = await connectDB();
 
         // Vérifier si l'utilisateur a déjà répondu à cette réclamation
-        const checkQuery = `
-            SELECT COUNT(*) AS count 
-            FROM [dbo].[CRONUS International Ltd_$ReponseReclamation$deddd337-e674-44a0-998f-8ddd7c79c8b2] 
-            WHERE UserId = @UserId AND ReclamationId = @ReclamationId
-        `;
+        const checkQuery = 
+           ` SELECT COUNT(*) AS count 
+            FROM [dbo].[CRONUS International Ltd_$ResponseReclamation$deddd337-e674-44a0-998f-8ddd7c79c8b2] 
+            WHERE UserId = @UserId AND ReclamationId = @ReclamationId`
+        ;
 
         const checkResult = await pool.request()
             .input('UserId', sql.NVarChar, userId)
@@ -38,22 +69,66 @@ async function add(req, res) {
         }
 
         // Insérer la réponse
-        const query = `
-            INSERT INTO [dbo].[CRONUS International Ltd_$ReponseReclamation$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+        const query = 
+           ` INSERT INTO [dbo].[CRONUS International Ltd_$ResponseReclamation$deddd337-e674-44a0-998f-8ddd7c79c8b2]
             ([Subject], [AttachedFile], [Content], [UserId], [ServiceSup], [ReclamationId])
+            OUTPUT INSERTED.No_
             VALUES 
-            (@Subject, @AttachedFile, @Content, @UserId, @ServiceSup, @ReclamationId)
-        `;
-        const defaultAttachedFile= AttachedFile || "vide"
+            (@Subject, @AttachedFile, @Content, @UserId, @ServiceSup, @ReclamationId)`
+        ;
 
-        await pool.request()
+        const defaultAttachedFile = AttachedFile || "vide";
+        const result = await pool.request()
             .input('Subject', sql.NVarChar, Subject)
             .input('AttachedFile', sql.NVarChar, defaultAttachedFile)
             .input('Content', sql.NVarChar, Content)
             .input('UserId', sql.NVarChar, userId)
-            .input('ServiceSup', sql.Int, ServiceSup || 0)
+            .input('ServiceSup', sql.Int, ServiceSup)
             .input('ReclamationId', sql.NVarChar, ReclamationId)
             .query(query);
+
+        const responseId = result.recordset[0].No_;
+
+        // Gestion des services supplémentaires
+        if (ServiceSup === 1 || ServiceSup===3) {
+            // Validation des champs pour le remboursement
+            if (!Montant || !DatePrevu) {
+                return res.status(400).json({ message: "Les champs Montant et DatePrevu sont obligatoires pour un remboursement." });
+            }
+
+            const remboursementQuery = 
+               ` INSERT INTO [dbo].[CRONUS International Ltd_$Payback$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+                ([Montant], [DatePrevu], [ReponseId])
+                VALUES 
+                (@Montant, @DatePrevu, @ReponseId)`
+            ;
+            await pool.request()
+                .input('Montant', sql.Decimal, Montant)
+                .input('DatePrevu', sql.Date, DatePrevu)
+                .input('ReponseId', sql.Int, responseId)
+                .query(remboursementQuery);
+        }
+
+        if (ServiceSup === 2 || ServiceSup===3) {
+            // Validation des champs pour l'intervention
+            if (!DatePrevuInterv || !TechnicienResponsable) {
+                return res.status(400).json({ message: "Les champs DatePrevuInterv et TechnicienResponsable sont obligatoires pour une intervention." });
+            }
+           
+
+            
+            const interventionQuery = 
+                `INSERT INTO [dbo].[CRONUS International Ltd_$Intervention$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+                ([DatePrevuInterv], [TechnicienResponsable], [ReponseId])
+                VALUES 
+                (@DatePrevuInterv, @TechnicienResponsable, @ReponseId)`
+            ;
+            await pool.request()
+                .input('DatePrevuInterv', sql.Date, DatePrevuInterv)
+                .input('TechnicienResponsable', sql.NVarChar, TechnicienResponsable)
+                .input('ReponseId', sql.Int, responseId)
+                .query(interventionQuery);
+        }
 
         res.status(201).json({
             success: true,
@@ -71,8 +146,6 @@ async function add(req, res) {
         });
     }
 }
-
-
 
 async function getall(req, res) {
     try {

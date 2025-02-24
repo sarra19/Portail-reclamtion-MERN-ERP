@@ -25,6 +25,10 @@ const SummaryApi = {
         url: `${backendDomin}/getUser`,
         method: 'get'
     },
+    getUserByReclamationId: {
+        url: `${backendDomin}/getUserByReclamationId`,
+        method: 'get'
+    },
     updateUser: {
         url: `${backendDomin}/update-user`,
         method: "post"
