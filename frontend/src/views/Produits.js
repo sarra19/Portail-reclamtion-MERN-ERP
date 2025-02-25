@@ -4,14 +4,34 @@ import HeaderAuth from "components/Header/HeaderAuth";
 import React, { useState, useEffect } from "react";
 import SummaryApi from '../common';
 import { useSelector } from 'react-redux';
+import { toast, ToastContainer } from "react-toastify";
+import Cookies from "js-cookie";
+
 
 export default function Produits() {
   const [allProduit, setAllProduit] = useState([]);
-  const user = useSelector(state => state?.user?.user);
 
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
+
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await fetch(SummaryApi.current_user.url, {
+        method: SummaryApi.current_user.method,
+        credentials: "include",
+      });
+      const result = await response.json();
+      if (result.success) {
+        setCurrentUser(result.data);
+      } else {
+        console.log(result.message);
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+      toast.error("Failed to fetch user details.");
+    }
+  };
+
 
   const fetchAllProduit = async () => {
     try {
@@ -35,16 +55,41 @@ export default function Produits() {
     }
   };
 
+  const handleReclamerClick = async (produitNo, e) => {
+    e.preventDefault(); // Empêcher le comportement par défaut du lien
+
+    try {
+
+      if (!currentUser) {
+        toast.error("Veuillez vous connecter...!");
+        return;
+
+
+      } else {
+        console.log("Utilisateur connecté, redirection..."); // Log pour déboguer
+        window.location.href = `/Envoyer-réclamation-produit/${produitNo}`; // Rediriger vers la page de réclamation
+      }
+    } catch (error) {
+      console.error("Erreur lors de la vérification de l'état de connexion :", error);
+      toast.error("Une erreur s'est produite. Veuillez réessayer.", {
+        position: "top-center",
+      });
+    }
+  };
+
   useEffect(() => {
     fetchAllProduit();
-  }, []);
+    fetchCurrentUser();
 
+  }, []);
   return (
     <>
       <HeaderAuth fixed />
       <IndexNavbar fixed />
       <main>
         <div className="relative pt-16 pb-32 flex content-center items-center justify-center min-h-screen-75">
+          <ToastContainer position='top-center' />
+
           <img
             alt="..."
             className="absolute top-0 w-full h-full bg-center bg-cover"
@@ -72,10 +117,10 @@ export default function Produits() {
                     <div className="hover:-mt-4 relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg bg-bleu-dys ease-linear transition-all duration-150">
                       <img
                         alt={produit.Name}
-                        src={require(`assets/img/${produit.Image}`)} 
+                        src={require(`assets/img/${produit.Image}`)}
                         className="w-full align-middle"
                       />
-                         {/* <img
+                      {/* <img
                     alt="..."
                     src={require("assets/img/power.jpg")}
                     className="w-full align-middle"
@@ -90,12 +135,27 @@ export default function Produits() {
                         >
                           En Savoir plus <i className="fa fa-angle-double-right ml-1 leading-relaxed"></i>
                         </a>
-                        <a
-                          href={`/Envoyer-réclamation-produit/${produit.No_}`}
-                          className="flex justify-center inline-block font-semibold mt-4 px-12 py-3 text-white bg-orange-dys shadow hover:bg-orange-600 transition duration-150 ease-in-out"
-                        >
-                          Réclamer
-                        </a>
+                        {currentUser?.Role !== 0 ? (
+                          <div
+                            className="flex justify-center font-bold mt-4 px-12 py-3 text-white bg-orange-dys shadow hover:bg-orange-600 active:bg-orange-700 transition duration-150 ease-in-out cursor-pointer"
+                            onClick={(e) => handleReclamerClick(produit.No_, e)}
+                          >
+                            <button className="w-full h-full font-bold focus:outline-none">
+                              Réclamer le produit
+                            </button>
+                          </div>
+                        ) : (
+                          <div
+                            className="flex justify-center font-bold mt-4 px-12 py-3 text-white bg-orange-dys shadow hover:bg-orange-600 active:bg-orange-700 transition duration-150 ease-in-out cursor-pointer"
+                            onClick={(e) => handleReclamerClick(produit.No_, e)}
+                          >
+                            <button className="w-full h-full font-bold focus:outline-none">
+                              Réclamer le fournisseur
+                            </button>
+                          </div>
+                        )}
+
+
                       </blockquote>
                     </div>
                   </div>

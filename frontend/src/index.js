@@ -46,6 +46,7 @@ const App = () => {
     }
   }, [dispatch]); // ✅ Only depends on `dispatch`
 
+  
   useEffect(() => {
     fetchUserDetails(); 
   }, [fetchUserDetails]); // ✅ Now stable across renders
@@ -55,6 +56,7 @@ const App = () => {
       <BrowserRouter>
         <Switch>
           <Route path="/admin" component={Admin} />
+
           <Route path="/auth" component={Auth} />
           <Route path="/services" exact component={Service} />
           <Route path="/mes-réclamations" exact component={MesReclamation} />

@@ -25,16 +25,14 @@ const router = createBrowserRouter([
       },
       {
         path: '/admin',
-        element: <Admin />, // Admin layout
+        element: <Admin />,
         children: [
-          // Add nested routes for the Admin layout here if needed
         ],
       },
       {
         path: '/auth',
-        element: <Auth />, // Auth layout
+        element: <Auth />, 
         children: [
-          // Add nested routes for the Auth layout here if needed
         ],
       },
       {
@@ -77,7 +75,6 @@ const router = createBrowserRouter([
         path: '/profile',
         element: <Profile />,
       },
-      // Redirect for unknown routes
       
     ],
   },

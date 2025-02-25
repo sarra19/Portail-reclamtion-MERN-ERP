@@ -20,7 +20,7 @@ export default function Profile() {
       if (result.success) {
         setCurrentUser(result.data);
       } else {
-        toast.error(result.message);
+        console.log(result.message);
       }
     } catch (error) {
       console.error("Error fetching user details:", error);

@@ -121,7 +121,6 @@ router.post("/signup",userController.SignUp)
 router.get("/:id/verify/:token/", userController.userVerify)
 router.post("/signin",userController.SignIn)
 router.get("/userLogout",userController.userLogout)
-
 router.get("/getAllUser",userController.getall)
 router.get("/user-details",authToken,userController.userDetails)
 router.put('/updateUser/:id',userController.updateUser);

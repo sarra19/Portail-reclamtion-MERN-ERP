@@ -20,7 +20,6 @@ export default function CardDétailsServiceFront() {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Fonction pour récupérer l'utilisateur actuel
   const fetchCurrentUser = async () => {
     try {
       const response = await fetch(SummaryApi.current_user.url, {
@@ -31,7 +30,7 @@ export default function CardDétailsServiceFront() {
       if (result.success) {
         setCurrentUser(result.data);
       } else {
-        toast.error(result.message);
+        console.log(result.message);
       }
     } catch (error) {
       console.error("Error fetching user details:", error);
@@ -39,7 +38,6 @@ export default function CardDétailsServiceFront() {
     }
   };
 
-  // Fonction pour récupérer le statut "J'aime"
   const fetchLikeStatus = async () => {
     if (!currentUser) return;
 
@@ -61,12 +59,11 @@ export default function CardDétailsServiceFront() {
     }
   };
 
-  // Fonction pour gérer le clic sur "J'aime"
   const handleLike = async () => {
-    if (!currentUser) {
-      toast.error("You must be logged in to like a service.");
-      return;
-    }
+ if (!currentUser) {
+       toast.error("Veuillez vous connecter...!");
+       return;
+     }
 
     try {
       const response = await fetch(SummaryApi.addLikeService.url, {
@@ -96,7 +93,6 @@ export default function CardDétailsServiceFront() {
     }
   };
 
-  // Fonction pour gérer le changement de fichier
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) {
@@ -131,15 +127,13 @@ export default function CardDétailsServiceFront() {
     toast.success("File selected successfully!");
   };
 
-  // Fonction pour ajouter un commentaire
   const handleAddComment = async (e) => {
     e.preventDefault();
-    if (newComment.trim() === "" && data.AttachedFile.length === 0) return;
-
     if (!currentUser) {
-      toast.error("Vous devez être connecté pour ajouter un commentaire.");
-      return;
-    }
+          toast.error("Veuillez vous connecter...!");
+          return;
+        }
+    if (newComment.trim() === "" && data.AttachedFile.length === 0) return;
 
     const formData = {
       Content: newComment,
@@ -192,7 +186,6 @@ export default function CardDétailsServiceFront() {
     }
   };
 
-  // Fonction pour formater la date
   function timeAgo(createdAt) {
     const now = new Date();
     const past = new Date(createdAt);
@@ -237,7 +230,6 @@ export default function CardDétailsServiceFront() {
     }
   };
 
-  // Effet pour charger les commentaires et les détails du service
   useEffect(() => {
     const fetchComments = async () => {
       try {
@@ -276,19 +268,16 @@ export default function CardDétailsServiceFront() {
     fetchComments();
   }, [id]);
 
-  // Effet pour charger le statut "J'aime" lorsque l'utilisateur est connecté
   useEffect(() => {
     if (currentUser) {
       fetchLikeStatus();
     }
   }, [currentUser]);
 
-  // Fonction pour basculer l'affichage des commentaires
   const toggleComments = () => {
     setShowComments(!showComments);
   };
 
-  // Fonction pour gérer le clic sur un emoji
   const handleEmojiClick = (emojiObject) => {
     setNewComment(newComment + emojiObject.emoji);
     setShowEmojiPicker(false);

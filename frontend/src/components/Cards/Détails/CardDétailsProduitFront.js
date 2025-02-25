@@ -81,7 +81,7 @@ export default function CardDétailsProduitFront() {
       if (result.success) {
         setCurrentUser(result.data);
       } else {
-        toast.error(result.message);
+        console.log(result.message);
       }
     } catch (error) {
       console.error("Error fetching user details:", error);
@@ -136,13 +136,13 @@ export default function CardDétailsProduitFront() {
   const handleAddComment = async (e) => {
     e.preventDefault();
 
-    if (newComment.trim() === "") {
-      toast.error("Le commentaire ne peut pas être vide.");
+    if (!currentUser) {
+      toast.error("Veuillez vous connecter...!");
       return;
     }
 
-    if (!currentUser) {
-      toast.error("Vous devez être connecté pour ajouter un commentaire.");
+    if (newComment.trim() === "") {
+      toast.error("Le commentaire ne peut pas être vide.");
       return;
     }
 
@@ -220,7 +220,7 @@ export default function CardDétailsProduitFront() {
 
   const handleLike = async () => {
     if (!currentUser) {
-      toast.error("You must be logged in to like a product.");
+      toast.error("Veuillez vous connecter...!");
       return;
     }
 

@@ -1,17 +1,45 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import IndexNavbar from "components/Navbars/IndexNavbar.js";
 import Footer from "components/Footers/Footer.js";
 import CardReclamation from "components/Cards/CardReclamtion";
 import HeaderAuth from "components/Header/HeaderAuth";
+import CardReclamationAdmin from "components/Cards/CardReclamtionAdmin";
+import { toast, ToastContainer } from "react-toastify";
+import SummaryApi from "common";
 
 export default function MesReclamation() {
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await fetch(SummaryApi.current_user.url, {
+        method: SummaryApi.current_user.method,
+        credentials: "include",
+      });
+      const result = await response.json();
+      if (result.success) {
+        setCurrentUser(result.data);
+      } else {
+        console.log(result.message);
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+      toast.error("Failed to fetch user details.");
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentUser();
+  }, []);
   return (
     <>
-            <HeaderAuth fixed />
-    
-      <IndexNavbar  />
+      <HeaderAuth fixed />
+
+      <IndexNavbar />
       <main className="profile-page">
+        <ToastContainer position='top-center' />
+
         <div className="relative  pt-16 pb-32 flex content-center items-center justify-center min-h-screen-75">
           <img
             alt="..."
@@ -68,11 +96,11 @@ export default function MesReclamation() {
         </div>
         <section className="relative py-16 bg-blueGray-200">
           <div className="container mx-auto px-4">
-              <div className="px-6">
-
-              <CardReclamation/>
-              </div>
+            <div className="px-6">
+              {currentUser?.Role !== 0 ? <CardReclamation /> : <CardReclamationAdmin />}
+            </div>
           </div>
+
         </section>
       </main>
       <Footer />

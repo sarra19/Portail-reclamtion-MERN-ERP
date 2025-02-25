@@ -25,7 +25,7 @@ export default function Navbar(props) {
       if (result.success) {
         setCurrentUser(result.data);
       } else {
-        toast.error(result.message);
+        console.log(result.message);
       }
     } catch (error) {
       console.error("Error fetching user details:", error);
@@ -95,7 +95,10 @@ export default function Navbar(props) {
                   Accueil
                 </a>
               </li>
+              {currentUser?.Role !== 0 && (
+
               <li className="flex items-center">
+
                 <a
                   className="hover:text-black text-black px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
                   href="/services"
@@ -103,7 +106,10 @@ export default function Navbar(props) {
                   <i className="text-black text-lg leading-lg mr-2" />{" "}
                   Services
                 </a>
+                 
               </li>
+               )}
+               
               <li className="flex items-center">
                 <a
                   className="hover:text-black text-black px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
@@ -112,16 +118,20 @@ export default function Navbar(props) {
                   <i className="text-black text-lg leading-lg mr-2" />{" "}
                   Produits
                 </a>
+
               </li>
-              <li className="flex items-center">
-                <a
-                  className="hover:text-black text-black px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
-                  href="/mes-réclamations"
-                >
-                  <i className="text-black text-lg leading-lg mr-2" />{" "}
-                  Mes Réclamations
-                </a>
-              </li>
+              {currentUser && (
+                <li className="flex items-center">
+                  <a
+                    className="hover:text-black text-black px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
+                    href="/mes-réclamations"
+                  >
+                    <i className="text-black text-lg leading-lg mr-2" />{" "}
+                    Mes Réclamations
+                  </a>
+                </li>
+              )}
+
 
             </ul>
 
@@ -142,27 +152,40 @@ export default function Navbar(props) {
                       />
                     </div>
                   </form>
-                  <li className="flex items-center">
-                    <a
-                      className="hover:text-black text-black px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
-                      href="/admin/dashboard"
-                    >
-                      <i className="text-black text-lg leading-lg mr-2" />{" "}
-                      Administration
-                    </a>
-                  </li>
-                  <li className="flex items-center">
-                    <a
-                      className="hover:text-black text-black px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
-                      onClick={handleLogout}
-                    >
-                      <i className="text-black fas fa-sign-out-alt text-lg leading-lg " />
-                      <span className="lg:hidden inline-block ml-2">Déconnexion</span>
-                    </a>
-                  </li></ul>
-              </li>
-           
+                  {currentUser?.Role === 0 && (
+                    <li className="flex items-center">
+                      <a
+                        className="hover:text-black text-black px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
+                        href="/admin/dashboard"
+                      >
+                        <i className="text-black text-lg leading-lg mr-2" />{" "}
+                        Administration
+                      </a>
+                    </li>
+                  )}
 
+
+                </ul>
+              </li>
+
+              <li className="flex items-center">
+                {currentUser ? (
+                  <a
+                    className="hover:text-black text-black px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
+                    onClick={handleLogout}
+                  >
+                    <i className="text-black fas fa-sign-out-alt text-lg leading-lg" />
+                    <span className="lg:hidden inline-block ml-2">Déconnexion</span>
+                  </a>
+                ) : (
+
+                  <a href="/auth/login">
+                    <button className="bg-orange-dys text-white px-4 py-2 rounded-md text-xs uppercase font-bold hover:bg-gray-800">
+                      Se connecter
+                    </button>
+                  </a>
+                )}
+              </li>
               <li className="flex items-center">
                 <IndexDropdown />
               </li>
@@ -177,21 +200,20 @@ export default function Navbar(props) {
                 </a>
               </li>
               <li className="flex items-center">
-    <a
-        className="hover:text-black text-black px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
-        href="/profile"
-    >
-        {currentUser?.ProfileImage ? (
-            <img
-                src={currentUser.ProfileImage}
-                alt="User Avatar"
-                className="w-8 h-8 mr-2 rounded-full"
-            />
-        ) : (
-            <i className="text-black fas fa-user text-lg leading-lg" />
-        )}
-    </a>
-</li>
+                <a
+                  className="hover:text-black text-black px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
+                  href="/profile"
+                >
+                  {currentUser && (
+                    <img
+                      src={currentUser.ProfileImage}
+                      alt="User Avatar"
+                      className="w-8 h-8 mr-2 rounded-full"
+                    />
+                  )
+                  }
+                </a>
+              </li>
 
             </ul>
           </div>
