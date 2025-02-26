@@ -161,6 +161,102 @@ if (ProfileImage.length > 40000) { // Si la taille dépasse 1000 caractères
     }
 }
 
+async function updateUser(req, res) {
+    try {
+        const { No_, FirstName, LastName, ProfileImage, City, PostalCode, Biography, Phone, Gender, Country, Address, OccupationUser, CompagnyUser } = req.body;
+
+        // Validate required fields
+        if (!No_) {
+            return res.status(400).json({
+                message: "L'identifiant de l'utilisateur (No_) est requis.",
+                error: true,
+                success: false,
+            });
+        }
+
+        // Check if the ProfileImage is too large
+        if (ProfileImage && ProfileImage.length > 40000) {
+            return res.status(400).json({
+                message: "L'image est trop grande pour être stockée directement dans la base de données.",
+                error: true,
+                success: false,
+            });
+        }
+
+        const pool = await connectDB();
+
+        // Check if the user exists
+        const checkUserQuery = `
+            SELECT COUNT(*) AS userCount
+            FROM [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+            WHERE No_ = @No_
+        `;
+        const checkUserResult = await pool.request()
+            .input('No_', sql.NVarChar, No_)
+            .query(checkUserQuery);
+
+        if (checkUserResult.recordset[0].userCount === 0) {
+            return res.status(404).json({
+                message: "Utilisateur non trouvé.",
+                error: true,
+                success: false,
+            });
+        }
+
+        // Update user details
+        const updateUserQuery = `
+            UPDATE [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+            SET 
+                FirstName = @FirstName,
+                LastName = @LastName,
+                ProfileImage = @ProfileImage,
+                City = @City,
+                PostalCode = @PostalCode,
+                Biography = @Biography,
+                Phone = @Phone,
+                Gender = @Gender,
+                Country = @Country,
+                Address = @Address,
+                OccupationUser = @OccupationUser,
+                CompagnyUser = @CompagnyUser,
+                [$systemModifiedAt] = GETDATE() -- Update the modified timestamp
+            WHERE 
+                No_ = @No_
+        `;
+
+        await pool.request()
+            .input('No_', sql.NVarChar, No_)
+            .input('FirstName', sql.NVarChar, FirstName || '')
+            .input('LastName', sql.NVarChar, LastName || '')
+            .input('ProfileImage', sql.NVarChar, ProfileImage || '')
+            .input('City', sql.NVarChar, City || '')
+            .input('PostalCode', sql.NVarChar, PostalCode || '')
+            .input('Biography', sql.NVarChar, Biography || '')
+            .input('Phone', sql.NVarChar, Phone || '')
+            .input('Gender', sql.NVarChar, Gender || '')
+            .input('Country', sql.NVarChar, Country || '')
+            .input('Address', sql.NVarChar, Address || '')
+            .input('OccupationUser', sql.NVarChar, OccupationUser || '')
+            .input('CompagnyUser', sql.NVarChar, CompagnyUser || '')
+            .query(updateUserQuery);
+
+        // Return success response
+        res.status(200).json({
+            data: { No_, FirstName, LastName, ProfileImage, City, PostalCode, Biography, Phone, Gender, Country, Address, OccupationUser, CompagnyUser },
+            success: true,
+            error: false,
+            message: "Utilisateur mis à jour avec succès!",
+        });
+    } catch (err) {
+        console.error("Erreur lors de la mise à jour de l'utilisateur :", err);
+        res.status(500).json({
+            message: err.message || "Erreur interne du serveur",
+            error: true,
+            success: false,
+        });
+    }
+}
+
 
 
 async function userVerify(req, res) {
@@ -464,17 +560,7 @@ async function getall(req, res) {
         res.status(400).json({ error: 'Erreur lors de la récupération des produits', details: err.message });
     }
 }
-async function updateUser(req, res) {
-    try {
-        await userModel.findByIdAndUpdate(
-            req.params.id,
-            req.body);
-        res.status(200).send("data updated")
 
-    } catch (err) {
-        res.status(400).json(err);
-    }
-}
 async function updateUserRole(req, res) {
     const { No_, Role } = req.body; 
     console.log("l id :", No_ )
@@ -501,15 +587,7 @@ async function updateUserRole(req, res) {
     }
 }
 
-async function getbyid(req, res) {
-    try {
-        const data = await userModel.findById(req.params.id);
 
-        res.status(200).send(data)
-    } catch (err) {
-        res.status(400).send(err);
-    }
-}
 
 async function deleteUser(req, res) {
     try {
@@ -541,4 +619,4 @@ async function deleteUser(req, res) {
   
 
 
-module.exports = {  SignUp, userVerify,getUserByReclamationId,getUser, userDetails,updateUserRole, SignIn, userLogout, getall, getbyid, updateUser, deleteUser }
+module.exports = {  SignUp, userVerify,getUserByReclamationId,getUser,updateUser, userDetails,updateUserRole, SignIn, userLogout, getall, deleteUser }

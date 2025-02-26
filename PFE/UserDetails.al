@@ -20,7 +20,7 @@ table 50106 "User_Details"
         { }
         field(140; "Gender"; Text[20])
         { }
-        field(150; "Phone"; BigInteger)
+        field(150; "Phone"; Text[20])
         { }
         field(160; "Role"; Option)
         {

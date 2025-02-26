@@ -34,6 +34,10 @@ const SummaryApi = {
         url: `${backendDomin}/updateUserRole`,
         method: "put"
     },
+    updateUser: {
+        url: `${backendDomin}/updateUser`,
+        method: "put"
+    },
     deleteUser: {
         url: `${backendDomin}/deleteUser`,  // Ensure this is correct
         method: 'DELETE'

@@ -1566,6 +1566,9 @@ select {
 .h-2 {
   height: 0.5rem;
 }
+.h-50 {
+  height: 50%;
+}
 
 .h-5 {
   height: 1.25rem;

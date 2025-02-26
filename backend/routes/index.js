@@ -124,7 +124,7 @@ router.post("/signin",userController.SignIn)
 router.get("/userLogout",userController.userLogout)
 router.get("/getAllUser",userController.getall)
 router.get("/user-details",authToken,userController.userDetails)
-router.put('/updateUser/:id',userController.updateUser);
+router.put('/updateUser',userController.updateUser);
 router.put('/updateUserRole',userController.updateUserRole);
 router.delete('/deleteUser',userController.deleteUser);
 router.get("/getUser/:id",userController.getUser)
