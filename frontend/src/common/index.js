@@ -30,14 +30,15 @@ const SummaryApi = {
         url: `${backendDomin}/getUserByReclamationId`,
         method: 'get'
     },
-    updateUser: {
-        url: `${backendDomin}/update-user`,
-        method: "post"
+    updateUserRole: {
+        url: `${backendDomin}/updateUserRole`,
+        method: "put"
     },
     deleteUser: {
-        url: `${backendDomin}/deleteUser`,
+        url: `${backendDomin}/deleteUser`,  // Ensure this is correct
         method: 'DELETE'
-    },
+      },
+    
  
     serviceDetails: {
         url: `${backendDomin}/getServiceDetails`,
@@ -123,6 +124,15 @@ const SummaryApi = {
         method: 'get'
     },
 
+    //reset
+    sendRecoveryEmail: {
+        url: `${backendDomin}/password-reset/send_recovery_email`,
+        method: 'post'
+    },
+    resetPassword: {
+        url: `${backendDomin}/password-reset/change`,
+        method: 'post'
+    },
 
 }
 

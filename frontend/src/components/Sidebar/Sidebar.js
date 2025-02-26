@@ -19,9 +19,9 @@ export default function Sidebar() {
             <i className="fas fa-bars"></i>
           </button>
           <img
-              src={require("assets/img/logo-dynamix-full.png")}
-              className="w-full"
-            ></img>
+            src={require("assets/img/logo-dynamix-full.png")}
+            className="w-full"
+          ></img>
 
           <ul className="md:hidden items-center flex flex-wrap list-none">
             <li className="inline-block relative">
@@ -204,32 +204,46 @@ export default function Sidebar() {
                   Interventions
                 </Link>
               </li>
-              
+
               <li className="items-center">
                 <Link
-                  className={
-                    "text-xs uppercase py-3 font-bold block " +
-                    (window.location.href.indexOf("/admin/historique") !== -1
-                      ? "text-blueGray-700 hover:text-blueGray-500"
-                      : "text-blueGray-700 hover:text-blueGray-500")
-                  }
+                  className={`text-xs uppercase py-3 font-bold block ${window.location.pathname === "/admin/historique"
+                      ? "text-blueGray-700 opacity-75"
+                      : "text-blueGray-500 hover:text-blueGray-700"
+                    }`}
                   to="/admin/historique"
                 >
                   <i
-                    className={
-                      "fas fa-history mr-2 text-sm " +
-                      (window.location.href.indexOf("/admin/historique") !== -1
+                    className={`fas fa-history mr-2 text-sm ${window.location.pathname === "/admin/historique"
                         ? "opacity-75"
-                        : "text-blueGray-300")
-                    }
+                        : "text-blueGray-300"
+                      }`}
                   ></i>{" "}
                   Historique d'Activités
                 </Link>
               </li>
+              <li className="items-center">
+                <Link
+                  className={`text-xs uppercase py-3 font-bold block ${window.location.pathname === "/"
+                      ? "text-blueGray-700 opacity-75"
+                      : "text-blueGray-500 hover:text-blueGray-700"
+                    }`}
+                  to="/"
+                >
+                  <i
+                    className={`fas fa-home mr-2 text-sm ${window.location.pathname === "/"
+                        ? "opacity-75"
+                        : "text-blueGray-300"
+                      }`}
+                  ></i>{" "}
+                  Page d'accueil
+                </Link>
+              </li>
+
             </ul>
 
             <hr className="my-4 md:min-w-full" />
-           
+
             <ul className="md:flex-col md:min-w-full flex flex-col list-none md:mb-4">
               <li className="items-center">
                 <Link
@@ -241,10 +255,10 @@ export default function Sidebar() {
                 </Link>
               </li>
 
-              
+
             </ul>
 
-            
+
           </div>
         </div>
       </nav>

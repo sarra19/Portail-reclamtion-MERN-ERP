@@ -2472,6 +2472,10 @@ select {
 .text-yellow-500 {
   color: rgba(234, 179, 8, var(--tw-bg-opacity));
 }
+.text-green-500{
+  --tw-text-opacity: 1;
+  color: #187f37;
+}
 .text-orange-dys {
   --tw-text-opacity: 1;
   color: #f74c27;
@@ -2608,6 +2612,10 @@ select {
 .w-16 {
   width: 4rem;
 }
+.w-32 {
+  width: 30%;
+}
+
 
 .w-auto {
   width: auto;

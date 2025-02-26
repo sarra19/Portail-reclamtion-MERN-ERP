@@ -33,6 +33,8 @@ export default function Auth() {
             <Route path="/auth/otp" exact component={OTPInput} />
             <Route path="/auth/modifierPwd" exact component={ModifierPassword} />
             <Route path="/auth/register" exact component={Register} />
+            <Route path="/auth/reset" exact component={ModifierPassword} />
+            
             <Redirect from="/auth" to="/auth/login" />
           </Switch>
           <FooterSmall absolute />

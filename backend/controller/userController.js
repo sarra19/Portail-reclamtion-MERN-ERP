@@ -475,6 +475,32 @@ async function updateUser(req, res) {
         res.status(400).json(err);
     }
 }
+async function updateUserRole(req, res) {
+    const { No_, Role } = req.body; 
+    console.log("l id :", No_ )
+    console.log("l Role :", Role )
+
+    const query = `
+        UPDATE [Demo Database BC (24-0)].[dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+        SET
+            [Role] = @Role
+        WHERE [No_] = @No_
+    `;
+
+    try {
+        const request = new sql.Request();
+        request.input('Role', sql.Int, Role); 
+        request.input('No_', sql.NVarChar, No_); 
+
+        await request.query(query);
+
+        res.status(200).json({ success: true, message: "User role modifié avec succès" });
+    } catch (err) {
+        console.error(err);
+        res.status(400).json({ success: false, error: "Erreur dans la modification", details: err });
+    }
+}
+
 async function getbyid(req, res) {
     try {
         const data = await userModel.findById(req.params.id);
@@ -484,38 +510,35 @@ async function getbyid(req, res) {
         res.status(400).send(err);
     }
 }
+
 async function deleteUser(req, res) {
     try {
-
-        const pool = await connectDB();
-
+      const pool = await connectDB();
+      const { No_ } = req.body;  // Ensure 'No_' is correct and exists in the table
+        console.log("id :", No_)
+      // Adjust the table name and column as per your DB schema
       await pool.request()
-            .input('userId',req.params.id)
-            .query(`
-                DELETE FROM [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
-                WHERE [No_] = @userId
-            `);
-
-       
-       
-
-        res.status(200).json({
-            error: false,
-            success: true,
-            message: "User supprimé avec succés"
-        });
-
+        .input('No_', No_)
+        .query(`
+          DELETE FROM [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+          WHERE [No_] = @No_
+        `);
+  
+      res.status(200).json({
+        error: false,
+        success: true,
+        message: "User supprimé avec succès"
+      });
     } catch (err) {
-        console.error("Erreur dans suppression d' utilisateur:", err);
-        res.status(400).json({
-            message: err.message || err,
-            error: true,
-            success: false
-        });
+      console.error("Erreur dans suppression d'utilisateur:", err);
+      res.status(400).json({
+        message: err.message || err,
+        error: true,
+        success: false
+      });
     }
-}
+  }
+  
 
 
-
-
-module.exports = {  SignUp, userVerify,getUserByReclamationId,getUser, userDetails, SignIn, userLogout, getall, getbyid, updateUser, deleteUser }
+module.exports = {  SignUp, userVerify,getUserByReclamationId,getUser, userDetails,updateUserRole, SignIn, userLogout, getall, getbyid, updateUser, deleteUser }

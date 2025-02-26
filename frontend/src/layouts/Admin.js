@@ -56,7 +56,7 @@ export default function Admin() {
 
             <Route path="/admin/users" exact component={Users} />
             <Route path="/admin/add-users" exact component={AddUsers} />
-            <Route path="/admin/modify-users" exact component={ModifytUsers} />
+            <Route path="/admin/users/modify-users/:id" exact component={ModifytUsers} />
             <Route path="/admin/delete-users" exact component={AddUsers} />
             <Route path="/admin/details-users" exact component={DetailsUsers} />
 

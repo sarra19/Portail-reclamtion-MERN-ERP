@@ -8,6 +8,7 @@ import SummaryApi from '../../common';
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import UserDropdown from "components/Dropdowns/UserDropdown";
 
 export default function Navbar(props) {
   const history = useHistory();
@@ -200,19 +201,8 @@ export default function Navbar(props) {
                 </a>
               </li>
               <li className="flex items-center">
-                <a
-                  className="hover:text-black text-black px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
-                  href="/profile"
-                >
-                  {currentUser && (
-                    <img
-                      src={currentUser.ProfileImage}
-                      alt="User Avatar"
-                      className="w-8 h-8 mr-2 rounded-full"
-                    />
-                  )
-                  }
-                </a>
+                <UserDropdown />
+              
               </li>
 
             </ul>

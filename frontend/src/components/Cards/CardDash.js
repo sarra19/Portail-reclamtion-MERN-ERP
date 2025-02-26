@@ -14,12 +14,12 @@ export default function CardDash() {
             <h4 className="text-lg font-semibold text-blueGray-700 mb-2">
               Suivi et Résolution Efficace
             </h4>
-            <div className="w-full px-4 flex justify-center">
-              <div className="relative">
+            <div className="w-full px-4 flex justify-center ">
+              <div className="relative mt-6 mb-6 ">
                 <img
                   alt="..."
-                  src={require("assets/img/dash.jpg")}
-                  className="mb-4"
+                  src={require("assets/img/dash1.jpg")}
+                  className="shadow-xl rounded-lg"
                 />
               </div>
             </div>

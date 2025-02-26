@@ -1,19 +1,37 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import SummaryApi from "common";
+import ChangeUserRole from "../Modify/ChangeUserRole";
+import { toast, ToastContainer } from "react-toastify";
 
 // components
 
 
 export default function CardTableUser({ color }) {
   const [allUser, setAllUser] = useState([]);
+
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const handleEdit = (user) => {
+    setSelectedUser(user);
+    setShowModal(true);
+  };
+
+
+  
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`${SummaryApi.deleteUser.url}/${id}`, {
-        method: SummaryApi.deleteUser.method,
+      const response = await fetch(SummaryApi.deleteUser.url, {
+        method: SummaryApi.deleteUser.method, // DELETE is the correct method for deletion
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json"
         },
+        body: JSON.stringify({
+          No_: id  // Pass the correct user identifier (e.g., No_)
+        })
       });
   
       if (!response.ok) {
@@ -21,13 +39,18 @@ export default function CardTableUser({ color }) {
       }
   
       const dataResponse = await response.json();
+      toast.success("Utilisateur supprimé avec succès");
       console.log("User data:", dataResponse);
+      
+      // Optionally, re-fetch the users to update the UI
+      fetchAllUser(); 
   
     } catch (error) {
       console.error("Erreur lors de la suppression de l'utilisateur:", error);
     }
   };
   
+
   const fetchAllUser = async () => {
     try {
       const response = await fetch(SummaryApi.allUser.url, {
@@ -55,6 +78,7 @@ export default function CardTableUser({ color }) {
   }, []);
   return (
     <>
+
       <div
         className={
           "animate-fade-down animate-once animate-duration-[2000ms]  animate-ease-in-out animate-fill-forwards relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded " +
@@ -63,6 +87,8 @@ export default function CardTableUser({ color }) {
         }
       >
         <div className="rounded-t mb-0 px-4 py-3 border-0">
+        <ToastContainer position='top-center' />
+
           <div className="flex flex-wrap items-center">
             <div className="relative w-full px-4 max-w-full flex-grow flex-1">
               <h3
@@ -148,6 +174,7 @@ export default function CardTableUser({ color }) {
                   Email
                 </th>
 
+
                 <th
                   className={
                     "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left " +
@@ -156,28 +183,9 @@ export default function CardTableUser({ color }) {
                       : "bg-lightBlue-800 text-lightBlue-300 border-lightBlue-700")
                   }
                 >
-                  Pays
+                  Role
                 </th>
-                <th
-                  className={
-                    "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left " +
-                    (color === "light"
-                      ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
-                      : "bg-lightBlue-800 text-lightBlue-300 border-lightBlue-700")
-                  }
-                >
-                  Adresse
-                </th>
-                <th
-                  className={
-                    "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left " +
-                    (color === "light"
-                      ? "bg-blueGray-50 text-blueGray-500 border-blueGray-100"
-                      : "bg-lightBlue-800 text-lightBlue-300 border-lightBlue-700")
-                  }
-                >
-                  Télephone
-                </th>
+
                 <th
                   className={
                     "px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left " +
@@ -219,31 +227,29 @@ export default function CardTableUser({ color }) {
                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
                       {user.Email}
                     </td>
-                    <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                      {user.City}
+
+                    <td className="border-t-0 px-6 font-bold  align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                      <span className={user.Role === 0 ? 'text-red-500' : user.Role === 2 ? 'text-green-500' : ''}>
+                        {user.Role === 0 ? 'Admin' : user.Role === 1 ? 'Client' : user.Role === 2 ? 'Fournisseur' : 'Unknown'}
+                      </span>
                     </td>
-                    <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                      {user.Address}
-                    </td>
-                    <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                      {user.Phone}
-                    </td>
+
 
                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
                       <div className="flex">
-                        <a href={`/admin/modify-user/${user.id}`}>
-                          <button className="bg-orange-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-2 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
-                            <i className="fas fa-pen"></i>
-                          </button>
-                        </a>
+                        <button onClick={() => handleEdit(user)}
+                          className="bg-orange-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-2 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
+                          <i className="fas fa-pen"></i>
+                        </button>
+
                         <a href={`/admin/users`}>
-                          <button   onClick={() => handleDelete(user.id)} 
- className="bg-blueGray-dys-2 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-2 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
-                           
-                          <i className="fas fa-trash"></i>
+                          <button onClick={() => handleDelete(user.No_)}
+                            className="bg-blueGray-dys-2 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-2 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
+
+                            <i className="fas fa-trash"></i>
                           </button>
                         </a>
-                        <a href={`/admin/details-user/${user.id}`}>
+                        <a href={`/admin/details-user/${user.No_}`}>
                           <button className="bg-lightBlue-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-2 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
                             <i className="fas fa-eye"></i>
                           </button>
@@ -262,7 +268,18 @@ export default function CardTableUser({ color }) {
             </tbody>
           </table>
         </div>
+        {showModal && selectedUser && (
+          <ChangeUserRole
+            onClose={() => setShowModal(false)}
+            name={selectedUser.FirstName}
+            email={selectedUser.Email}
+            role={selectedUser.Role}
+            userId={selectedUser.No_}
+            callFunc={fetchAllUser}
+          />
+        )}
       </div>
+
     </>
   );
 }

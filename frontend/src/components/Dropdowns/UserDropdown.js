@@ -1,11 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { createPopper } from "@popperjs/core";
+import SummaryApi from "common";
+import {useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const UserDropdown = () => {
   // dropdown props
   const [dropdownPopoverShow, setDropdownPopoverShow] = React.useState(false);
   const btnDropdownRef = React.createRef();
   const popoverDropdownRef = React.createRef();
+  const [currentUser, setCurrentUser] = useState(null);
+  const history = useHistory();
+
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await fetch(SummaryApi.current_user.url, {
+        method: SummaryApi.current_user.method,
+        credentials: "include",
+      });
+      const result = await response.json();
+      if (result.success) {
+        setCurrentUser(result.data);
+      } else {
+        console.log(result.message);
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
   const openDropdownPopover = () => {
     createPopper(btnDropdownRef.current, popoverDropdownRef.current, {
       placement: "bottom-start",
@@ -15,6 +37,38 @@ const UserDropdown = () => {
   const closeDropdownPopover = () => {
     setDropdownPopoverShow(false);
   };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(SummaryApi.deleteUser.url, {
+        method: SummaryApi.deleteUser.method, // DELETE is the correct method for deletion
+        credentials: 'include',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          No_: id  // Pass the correct user identifier (e.g., No_)
+        })
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+  
+      const dataResponse = await response.json();
+      toast.success("Utilisateur supprimé avec succès");
+      console.log("User data:", dataResponse);
+      
+history.push("/auth/login")  
+    } catch (error) {
+      console.error("Erreur lors de la suppression de l'utilisateur:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentUser();
+
+  }, []);
   return (
     <>
       <a
@@ -26,15 +80,19 @@ const UserDropdown = () => {
           dropdownPopoverShow ? closeDropdownPopover() : openDropdownPopover();
         }}
       >
+        {currentUser && (
         <div className="items-center flex">
-          <span className="w-12 h-12 text-sm text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full">
-            <img
+          <span className=" ml-2 w-12 h-12 text-sm text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full">
+           <img
               alt="..."
               className="w-full rounded-full align-middle border-none shadow-lg"
-              src={require("assets/img/team-3-800x800.jpg")}
+              src={currentUser.ProfileImage}
             />
+       
           </span>
         </div>
+           )
+          }
       </a>
       <div
         ref={popoverDropdownRef}
@@ -44,42 +102,25 @@ const UserDropdown = () => {
         }
       >
         <a
-          href="#pablo"
+          href="/profile"
           className={
             "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
           }
-          onClick={(e) => e.preventDefault()}
         >
-          Action
+          Profile
         </a>
+      
         <a
           href="#pablo"
           className={
-            "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+            "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-red-500"
           }
-          onClick={(e) => e.preventDefault()}
+          onClick={() => handleDelete(currentUser.No_)}
         >
-          Another action
+          Supprimer mon compte
         </a>
-        <a
-          href="#pablo"
-          className={
-            "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-          }
-          onClick={(e) => e.preventDefault()}
-        >
-          Something else here
-        </a>
-        <div className="h-0 my-2 border border-solid border-blueGray-100" />
-        <a
-          href="#pablo"
-          className={
-            "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-          }
-          onClick={(e) => e.preventDefault()}
-        >
-          Seprated link
-        </a>
+      
+       
       </div>
     </>
   );

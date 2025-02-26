@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { Provider, useDispatch } from 'react-redux';
@@ -28,7 +28,8 @@ import AddReclamationProd from 'views/AddReclamationProd';
 
 const App = () => {
   const dispatch = useDispatch();
-
+  const [Email, setEmail] = useState('');
+  const [otp, setOTP] = useState('');
   const fetchUserDetails = useCallback(async () => {
     try {
       const dataResponse = await fetch(SummaryApi.current_user.url, {
@@ -52,7 +53,7 @@ const App = () => {
   }, [fetchUserDetails]); // ✅ Now stable across renders
 
   return (
-    <Context.Provider value={{ fetchUserDetails }}>
+    <Context.Provider value={{ fetchUserDetails , otp,setOTP,setEmail,Email}}>
       <BrowserRouter>
         <Switch>
           <Route path="/admin" component={Admin} />

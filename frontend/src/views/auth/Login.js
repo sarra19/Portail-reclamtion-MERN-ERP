@@ -6,10 +6,9 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import SummaryApi from '../../common';
 import Context from '../../context';
-
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const { fetchUserDetails } = useContext(Context);
+  const { fetchUserDetails ,setEmail, setOTP} = useContext(Context);
 
   const [data, setData] = useState({
     Email: "",
@@ -17,7 +16,38 @@ export default function Login() {
   });
   const [errors, setErrors] = useState({});
   const history = useHistory();
-
+  const navigateToOtp = async () => {
+    if (data.Email) {
+      const OTP = Math.floor(Math.random() * 9000 + 1000);
+      setOTP(OTP);
+      setEmail(data.Email);
+  
+      try {
+        const response = await fetch(SummaryApi.sendRecoveryEmail.url, {
+          method: SummaryApi.sendRecoveryEmail.method,
+          credentials: 'include',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            OTP,
+            recipient_email: data.Email,
+          }),
+        });
+  
+        if (response.ok) {
+          history.push('/auth/otp');
+        } else {
+          console.log("Failed to send OTP:", response.statusText);
+        }
+      } catch (error) {
+        console.log("Error sending OTP:", error);
+      }
+    } else {
+      toast.error("Please enter your email");
+    }
+  };
+  
   const validateField = (name, value) => {
     let error = '';
     switch (name) {
@@ -223,12 +253,12 @@ export default function Login() {
             </div>
             <div className="flex flex-wrap mt-6 relative">
               <div className="w-1/2">
-                <a
-                  href="/auth/otp"
+                <button
+                  onClick={navigateToOtp}
                   className="text-blueGray-600"
                 >
                   <small>Mot de passe oublié ?</small>
-                </a>
+                </button>
               </div>
               <div className="w-1/2 text-right">
                 <Link to="/auth/register" className="text-blueGray-600">
