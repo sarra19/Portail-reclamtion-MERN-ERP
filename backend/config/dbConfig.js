@@ -2,10 +2,10 @@ const sql = require("mssql");
 require('dotenv').config();
 
 const config = {
-  user: process.env.DB_USER , 
-  password: process.env.DB_PASSWORD ,
-  server: process.env.DB_HOST , 
-  database: process.env.DB_NAME , 
+  user: process.env.DB_USER || "sarra", // Fallback value
+  password: process.env.DB_PASSWORD || "0000", // Fallback value
+  server: process.env.DB_HOST || "SARRA\\BCDEMO", // Fallback value
+  database: process.env.DB_NAME || "Demo Database BC (24-0)", // Fallback value
   options: {
     encrypt: false,
     trustServerCertificate: true,
