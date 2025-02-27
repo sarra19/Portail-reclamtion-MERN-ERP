@@ -417,6 +417,46 @@ async function getUser(req, res) {
         });
     }
 }
+async function getVendors(req, res) {
+    try {
+
+        const pool = await connectDB();
+
+        const result = await pool.request()
+            .query(`
+                SELECT 
+                   *
+                FROM [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+                WHERE [Role] = 2
+            `);
+
+        if (result.recordset.length === 0) {
+            return res.status(404).json({
+                message: "User not found",
+                error: true,
+                success: false,
+            });
+        }
+
+        const user = result.recordset; // Define the user variable
+        console.log("utilisateur", user); // Log the user details
+
+        res.status(200).json({
+            data: user, // Send the user details in the response
+            error: false,
+            success: true,
+            message: "User details fetched successfully"
+        });
+
+    } catch (err) {
+        console.error("Error in userDetails:", err); // Log the error for debugging
+        res.status(400).json({
+            message: err.message || err,
+            error: true,
+            success: false
+        });
+    }
+}
 async function getUserByReclamationId(req, res) {
     try {
       const reclamationId = req.params.id; // Get the reclamation ID from request parameters
@@ -592,9 +632,8 @@ async function updateUserRole(req, res) {
 async function deleteUser(req, res) {
     try {
       const pool = await connectDB();
-      const { No_ } = req.body;  // Ensure 'No_' is correct and exists in the table
+      const { No_ } = req.body;  
         console.log("id :", No_)
-      // Adjust the table name and column as per your DB schema
       await pool.request()
         .input('No_', No_)
         .query(`
@@ -619,4 +658,4 @@ async function deleteUser(req, res) {
   
 
 
-module.exports = {  SignUp, userVerify,getUserByReclamationId,getUser,updateUser, userDetails,updateUserRole, SignIn, userLogout, getall, deleteUser }
+module.exports = {  SignUp,getVendors, userVerify,getUserByReclamationId,getUser,updateUser, userDetails,updateUserRole, SignIn, userLogout, getall, deleteUser }

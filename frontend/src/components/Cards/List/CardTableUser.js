@@ -24,13 +24,13 @@ export default function CardTableUser({ color }) {
   const handleDelete = async (id) => {
     try {
       const response = await fetch(SummaryApi.deleteUser.url, {
-        method: SummaryApi.deleteUser.method, // DELETE is the correct method for deletion
+        method: SummaryApi.deleteUser.method, 
         credentials: 'include',
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          No_: id  // Pass the correct user identifier (e.g., No_)
+          No_: id  
         })
       });
   
@@ -42,7 +42,6 @@ export default function CardTableUser({ color }) {
       toast.success("Utilisateur supprimé avec succès");
       console.log("User data:", dataResponse);
       
-      // Optionally, re-fetch the users to update the UI
       fetchAllUser(); 
   
     } catch (error) {

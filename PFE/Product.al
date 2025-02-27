@@ -8,7 +8,7 @@ table 50109 "Product"
         {
             AutoIncrement = true;
         }
-        field(2; "Image"; Text[255])
+        field(2; "ImageProduct"; Text[255])
         { 
                          NotBlank = false;
 

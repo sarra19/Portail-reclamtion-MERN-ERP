@@ -1,12 +1,44 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import SummaryApi from "common";
+import { toast } from "react-toastify";
 
 // components
 
 
 export default function CardTableProd({ color }) {
   const [allProduit, setAllProduit] = useState([]);
+
+
+
+    const handleDelete = async (id) => {
+      try {
+        const response = await fetch(SummaryApi.deleteProduit.url, {
+          method: SummaryApi.deleteProduit.method, 
+          credentials: 'include',
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            No_: id 
+          })
+        });
+    
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+    
+        const dataResponse = await response.json();
+        toast.success("Produit supprimé avec succès");
+        console.log("User data:", dataResponse);
+        
+        fetchAllProduit(); 
+    
+      } catch (error) {
+        console.error("Erreur lors de la suppression de l'Produit:", error);
+      }
+    };
+    
   const fetchAllProduit = async () => {
     try {
       const response = await fetch(SummaryApi.allProduit.url, {
@@ -148,7 +180,7 @@ export default function CardTableProd({ color }) {
                   <tr key={index} className="border-t">
                     <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center">
                       <img
-                        src={require(`assets/img/${produit.Image}`)}
+                        src={produit.ImageProduct}
                         className="h-12 w-12 bg-white rounded-full border"
                         alt="..."
                       />
@@ -165,13 +197,15 @@ export default function CardTableProd({ color }) {
 
                     <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
                       <div className="flex">
-                        <a href={`/admin/modify-produit/${produit.id}`}>
+                        <a href={`/admin/modify-produit/${produit.No_}`}>
                           <button className="bg-orange-500 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-2 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
                             <i className="fas fa-pen"></i>
                           </button>
                         </a>
-                        <a href={`/admin/delete-users/${produit.id}`}>
-                          <button className="bg-blueGray-dys-2 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-2 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
+                        <a href={`/admin/produit`}>
+                          <button onClick={() => handleDelete(produit.No_)}
+                            className="bg-blueGray-dys-2 text-white active:bg-lightBlue-600 font-bold uppercase text-xs px-2 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
+
                             <i className="fas fa-trash"></i>
                           </button>
                         </a>

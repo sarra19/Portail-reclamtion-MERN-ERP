@@ -43,7 +43,11 @@ const SummaryApi = {
         method: 'DELETE'
       },
     
- 
+      deleteProduit: {
+        url: `${backendDomin}/deleteProduit`,  // Ensure this is correct
+        method: 'DELETE'
+      },
+    
     serviceDetails: {
         url: `${backendDomin}/getServiceDetails`,
         method: "get"
@@ -63,6 +67,10 @@ const SummaryApi = {
     productDetails: {
         url: `${backendDomin}/getProductDetails`,
         method: "get"
+    },
+    addNewProduct: {
+        url: `${backendDomin}/addNewProduct`,
+        method: "post"
     },
     allReclamation: {
         url: `${backendDomin}/getAllReclamation`,
@@ -136,6 +144,10 @@ const SummaryApi = {
     resetPassword: {
         url: `${backendDomin}/password-reset/change`,
         method: 'post'
+    },
+    getVendors: {
+        url: `${backendDomin}/getVendors`,
+        method: 'get'
     },
 
 }

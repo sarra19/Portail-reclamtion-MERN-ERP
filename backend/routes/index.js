@@ -27,11 +27,11 @@ router.put('/updateService/:id',serviceController.updateService);
 router.delete('/deleteService/:id',serviceController.deleteService);
 
 //produit
-router.post("/addProduit",produitController.add)
+router.post("/addNewProduct",produitController.addNewProduct)
 router.get("/getAllProduit",produitController.getall)
 router.get("/getProductDetails/:id",produitController.getProductDetails)
 router.put('/updateProduit/:id',produitController.updateProduit);
-router.delete('/deleteProduit/:id',produitController.deleteProduit);
+router.delete('/deleteProduit',produitController.deleteProduit);
 
 
 
@@ -128,6 +128,7 @@ router.put('/updateUser',userController.updateUser);
 router.put('/updateUserRole',userController.updateUserRole);
 router.delete('/deleteUser',userController.deleteUser);
 router.get("/getUser/:id",userController.getUser)
+router.get("/getVendors",userController.getVendors)
 router.get("/getUserByReclamationId/:id",userController.getUserByReclamationId)
 
 

@@ -69,7 +69,7 @@ export default function Admin() {
 
             <Route path="/admin/produit" exact component={Produits} />
             <Route path="/admin/add-produit" exact component={AddProduit} />
-            <Route path="/admin/modify-produit" exact component={ModifyProduit} />
+            <Route path="/admin/modify-produit/:id" exact component={ModifyProduit} />
             <Route path="/admin/details-produit" exact component={DetailsProd} />
 
             <Route path="/admin/service" exact component={Services} />
