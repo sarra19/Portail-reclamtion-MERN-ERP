@@ -150,11 +150,11 @@ export default function CardAddProd() {
   }, []);
 
   const handleVendorChange = (event) => {
-    const selectedValue = JSON.parse(event.target.value); // Convertir la chaîne JSON en objet
-    setSelectedVendor(selectedValue); // Mettre à jour selectedVendor avec l'objet complet
+    const selectedValue = JSON.parse(event.target.value);
+    setSelectedVendor(selectedValue); 
     setData((prev) => ({
       ...prev,
-      Vendor: `${selectedValue.FirstName} ${selectedValue.LastName}`, // Mettre à jour data.Vendor avec le nom complet
+      Vendor: `${selectedValue.FirstName} ${selectedValue.LastName}`, 
     }));
   };
 

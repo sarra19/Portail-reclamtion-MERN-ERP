@@ -142,7 +142,7 @@ export default function Profile() {
       const result = await response.json();
       if (result.success) {
         setCurrentUser(result.data);
-        setFormData(result.data); // Pré-remplir le formulaire avec les données actuelles
+        setFormData(result.data); 
       } else {
         console.log(result.message);
       }

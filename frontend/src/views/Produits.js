@@ -117,7 +117,7 @@ export default function Produits() {
                     <div className="hover:-mt-4 relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg bg-bleu-dys ease-linear transition-all duration-150">
                       <img
                         alt={produit.Name}
-                        src={require(`assets/img/${produit.Image}`)}
+                        src={produit.ImageProduct}
                         className="w-full align-middle"
                       />
                       {/* <img
