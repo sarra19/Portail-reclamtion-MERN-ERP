@@ -5,7 +5,7 @@ const config = {
   user: process.env.DB_USER , 
   password: process.env.DB_PASSWORD ,
   server: process.env.DB_HOST , 
-  database: process.env.DB_NAME , 
+  database:"Demo Database BC (24-0)" , 
   options: {
     encrypt: false,
     trustServerCertificate: true,
