@@ -4,7 +4,7 @@ require('dotenv').config();
 const config = {
   user: process.env.DB_USER || "sarra", // Fallback value
   password: process.env.DB_PASSWORD || "0000", // Fallback value
-  server: "SARRA\\BCDEMO", 
+  server: "Sarra\\BCDEMO", 
   database: process.env.DB_NAME || "Demo Database BC (24-0)", // Fallback value
   options: {
     encrypt: false,
