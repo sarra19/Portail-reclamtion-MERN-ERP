@@ -7,7 +7,7 @@ const config = {
   server: process.env.DB_HOST,//"SARRA\\BCDEMO", 
   database: process.env.DB_NAME || "Demo Database BC (24-0)", // Fallback value
   options: {
-    encrypt: false,
+    encrypt: true,
     trustServerCertificate: true,
   },
 };
