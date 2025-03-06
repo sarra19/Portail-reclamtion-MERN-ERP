@@ -342,9 +342,9 @@ async function SignIn(req, res) {
         };
         
         // Manually set the cookie header
-        res.setHeader('Set-Cookie', [
-            `token=${token}; HttpOnly; Secure; SameSite=None; Max-Age=${tokenOptions.maxAge}`,
-        ]);
+        // res.setHeader('Set-Cookie', [
+        //     `token=${token}; HttpOnly; Secure; SameSite=None; Max-Age=${tokenOptions.maxAge}`,
+        // ]);
 
         // Set the cookie and send the response
         res.cookie("token", token, tokenOptions).status(200).json({
