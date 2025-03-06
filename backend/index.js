@@ -18,10 +18,7 @@ app.use(cors({
 }));
 
 // Middleware pour afficher les cookies envoyés
-app.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    next();
-});
+
 
 // Configuration de la session
 app.use(
