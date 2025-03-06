@@ -338,6 +338,7 @@ async function SignIn(req, res) {
         const tokenOptions = {
             httpOnly: true,
             secure: true,
+            SameSite: "none", // Assurez-vous que c'est bien en minuscule
             maxAge: 1000 * 60 * 60 * 24, // 1 day
         };
         
