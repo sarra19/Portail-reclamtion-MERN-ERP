@@ -363,25 +363,30 @@ async function SignIn(req, res) {
 
 async function userLogout(req, res) {
     try {
+        // Options pour le cookie
         const tokenOption = {
             httpOnly: true,
             secure: true,
-            maxAge: 1000 * 60 * 60 * 24, // 1 day
-        }
-        res.clearCookie("token", tokenOption)
+            sameSite: "none", // Assurez-vous que c'est bien en minuscule
+        };
 
-        res.json({
-            message: "Déconnexion réussite",
+        // Supprimer le cookie "token"
+        res.clearCookie("token", tokenOption);
+
+        // Réponse JSON indiquant que la déconnexion a réussi
+        res.status(200).json({
+            message: "Déconnexion réussie",
             error: false,
             success: true,
             data: []
-        })
+        });
     } catch (err) {
-        res.json({
-            message: err.message || err,
+        // En cas d'erreur, renvoyer une réponse d'erreur
+        res.status(500).json({
+            message: err.message || "Erreur serveur",
             error: true,
             success: false,
-        })
+        });
     }
 }
 async function getUser(req, res) {
