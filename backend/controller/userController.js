@@ -365,8 +365,8 @@ async function userLogout(req, res) {
     try {
         const tokenOption = {
             httpOnly: true,
-            secure: true, // http -- true
-            sameSite: 'lax' //sans http avec localhost   --- none avec http
+            secure: true,
+            maxAge: 1000 * 60 * 60 * 24, // 1 day
         }
         res.clearCookie("token", tokenOption)
 
