@@ -340,48 +340,40 @@ async function SignIn(req, res) {
             secure: true,
             maxAge: 1000 * 60 * 60 * 24, // 1 day
         };
-        
-        // Manually set the cookie header
-        res.setHeader('Set-Cookie', [
-            `token=${token}; HttpOnly; Secure; SameSite=None; Max-Age=${tokenOptions.maxAge}`,
-        ]);
 
-        // Set the cookie and send the response
+        // Définir le cookie avec le token
         res.cookie("token", token, tokenOptions).status(200).json({
             message: "Connexion réussie",
             token,
             success: true,
         });
 
-        console.log("🔹 Cookies envoyés:", token); // Debugging
-
     } catch (err) {
-        console.error("Erreur:", err); // Debugging
+        console.error("Erreur:", err);
         res.status(500).json({ message: err.message || "Erreur serveur", error: true });
     } 
 }
-
 async function userLogout(req, res) {
     try {
         const tokenOption = {
             httpOnly: true,
             secure: true,
-            maxAge: 1000 * 60 * 60 * 24, // 1 day
-        }
-        res.clearCookie("token", tokenOption)
+            expires: new Date(0), // Date d'expiration passée pour supprimer le cookie
+        };
 
-        res.json({
+        // Supprimer le cookie
+        res.clearCookie("token", tokenOption).json({
             message: "Déconnexion réussite",
             error: false,
             success: true,
             data: []
-        })
+        });
     } catch (err) {
         res.json({
             message: err.message || err,
             error: true,
             success: false,
-        })
+        });
     }
 }
 async function getUser(req, res) {
