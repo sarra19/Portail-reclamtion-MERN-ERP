@@ -298,94 +298,90 @@ async function userVerify(req, res) {
     }
 }
 
-
-
 async function SignIn(req, res) {
     try {
         const { Email, Password } = req.body;
 
-        // Vérification des champs obligatoires
         if (!Email || !Password) {
             return res.status(400).json({ message: "Email et mot de passe requis", error: true });
         }
 
         const pool = await connectDB();
-
-        // Recherche de l'utilisateur dans la base de données
+        
         const result = await pool.request().query`
             SELECT * FROM [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2] WHERE Email = ${Email}
         `;
 
-        // Vérification si l'utilisateur existe
         if (result.recordset.length === 0) {
             return res.status(404).json({ message: "Utilisateur n'existe pas", error: true });
         }
 
         const user = result.recordset[0];
 
-        // Vérification si l'utilisateur est vérifié
         if (!user.Verified) {
             return res.status(403).json({ message: "Vérifiez votre email avant de vous connecter", error: true });
         }
 
-        // Vérification du mot de passe
         const isPasswordValid = await bcrypt.compare(Password, user.Password);
+
         if (!isPasswordValid) {
             return res.status(401).json({ message: "Mot de passe incorrect", error: true });
         }
 
-        // Création du token JWT
         const tokenData = {
-            id: user.No_,
+            id: user.No_, 
             email: user.Email,
         };
+
         const token = jwt.sign(tokenData, process.env.TOKEN_SECRET_KEY, { expiresIn: "8h" });
 
-        // Options du cookie
         const tokenOptions = {
             httpOnly: true,
             secure: true,
             maxAge: 1000 * 60 * 60 * 24, // 1 day
         };
+        
+        // Manually set the cookie header
+        res.setHeader('Set-Cookie', [
+            `token=${token}; HttpOnly; Secure; SameSite=None; Max-Age=${tokenOptions.maxAge}`,
+        ]);
 
-        // Définition du cookie dans la réponse
+        // Set the cookie and send the response
         res.cookie("token", token, tokenOptions).status(200).json({
             message: "Connexion réussie",
             token,
             success: true,
         });
 
-    } catch (err) {
-        console.error("Erreur:", err);
-        res.status(500).json({ message: err.message || "Erreur serveur", error: true });
-    }
-}
+        console.log("🔹 Cookies envoyés:", token); // Debugging
 
+    } catch (err) {
+        console.error("Erreur:", err); // Debugging
+        res.status(500).json({ message: err.message || "Erreur serveur", error: true });
+    } 
+}
 
 async function userLogout(req, res) {
     try {
-        // Options du cookie pour la suppression
-        const tokenOptions = {
+        const tokenOption = {
             httpOnly: true,
             secure: true,
             maxAge: 1000 * 60 * 60 * 24, // 1 day
-        };
+        }
+        res.clearCookie("token", tokenOption)
 
-        // Suppression du cookie "token"
-        res.clearCookie("token", tokenOptions).status(200).json({
-            message: "Déconnexion réussie",
+        res.json({
+            message: "Déconnexion réussite",
             error: false,
             success: true,
-            data: [],
-        });
-
+            data: []
+        })
     } catch (err) {
-        console.error("Erreur:", err);
-        res.status(500).json({
-            message: err.message || "Erreur serveur",
+        res.json({
+            message: err.message || err,
             error: true,
             success: false,
-        });
+        })
     }
 }
 async function getUser(req, res) {
