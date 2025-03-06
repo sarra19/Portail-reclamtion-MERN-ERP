@@ -338,7 +338,7 @@ async function SignIn(req, res) {
         const tokenOptions = {
             httpOnly: true,
             secure: true,
-            SameSite: 'None',
+            SameSite: "none", // Assurez-vous que c'est bien en minuscule
             maxAge: 1000 * 60 * 60 * 24, // 1 day
         };
         
@@ -366,12 +366,10 @@ async function userLogout(req, res) {
         const tokenOption = {
             httpOnly: true,
             secure: true,
-            SameSite: 'None',
-            maxAge: 1000 * 60 * 60 * 24, // 1 day
+            SameSite: "none", // Assurez-vous que c'est bien en minuscule
+            maxAge: 0, // Expire immédiatement
         }
-        res.setHeader('Set-Cookie', [
-            `token=; HttpOnly; Secure; SameSite=None; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0`,
-        ]);
+    
         res.clearCookie("token", tokenOption);
 
         res.status(200).json({
