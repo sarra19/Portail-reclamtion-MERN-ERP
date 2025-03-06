@@ -42,7 +42,7 @@ app.use(
         cookie: {
             httpOnly: true, // Empêche l'accès aux cookies côté client
             secure: true, // Nécessaire pour HTTPS
-            SameSite: "none", // Assurez-vous que c'est bien en minuscule
+            sameSite: "none", // Assurez-vous que c'est bien en minuscule
             maxAge: 1000 * 60 * 60 * 24 // 1 jour
         }
     })
