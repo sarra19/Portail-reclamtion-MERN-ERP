@@ -13,6 +13,10 @@ async function add(req, res) {
         if (!Content) {
             return res.status(400).json({ message: "Saisir votre Commentaire." });
         }
+
+        console.log("🔹 ServiceId reçu:", ServiceId); // ➜ Affiche la valeur dans la console
+        console.log("🔹 ProductId reçu:", ProductId); // ➜ Vérification du ProductId aussi
+
         const pool = await connectDB();
 
         const query = `
@@ -21,8 +25,9 @@ async function add(req, res) {
             VALUES 
             (@Content, @Status, @ServiceId, @ProductId, @AttachedFile, @UserId,@CreatedAt)
         `;
-        const defaultProductId = ProductId || "vide"
-        const defaultServiceId = ServiceId || "vide"
+
+        const defaultProductId = ProductId || "vide";
+        const defaultServiceId = ServiceId || "vide";
 
         const createdAt = new Date();
         await pool.request()
@@ -38,22 +43,23 @@ async function add(req, res) {
         res.status(201).json({
             success: true,
             error: false,
-            message: "commentaire envoyé avec succès!",
+            message: "Commentaire envoyé avec succès!",
             data: {
                 Content,
                 Status: 0,
-                ServiceId,
-                ProductId,
+                ServiceId: defaultServiceId,
+                ProductId: defaultProductId,
                 AttachedFile,
                 UserId: userId,
                 CreatedAt: createdAt
             }
         });
     } catch (err) {
-        console.error("Erreur lors de l'ajout de commentaire:", err);
+        console.error("❌ Erreur lors de l'ajout de commentaire:", err);
         res.status(400).send({ error: err.message });
     }
 }
+
 async function getall(req, res) {
 
     try {
@@ -125,9 +131,9 @@ async function deleteComment(req, res) {
         const userId = req.userId;
 
         const comment = await pool.request()
-        .input('No_', sql.NVarChar, req.params.id)
-        .input('UserId', sql.NVarChar, userId)
-        .query(`
+            .input('No_', sql.NVarChar, req.params.id)
+            .input('UserId', sql.NVarChar, userId)
+            .query(`
               Delete FROM 
                 [dbo].[CRONUS International Ltd_$Comment$deddd337-e674-44a0-998f-8ddd7c79c8b2] 
                 WHERE [No_] = @No_ AND [UserId] = @UserId
@@ -152,17 +158,17 @@ async function getCommentsByService(req, res) {
 
         const query = `
             SELECT 
-             c.[No_]
-                c.[Content], 
-                c.[Status], 
-                c.[ServiceId], 
-                c.[ProductId], 
-                c.[AttachedFile], 
-                c.[UserId], 
-                c.[CreatedAt],
-                u.[FirstName], 
-                u.[LastName], 
-                u.[ProfileImage]
+             c.[No_],
+             c.[Content], 
+             c.[Status], 
+             c.[ServiceId], 
+             c.[ProductId], 
+             c.[AttachedFile], 
+             c.[UserId], 
+             c.[CreatedAt],
+             u.[FirstName], 
+             u.[LastName], 
+             u.[ProfileImage]
             FROM 
                 [dbo].[CRONUS International Ltd_$Comment$deddd337-e674-44a0-998f-8ddd7c79c8b2] c
             INNER JOIN 
@@ -182,7 +188,7 @@ async function getCommentsByService(req, res) {
 
             AttachedFile: comment.AttachedFile,
             UserId: comment.UserId,
-            CreatedAt:comment.CreatedAt,
+            CreatedAt: comment.CreatedAt,
             user: {
                 FirstName: comment.FirstName,
                 LastName: comment.LastName,
@@ -204,11 +210,11 @@ async function getCommentsByProduct(req, res) {
             return res.status(400).json({ success: false, message: "Product ID is required" });
         }
 
-        const pool = await connectDB(); 
+        const pool = await connectDB();
 
         const query = `
             SELECT 
-             c.[No_]
+             c.[No_],
                 c.[Content], 
                 c.[Status], 
                 c.[ServiceId], 
@@ -238,14 +244,14 @@ async function getCommentsByProduct(req, res) {
 
             AttachedFile: comment.AttachedFile,
             UserId: comment.UserId,
-            CreatedAt:comment.CreatedAt,
+            CreatedAt: comment.CreatedAt,
             user: {
                 FirstName: comment.FirstName,
                 LastName: comment.LastName,
                 ProfileImage: comment.ProfileImage
             }
         }));
-        
+
         res.status(200).json({ success: true, data: comments });
     } catch (err) {
         console.error("Erreur lors de la récupération des commentaires :", err);

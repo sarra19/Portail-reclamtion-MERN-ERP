@@ -202,6 +202,12 @@ export default function Register() {
             <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-200 border-0">
               <div className="rounded-t mb-0 px-6 py-6">
                 <div className="text-center mb-3">
+                <div className="flex justify-center mb-3">
+                    <img
+                      src={require("assets/img/dyn1.png")}
+                      className="h-16"
+                    ></img>
+                  </div>
                   <h6 className="text-blueGray-500 text-sm font-bold">
                     Inscription avec
                   </h6>

@@ -341,7 +341,7 @@ export default function CardDétailsProduitFront() {
                 <div className="Image-section ml-4 w-1/2">
                   <img
                     alt={data.Name}
-                    src={require(`assets/img/${data.Image}`)}
+                    src={data.ImageProduct}
                     className="w-full h-auto object-cover rounded-lg"
                   />
                 </div>

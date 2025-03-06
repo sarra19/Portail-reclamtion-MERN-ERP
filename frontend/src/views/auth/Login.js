@@ -8,7 +8,7 @@ import SummaryApi from '../../common';
 import Context from '../../context';
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const { fetchUserDetails ,setEmail, setOTP} = useContext(Context);
+  const { fetchUserDetails, setEmail, setOTP } = useContext(Context);
 
   const [data, setData] = useState({
     Email: "",
@@ -21,7 +21,7 @@ export default function Login() {
       const OTP = Math.floor(Math.random() * 9000 + 1000);
       setOTP(OTP);
       setEmail(data.Email);
-  
+
       try {
         const response = await fetch(SummaryApi.sendRecoveryEmail.url, {
           method: SummaryApi.sendRecoveryEmail.method,
@@ -34,7 +34,7 @@ export default function Login() {
             recipient_email: data.Email,
           }),
         });
-  
+
         if (response.ok) {
           history.push('/auth/otp');
         } else {
@@ -47,7 +47,7 @@ export default function Login() {
       toast.error("Please enter your email");
     }
   };
-  
+
   const validateField = (name, value) => {
     let error = '';
     switch (name) {
@@ -153,6 +153,12 @@ export default function Login() {
             <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg  bg-blueGray-200 border-0">
               <div className="rounded-t mb-0 px-6 py-6">
                 <div className="text-center mb-3">
+                  <div className="flex justify-center mb-3">
+                    <img
+                      src={require("assets/img/dyn1.png")}
+                      className="h-16"
+                    ></img>
+                  </div>
                   <h6 className="text-blueGray-500 text-sm font-bold">
                     Connecter avec
                   </h6>
@@ -195,6 +201,7 @@ export default function Login() {
                 <hr className="mt-6 border-b-1 border-blueGray-300" />
               </div>
               <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
+
                 <div className="text-blueGray-400 text-center mb-3 font-bold">
                   <small>Ou connecter avec</small>
                 </div>

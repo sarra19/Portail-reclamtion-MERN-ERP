@@ -9,14 +9,19 @@ export default function HeaderAuth(props) {
           <div className="flex flex-wrap items-center md:justify-between justify-center">
             <div className="w-full md:w-4/12 px-4">
               <div className="text-sm text-blueGray-500 font-semibold py-1 text-center md:text-left">
-
+             {/* <div className="flex">
+              <img
+              src={require("assets/img/dynablack.png")}
+              className="h-12 mr-2"
+            ></img> */}
                 <a
                   href="https://www.creative-tim.com?ref=nr-footer-small"
                   className="text-white hover:text-blueGray-300 text-sm font-semibold py-1"
                 >
-                  Bienvenue à Service Reclamation Dynamix services!                </a>
+                  Bienvenue à Service Reclamation DynaAssist-Dynamix services!                </a>
               </div>
             </div>
+            {/* </div> */}
             <div className="w-full md:w-8/12 px-4">
               <ul className="flex flex-wrap items-center list-none md:justify-end justify-center">
                 <li className="flex items-center mr-4">

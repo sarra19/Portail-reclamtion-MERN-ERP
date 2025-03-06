@@ -19,9 +19,9 @@ export default function Sidebar() {
             <i className="fas fa-bars"></i>
           </button>
           <img
-            src={require("assets/img/logo-dynamix-full.png")}
-            className="w-full"
-          ></img>
+            src={require("assets/img/dyn1.jpg")}
+            className="w-50 mx-auto"
+            ></img>
 
           <ul className="md:hidden items-center flex flex-wrap list-none">
             <li className="inline-block relative">

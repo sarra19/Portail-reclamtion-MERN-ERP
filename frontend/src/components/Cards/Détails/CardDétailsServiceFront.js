@@ -130,17 +130,17 @@ export default function CardDétailsServiceFront() {
   const handleAddComment = async (e) => {
     e.preventDefault();
     if (!currentUser) {
-          toast.error("Veuillez vous connecter...!");
-          return;
-        }
+      toast.error("Veuillez vous connecter...!");
+      return;
+    }
     if (newComment.trim() === "" && data.AttachedFile.length === 0) return;
-
+  
     const formData = {
       Content: newComment,
-      ServiceID: id,
+      ServiceId: id,  // Vérifie que l'API attend bien "ServiceId" et non "ServiceID"
       AttachedFile: "",
     };
-
+  
     if (data.AttachedFile && data.AttachedFile.length > 0) {
       const fileUrls = [];
       for (const file of data.AttachedFile) {
@@ -149,7 +149,7 @@ export default function CardDétailsServiceFront() {
       }
       formData.AttachedFile = fileUrls.join(",");
     }
-
+  
     try {
       const response = await fetch(SummaryApi.addCommentaire.url, {
         method: SummaryApi.addCommentaire.method,
@@ -157,14 +157,15 @@ export default function CardDétailsServiceFront() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData),  // Vérifie que ServiceId est bien pris en compte ici
       });
-
+  
       const result = await response.json();
       if (result.success) {
         const newCommentData = {
           Content: newComment,
           AttachedFile: formData.AttachedFile,
+          ServiceId: id,  // Ajouté pour garder cohérence avec le backend
           UserId: currentUser?.No_,
           CreatedAt: result.data.CreatedAt,
           user: {
@@ -185,7 +186,7 @@ export default function CardDétailsServiceFront() {
       toast.error("Une erreur s'est produite lors de l'ajout du commentaire.");
     }
   };
-
+  
   function timeAgo(createdAt) {
     const now = new Date();
     const past = new Date(createdAt);

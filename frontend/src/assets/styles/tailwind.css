@@ -2639,6 +2639,10 @@ select {
 .w-full {
   width: 100%;
 }
+.w-50 {
+  width: 50%;
+}
+
 
 .z-2 {
   z-index: 2;

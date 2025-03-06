@@ -8,7 +8,7 @@ table 50111 "Reclamation"
         {
             AutoIncrement = true;
         }
-        field(2; "TargetType"; Text[50])
+        field(2; "TargetType"; Text[50]) //service-product
         {
             NotBlank = true;
         }

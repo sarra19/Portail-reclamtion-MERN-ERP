@@ -66,8 +66,8 @@ export default function Navbar(props) {
           <div className="w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start">
             <a href="/">
               <img
-                src={require("assets/img/logo-dynamix-full.png")}
-                className="h-8"
+                src={require("assets/img/dyn1.jpg")}
+                className="h-16"
                 alt="Logo Dynamix"
               />
             </a>
