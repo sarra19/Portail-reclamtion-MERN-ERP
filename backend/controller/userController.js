@@ -343,10 +343,9 @@ async function SignIn(req, res) {
 
         // Options du cookie
         const tokenOptions = {
-            httpOnly: true, // Empêche l'accès au cookie via JavaScript côté client
-            secure: true, // Nécessaire pour HTTPS
-            sameSite: "none", // Autorise les requêtes cross-site
-            maxAge: 1000 * 60 * 60 * 24, // Durée de vie du cookie (1 jour)
+            httpOnly: true,
+            secure: true,
+            maxAge: 1000 * 60 * 60 * 24, // 1 day
         };
 
         // Définition du cookie dans la réponse
@@ -369,7 +368,7 @@ async function userLogout(req, res) {
         const tokenOptions = {
             httpOnly: true,
             secure: true,
-            sameSite: "none",
+            maxAge: 1000 * 60 * 60 * 24, // 1 day
         };
 
         // Suppression du cookie "token"
