@@ -308,7 +308,7 @@ async function SignIn(req, res) {
 
         const pool = await connectDB();
         
-        const result =await pool.request().query`
+        const result = await pool.request().query`
             SELECT * FROM [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2] WHERE Email = ${Email}
         `;
 
@@ -337,16 +337,21 @@ async function SignIn(req, res) {
 
         const tokenOptions = {
             httpOnly: true,
-            secure: true, 
-            sameSite: "none", // Minuscule !
+            secure: true, // Required for 'none'
+            sameSite: 'none', // Allow cross-site cookies
         };
+
+        // Set the cookie and send the response
         res.cookie("token", token, tokenOptions).status(200).json({
             message: "Connexion réussie",
             token,
             success: true,
         });
 
+        console.log("🔹 Cookies envoyés:", token); // Debugging
+
     } catch (err) {
+        console.error("Erreur:", err); // Debugging
         res.status(500).json({ message: err.message || "Erreur serveur", error: true });
     } 
 }
