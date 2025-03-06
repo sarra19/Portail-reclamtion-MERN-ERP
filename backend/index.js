@@ -37,7 +37,7 @@ app.use(
         cookie: {
             httpOnly: true, // Pour empêcher l'accès côté client
             secure: true, // Obligatoire pour 'None'
-            sameSite: 'none',
+            sameSite: "none",
             maxAge: 1000 * 60 * 60 * 24 // 1 jour
         }
     })
