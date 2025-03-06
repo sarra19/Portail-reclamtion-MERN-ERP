@@ -10,7 +10,7 @@ const app = express();
 const indexRouter = require('./routes/index');
 require('dotenv').config(); // Charger les variables d'environnement
 app.use(cors({
-    origin: ["https://claimflow.onrender.com","https://portail-reclamtion-mern-erp.onrender.com"],
+    origin: ["https://claimflow.onrender.com","http://localhost:3000"],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
 }));
@@ -47,11 +47,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 app.use('/', indexRouter);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use(express.static(path.join(__dirname, 'frontend', 'build')));
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend', 'build', 'index.html'));
-});
 const PORT = process.env.PORT || 8081;
 
 connectDB().then(() => {
