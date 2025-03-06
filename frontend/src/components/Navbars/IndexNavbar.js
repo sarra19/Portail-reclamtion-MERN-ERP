@@ -35,23 +35,24 @@ export default function Navbar(props) {
   };
   const handleLogout = async () => {
     try {
-      const fetchData = await fetch(SummaryApi.logout_user.url, {
-        method: SummaryApi.logout_user.method,
-      });
+        const fetchData = await fetch(SummaryApi.logout_user.url, {
+            method: SummaryApi.logout_user.method,
+            credentials: 'include', // Inclure les cookies dans la requête
+        });
 
-      const data = await fetchData.json();
+        const data = await fetchData.json();
 
-      if (data.success) {
-        toast.success(data.message);
-        // dispatch(setUserDetails(null));
-        history.push('/auth/login');
-      } else if (data.error) {
-        toast.error(data.message);
-      }
+        if (data.success) {
+            toast.success(data.message);
+            setCurrentUser(null); // Réinitialiser l'utilisateur courant
+            history.push('/auth/login'); // Rediriger vers la page de connexion
+        } else if (data.error) {
+            toast.error(data.message);
+        }
     } catch (error) {
-      toast.error("An error occurred while logging out. Please try again.");
+        toast.error("Une erreur s'est produite lors de la déconnexion. Veuillez réessayer.");
     }
-  };
+};
   useEffect(() => {
     fetchCurrentUser();
 
