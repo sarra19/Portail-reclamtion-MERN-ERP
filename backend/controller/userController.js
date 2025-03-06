@@ -368,7 +368,11 @@ async function userLogout(req, res) {
             secure: true,
             maxAge: 1000 * 60 * 60 * 24, // 1 day
         }
+        res.setHeader('Set-Cookie', [
+            `token=; HttpOnly; Secure; SameSite=None; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0`,
+        ]);
         res.clearCookie("token", tokenOption)
+        res.status(200).send('Cookie supprimé');
 
         res.json({
             message: "Déconnexion réussite",
