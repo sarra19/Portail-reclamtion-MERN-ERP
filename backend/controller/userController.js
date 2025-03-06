@@ -337,9 +337,15 @@ async function SignIn(req, res) {
 
         const tokenOptions = {
             httpOnly: true,
-            secure: true, // Required for 'none'
-            sameSite: 'none', // Allow cross-site cookies
+            secure: true,
+            sameSite: 'none',
+            maxAge: 1000 * 60 * 60 * 24, // 1 day
         };
+        
+        // Manually set the cookie header
+        res.setHeader('Set-Cookie', [
+            `token=${token}; HttpOnly; Secure; SameSite=None; Max-Age=${tokenOptions.maxAge}`,
+        ]);
 
         // Set the cookie and send the response
         res.cookie("token", token, tokenOptions).status(200).json({
