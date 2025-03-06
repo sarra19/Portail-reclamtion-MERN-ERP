@@ -364,9 +364,10 @@ async function SignIn(req, res) {
 async function userLogout(req, res) {
     try {
         const tokenOption = {
-            httpOnly : true,
-            secure : true,
-            sameSite :'None'
+            httpOnly: true,
+            secure: true,
+            sameSite: 'None',
+            maxAge: 1000 * 60 * 60 * 24, // 1 da
         }
         res.clearCookie("token",tokenOption)
         // res.setHeader('Set-Cookie', [
