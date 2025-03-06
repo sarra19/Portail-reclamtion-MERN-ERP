@@ -10,7 +10,7 @@ const app = express();
 const indexRouter = require('./routes/index');
 require('dotenv').config(); // Charger les variables d'environnement
 app.use(cors({
-    origin: ["http://localhost:8081","http://localhost:3000"],
+    origin: ["https://claimflow.onrender.com","http://localhost:3000"],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
 }));
