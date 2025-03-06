@@ -364,15 +364,14 @@ async function SignIn(req, res) {
 async function userLogout(req, res) {
     try {
         const tokenOption = {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'None',
-            maxAge: 1000 * 60 * 60 * 24, // 1 day
+            httpOnly : true,
+            secure : true,
+            sameSite :'None'
         }
-        res.setHeader('Set-Cookie', [
-            `token=; HttpOnly; Secure; SameSite=None; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0`,
-        ]);
-        res.clearCookie("token", tokenOption);
+        res.clearCookie("token",tokenOption)
+        // res.setHeader('Set-Cookie', [
+        //     `token=; HttpOnly; Secure; SameSite=None; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0`,
+        // ]);
 
         res.status(200).json({
             message: "Déconnexion réussite",
