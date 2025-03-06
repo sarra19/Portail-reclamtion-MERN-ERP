@@ -58,11 +58,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', indexRouter);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Test pour voir les cookies envoyés
-app.use((req, res, next) => {
-    console.log("🔹 Cookies envoyés:", res.getHeaders()["set-cookie"]);
-    next();
-});
+
 
 // Lancer le serveur
 const PORT = process.env.PORT || 8081;
