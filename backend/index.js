@@ -23,10 +23,10 @@ app.use(
         store: new MSSQLStore({ 
             client: sql, 
             config: {
-                user: "sarra", 
-                password: "0000", 
-                server: "SARRA\\BCDEMO", 
-                database: "Demo Database BC (24-0)", 
+                user: "sarradb", 
+                password: "201JFT201&too", 
+                server: "https://dev.azure.com/nvsarra8/_git/DynaAssist", 
+                database: "sarrademo", 
                 options: {
                     encrypt: false, 
                     trustServerCertificate: true, 
