@@ -34,9 +34,10 @@ app.use(
             },
         }),
         cookie: {
-            sameSite: "None", // Doit être en majuscule
-            secure: true,
-            maxAge: 1000 * 60 * 60 * 24 // 1 day
+            httpOnly: true, // Pour empêcher l'accès côté client
+            secure: true, // Obligatoire pour 'None'
+            sameSite: "none", // Assurez-vous que c'est bien en minuscule ici
+            maxAge: 1000 * 60 * 60 * 24 // 1 jour
         }
     })
 );
