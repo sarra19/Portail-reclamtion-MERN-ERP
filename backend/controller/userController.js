@@ -342,6 +342,9 @@ async function SignIn(req, res) {
         };
         
      
+       res.setHeader('Set-Cookie', [
+            `token=${token}; HttpOnly; Secure; SameSite=None; Max-Age=${tokenOptions.maxAge}`,
+        ]);
 
         // Set the cookie and send the response
         res.cookie("token", token, tokenOptions).status(200).json({
