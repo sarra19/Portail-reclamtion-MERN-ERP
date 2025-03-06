@@ -349,7 +349,6 @@ async function SignIn(req, res) {
         // Set the cookie and send the response
         res.cookie("token", token, tokenOptions).status(200).json({
             message: "Connexion réussie",
-            token,
             success: true,
         });
 
