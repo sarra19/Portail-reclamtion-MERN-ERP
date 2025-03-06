@@ -338,7 +338,7 @@ async function SignIn(req, res) {
         const tokenOptions = {
             httpOnly: true,
             secure: true, // Obligatoire pour Render
-            sameSite: "none", // Minuscule ici pour éviter les erreurs
+            sameSite: "None", // Majuscule ici
         };
         res.cookie("token", token, tokenOptions).status(200).json({
             message: "Connexion réussie",
