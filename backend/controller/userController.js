@@ -338,7 +338,7 @@ async function SignIn(req, res) {
         const tokenOptions = {
             httpOnly: true,
             secure: true,
-            SameSite: 'None',
+            sameSite: 'None',
             maxAge: 1000 * 60 * 60 * 24, // 1 day
         };
         
@@ -366,7 +366,7 @@ async function userLogout(req, res) {
         const tokenOption = {
             httpOnly: true,
             secure: true,
-            SameSite: 'None',
+            sameSite: 'None',
             maxAge: 1000 * 60 * 60 * 24, // 1 day
         }
         res.setHeader('Set-Cookie', [
