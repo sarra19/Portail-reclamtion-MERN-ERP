@@ -9,6 +9,7 @@ const { sql, connectDB } = require("./config/dbConfig")
 const app = express();
 const indexRouter = require('./routes/index');
 require('dotenv').config(); // Charger les variables d'environnement
+app.set('trust proxy', 1); // Faire confiance au premier proxy
 app.use(cors({
     origin: ["http://localhost:8081","https://portail-reclamtion-mern-erp.onrender.com"],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
