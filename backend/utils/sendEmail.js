@@ -1,20 +1,20 @@
 const nodemailer = require("nodemailer");
 
 function sendEmail({ recipient_email, subject, text, html }) {
-  console.log("User:", process.env.USER);
-  console.log("App Password:", process.env.APP_PASSWORD);
+  console.log("User:", "nvsarra8@gmail.com");
+  console.log("App Password:", "nrli gkeh pgey xbig");
   return new Promise((resolve, reject) => {
     const transporter = nodemailer.createTransport({
       service: process.env.SERVICE || "gmail",
       auth: {
-        user: process.env.USER,
-        pass: process.env.APP_PASSWORD, // Use the app password here
+        user: "nvsarra8@gmail.com",
+        pass: "nrli gkeh pgey xbig", // Use the app password here
       },
       pool: true,
     });
 
     const mail_configs = {
-      from: process.env.USER,
+      from: "nvsarra8@gmail.com",
       to: recipient_email,
       subject: subject,
       text: text,
