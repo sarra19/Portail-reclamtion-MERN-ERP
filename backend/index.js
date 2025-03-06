@@ -34,7 +34,7 @@ app.use(
             },
         }),
         cookie: {
-            sameSite: "none",
+            sameSite: "None", // Doit être en majuscule
             secure: true,
             maxAge: 1000 * 60 * 60 * 24 // 1 day
         }
