@@ -12,7 +12,7 @@ const app = express();
 const indexRouter = require('./routes/index');
 
 app.use(cors({
-    origin: ["https://portail-reclamtion-mern-erp.onrender.com"], // Remplace par ton domaine de production
+    origin: ["http://localhost:8081","https://portail-reclamtion-mern-erp.onrender.com"], // Remplace par ton domaine de production
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true, // Permet l'envoi des cookies
 }));
