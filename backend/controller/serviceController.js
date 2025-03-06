@@ -35,7 +35,7 @@ async function getall(req, res) {
         const result = await pool.request().query(`
               SELECT 
              *
-  FROM [Demo Database BC (24-0)].[dbo].[CRONUS International Ltd_$Service$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+  FROM [dbo].[CRONUS International Ltd_$Service$deddd337-e674-44a0-998f-8ddd7c79c8b2]
             `);
         const data = result.recordset
         console.log("data :", data)
@@ -71,7 +71,7 @@ async function getServiceDetails(req, res) {
                 ,[Description] 
                 ,[Tags]
       
-  FROM [Demo Database BC (24-0)].[dbo].[CRONUS International Ltd_$Service$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+  FROM [dbo].[CRONUS International Ltd_$Service$deddd337-e674-44a0-998f-8ddd7c79c8b2]
                 WHERE [No_] = @No_
             `);
 

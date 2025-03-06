@@ -607,7 +607,7 @@ async function updateUserRole(req, res) {
     console.log("l Role :", Role )
 
     const query = `
-        UPDATE [Demo Database BC (24-0)].[dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
+        UPDATE [dbo].[CRONUS International Ltd_$User_Details$deddd337-e674-44a0-998f-8ddd7c79c8b2]
         SET
             [Role] = @Role
         WHERE [No_] = @No_
