@@ -338,7 +338,7 @@ async function SignIn(req, res) {
         const tokenOptions = {
             httpOnly: true,
             secure: true,
-            sameSite: "none", // Assurez-vous que c'est bien en minuscule
+            SameSite: 'None',
             maxAge: 1000 * 60 * 60 * 24, // 1 day
         };
         
@@ -366,14 +366,14 @@ async function userLogout(req, res) {
         const tokenOption = {
             httpOnly: true,
             secure: true,
-            sameSite: "none", // Assurez-vous que c'est bien en minuscule
+            SameSite: 'None',
             maxAge: 0, // Expire immédiatement
         }
-    
-        res.clearCookie("token", tokenOption);
         res.setHeader('Set-Cookie', [
-            `token=; HttpOnly; Secure; sameSite=None; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0`,
+            `token=; HttpOnly; Secure; SameSite=None; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0`,
         ]);
+        res.clearCookie("token", tokenOption);
+
         res.status(200).json({
             message: "Déconnexion réussite",
             error: false,
