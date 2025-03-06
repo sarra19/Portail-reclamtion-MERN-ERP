@@ -373,6 +373,8 @@ async function userLogout(req, res) {
         ]);
         res.clearCookie("token", tokenOption)
         res.status(200).send('Cookie supprimé');
+        res.redirect("https://portail-reclamtion-mern-erp.onrender.com/auth/login");
+
 
         res.json({
             message: "Déconnexion réussite",
