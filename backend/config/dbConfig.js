@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const config = {
   user: process.env.DB_USER || "sarradb", // Fallback value
-  password: process.env.DB_PASSWORD, // Fallback value
+  password: "201JFT201&too", // Fallback value
   server: process.env.DB_HOST,//"SARRA\\BCDEMO", 
   database: process.env.DB_NAME || "sarrademo", // Fallback value
   options: {
