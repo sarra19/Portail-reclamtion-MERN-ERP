@@ -360,7 +360,6 @@ async function SignIn(req, res) {
         res.status(500).json({ message: err.message || "Erreur serveur", error: true });
     } 
 }
-
 async function userLogout(req, res) {
     try {
         const tokenOption = {
@@ -371,23 +370,20 @@ async function userLogout(req, res) {
         res.setHeader('Set-Cookie', [
             `token=; HttpOnly; Secure; SameSite=None; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0`,
         ]);
-        res.clearCookie("token", tokenOption)
-        res.status(200).send('Cookie supprimé');
-        res.redirect("https://portail-reclamtion-mern-erp.onrender.com/auth/login");
+        res.clearCookie("token", tokenOption);
 
-
-        res.json({
+        res.status(200).json({
             message: "Déconnexion réussite",
             error: false,
             success: true,
             data: []
-        })
+        });
     } catch (err) {
-        res.json({
+        res.status(500).json({
             message: err.message || err,
             error: true,
             success: false,
-        })
+        });
     }
 }
 async function getUser(req, res) {

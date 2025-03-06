@@ -45,7 +45,7 @@ export default function Navbar(props) {
       if (data.success) {
         toast.success(data.message);
         // dispatch(setUserDetails(null));
-        history.push('/auth/login');
+        window.location.href = "https://portail-reclamtion-mern-erp.onrender.com/auth/login";
       } else if (data.error) {
         toast.error(data.message);
       }
