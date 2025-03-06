@@ -32,28 +32,36 @@ const App = () => {
   const [otp, setOTP] = useState('');
   const fetchUserDetails = useCallback(async () => {
     try {
-      const dataResponse = await fetch(SummaryApi.current_user.url, {
+      console.log("Fetching user details...");
+
+      const response = await fetch(SummaryApi.current_user.url, {
         method: SummaryApi.current_user.method,
         credentials: 'include'
       });
 
-      const dataApi = await dataResponse.json();
+      console.log("Response Status:", response.status);
+
+      const dataApi = await response.json();
+      console.log("API Response:", dataApi);
 
       if (dataApi.success) {
         dispatch(setUserDetails(dataApi.data));
+      } else {
+        console.error("API returned an error:", dataApi.message);
       }
     } catch (error) {
-      console.error('Error fetching user details:', error);
+      console.error("Error fetching user details:", error);
     }
-  }, [dispatch]); // ✅ Only depends on `dispatch`
+  }, [dispatch]);
 
-  
+
+
   useEffect(() => {
-    fetchUserDetails(); 
+    fetchUserDetails();
   }, [fetchUserDetails]); // ✅ Now stable across renders
 
   return (
-    <Context.Provider value={{ fetchUserDetails , otp,setOTP,setEmail,Email}}>
+    <Context.Provider value={{ fetchUserDetails, otp, setOTP, setEmail, Email }}>
       <BrowserRouter>
         <Switch>
           <Route path="/admin" component={Admin} />

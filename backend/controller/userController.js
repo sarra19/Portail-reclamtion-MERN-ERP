@@ -355,8 +355,8 @@ async function SignIn(req, res) {
 async function userLogout(req, res) {
     try {
         const tokenOption = {
-            httpOnly: false,
-            secure: false, // http -- true
+            httpOnly: true,
+            secure: true, // http -- true
             sameSite: 'lax' //sans http avec localhost   --- none avec http
         }
         res.clearCookie("token", tokenOption)
