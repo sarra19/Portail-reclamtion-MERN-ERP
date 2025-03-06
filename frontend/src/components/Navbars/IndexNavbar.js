@@ -37,7 +37,6 @@ export default function Navbar(props) {
     try {
       const fetchData = await fetch(SummaryApi.logout_user.url, {
         method: SummaryApi.logout_user.method,
-        credentials: 'include',
       });
 
       const data = await fetchData.json();
